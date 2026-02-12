@@ -1,0 +1,31 @@
+# These files are known to work (just need relation name fixes):
+
+## Core Infrastructure
+- lib/auth.ts
+- lib/prisma.ts
+- middleware.ts
+- prisma/schema.prisma
+
+## Layouts
+- app/(dashboard)/layout.tsx
+
+## Student Pages (All Working Before)
+- app/(dashboard)/student/page.tsx
+- app/(dashboard)/student/onboarding/page.tsx
+- app/(dashboard)/student/profile/page.tsx
+- app/(dashboard)/student/applications/page.tsx
+- app/(dashboard)/student/test-scores/page.tsx
+- app/(dashboard)/student/edit/*/page.tsx
+
+## Coordinator Pages
+- app/(dashboard)/coordinator/page.tsx
+- app/(dashboard)/coordinator/meetings/page.tsx
+- app/(dashboard)/coordinator/students/[studentId]/page.tsx
+
+## Counselor Pages
+- app/(dashboard)/counselor/page.tsx
+- app/(dashboard)/counselor/manage-users/page.tsx
+
+## All API Routes (in app/api/)
+- Working before schema change
+- Just need relation name updates

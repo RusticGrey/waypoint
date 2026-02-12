@@ -13,7 +13,7 @@ model AcademicProfile {
   grading_system_type GradingSystemType
   current_gpa         String?
   created_at          DateTime          @default(now())
-  student             Student           @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
+  Student             Student           @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
 }
 
 model Achievement {
@@ -30,7 +30,7 @@ model Achievement {
   verifiable_link   String?
   created_at        DateTime          @default(now())
   updated_at        DateTime
-  student           Student           @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
+  Student           Student           @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
 }
 
 model Activity {
@@ -45,7 +45,7 @@ model Activity {
   description    String?
   created_at     DateTime @default(now())
   updated_at     DateTime
-  student        Student  @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
+  Student        Student  @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
 }
 
 model ChangeLog {
@@ -60,33 +60,33 @@ model ChangeLog {
   new_value   String?
   description String
   created_at  DateTime     @default(now())
-  student     Student      @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
+  Student     Student      @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
 
   @@index([created_at])
   @@index([student_id])
 }
 
 model College {
-  id                  String               @id
-  name                String
-  country             String               @default("United States")
-  acceptance_rate     Float?
-  avg_gpa             Float?
-  avg_sat             Int?
-  avg_act             Int?
-  ranking_us_news     Int?
-  is_active           Boolean              @default(true)
-  created_at          DateTime             @default(now())
-  updated_at          DateTime
-  college_applications CollegeApplication[]
-  target_colleges     TargetCollege[]
+  id                 String               @id
+  name               String
+  country            String               @default("United States")
+  acceptance_rate    Float?
+  avg_gpa            Float?
+  avg_sat            Int?
+  avg_act            Int?
+  ranking_us_news    Int?
+  is_active          Boolean              @default(true)
+  created_at         DateTime             @default(now())
+  updated_at         DateTime
+  CollegeApplication CollegeApplication[]
+  TargetCollege      TargetCollege[]
 
   @@index([country])
   @@index([ranking_us_news])
 }
 
 model CollegeApplication {
-  id                      String    @id
+  id                      String    @id(map: "college_applications_pkey")
   student_id              String
   college_id              String
   target_category         String
@@ -102,13 +102,15 @@ model CollegeApplication {
   decision_received_date  DateTime?
   created_at              DateTime  @default(now())
   updated_at              DateTime
-  college                 College   @relation(fields: [college_id], references: [id], onDelete: Cascade)
-  student                 Student   @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
+  College                 College   @relation(fields: [college_id], references: [id], onDelete: Cascade)
+  Student                 Student   @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
 
   @@index([application_status])
   @@index([college_id])
   @@index([student_id])
-  @@index([application_deadline])
+  @@index([application_deadline], map: "college_applications_application_deadline_idx")
+  @@index([college_id], map: "college_applications_college_id_idx")
+  @@index([student_id], map: "college_applications_student_id_idx")
 }
 
 model Meeting {
@@ -125,8 +127,8 @@ model Meeting {
   student_mood      String?
   created_at        DateTime    @default(now())
   updated_at        DateTime
-  coordinator       User        @relation(fields: [coordinator_id], references: [id], onDelete: Cascade)
-  student           Student     @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
+  User              User        @relation(fields: [coordinator_id], references: [id], onDelete: Cascade)
+  Student           Student     @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
 
   @@index([coordinator_id])
   @@index([meeting_date])
@@ -142,8 +144,8 @@ model MeetingLog {
   notes            String
   action_items     String?
   created_at       DateTime @default(now())
-  coordinator      User     @relation(fields: [coordinator_id], references: [id], onDelete: Cascade)
-  student          Student  @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
+  User             User     @relation(fields: [coordinator_id], references: [id], onDelete: Cascade)
+  Student          Student  @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
 }
 
 model Organization {
@@ -152,7 +154,7 @@ model Organization {
   logo_url      String?
   primary_color String   @default("#3B82F6")
   created_at    DateTime @default(now())
-  users         User[]
+  User          User[]
 }
 
 model PersonalProfile {
@@ -166,7 +168,7 @@ model PersonalProfile {
   parent_email    String?
   parent_phone    String?
   created_at      DateTime  @default(now())
-  student         Student   @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
+  Student         Student   @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
 }
 
 model ProfileComment {
@@ -178,8 +180,8 @@ model ProfileComment {
   is_private   Boolean  @default(false)
   created_at   DateTime @default(now())
   updated_at   DateTime
-  author       User     @relation(fields: [author_id], references: [id], onDelete: Cascade)
-  student      Student  @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
+  User         User     @relation(fields: [author_id], references: [id], onDelete: Cascade)
+  Student      Student  @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
 
   @@index([author_id])
   @@index([student_id])
@@ -199,7 +201,7 @@ model ProfileGoal {
   created_at    DateTime   @default(now())
   updated_at    DateTime
   completed_at  DateTime?
-  student       Student    @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
+  Student       Student    @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
 
   @@index([status])
   @@index([student_id])
@@ -213,8 +215,8 @@ model ProfileOverride {
   overridden_by   String
   created_at      DateTime @default(now())
   updated_at      DateTime
-  counselor       User     @relation(fields: [overridden_by], references: [id], onDelete: NoAction)
-  student         Student  @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
+  User            User     @relation(fields: [overridden_by], references: [id], onDelete: NoAction)
+  Student         Student  @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
 
   @@index([overridden_by])
   @@index([student_id])
@@ -240,7 +242,7 @@ model ProjectExperience {
   status          ProjectStatus  @default(Completed)
   created_at      DateTime       @default(now())
   updated_at      DateTime
-  student         Student        @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
+  Student         Student        @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
 }
 
 model Student {
@@ -250,24 +252,24 @@ model Student {
   primary_coordinator_id                    String?
   profile_completion_pct                    Int                  @default(0)
   coordinator_id                            String?
-  academic_profile                          AcademicProfile?
-  achievements                              Achievement[]
-  activities                                Activity[]
-  change_logs                               ChangeLog[]
-  college_applications                      CollegeApplication[]
-  meetings                                  Meeting[]
-  meeting_logs                              MeetingLog[]
-  personal_profile                          PersonalProfile?
-  profile_comments                          ProfileComment[]
-  profile_goals                             ProfileGoal[]
-  profile_override                          ProfileOverride?
-  project_experiences                       ProjectExperience[]
-  coordinator                               User?                @relation("Student_coordinator_idToUser", fields: [coordinator_id], references: [id])
-  primary_coordinator                       User?                @relation("Student_primary_coordinator_idToUser", fields: [primary_coordinator_id], references: [id])
-  user                                      User                 @relation("Student_user_idToUser", fields: [user_id], references: [id], onDelete: Cascade)
-  target_colleges                           TargetCollege[]
-  test_scores                               TestScore[]
-  transcripts                               Transcript[]
+  AcademicProfile                           AcademicProfile?
+  Achievement                               Achievement[]
+  Activity                                  Activity[]
+  ChangeLog                                 ChangeLog[]
+  CollegeApplication                        CollegeApplication[]
+  Meeting                                   Meeting[]
+  MeetingLog                                MeetingLog[]
+  PersonalProfile                           PersonalProfile?
+  ProfileComment                            ProfileComment[]
+  ProfileGoal                               ProfileGoal[]
+  ProfileOverride                           ProfileOverride?
+  ProjectExperience                         ProjectExperience[]
+  User_Student_coordinator_idToUser         User?                @relation("Student_coordinator_idToUser", fields: [coordinator_id], references: [id])
+  User_Student_primary_coordinator_idToUser User?                @relation("Student_primary_coordinator_idToUser", fields: [primary_coordinator_id], references: [id])
+  User_Student_user_idToUser                User                 @relation("Student_user_idToUser", fields: [user_id], references: [id], onDelete: Cascade)
+  TargetCollege                             TargetCollege[]
+  TestScore                                 TestScore[]
+  Transcript                                Transcript[]
 }
 
 model Subject {
@@ -289,8 +291,8 @@ model TargetCollege {
   notes      String?
   created_at DateTime          @default(now())
   updated_at DateTime
-  college    College           @relation(fields: [college_id], references: [id], onDelete: Cascade)
-  student    Student           @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
+  College    College           @relation(fields: [college_id], references: [id], onDelete: Cascade)
+  Student    Student           @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
 
   @@unique([student_id, college_id])
   @@index([college_id])
@@ -307,7 +309,7 @@ model TestScore {
   section_scores  Json?
   created_at      DateTime @default(now())
   updated_at      DateTime
-  student         Student  @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
+  Student         Student  @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
 }
 
 model Transcript {
@@ -322,7 +324,7 @@ model Transcript {
   is_board_exam Boolean     @default(false)
   created_at    DateTime    @default(now())
   updated_at    DateTime
-  student       Student     @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
+  Student       Student     @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
 }
 
 model User {
@@ -334,14 +336,14 @@ model User {
   first_name                                   String
   last_name                                    String
   created_at                                   DateTime          @default(now())
-  meetings                                     Meeting[]
-  meeting_logs                                 MeetingLog[]
-  profile_comments                             ProfileComment[]
-  profile_overrides                            ProfileOverride[]
-  coordinated_students                         Student[]         @relation("Student_coordinator_idToUser")
-  primary_coordinated_students                 Student[]         @relation("Student_primary_coordinator_idToUser")
-  student_profile                              Student?          @relation("Student_user_idToUser")
-  organization                                 Organization      @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  Meeting                                      Meeting[]
+  MeetingLog                                   MeetingLog[]
+  ProfileComment                               ProfileComment[]
+  ProfileOverride                              ProfileOverride[]
+  Student_Student_coordinator_idToUser         Student[]         @relation("Student_coordinator_idToUser")
+  Student_Student_primary_coordinator_idToUser Student[]         @relation("Student_primary_coordinator_idToUser")
+  Student_Student_user_idToUser                Student?          @relation("Student_user_idToUser")
+  Organization                                 Organization      @relation(fields: [organization_id], references: [id], onDelete: Cascade)
 }
 
 enum AchievementType {
