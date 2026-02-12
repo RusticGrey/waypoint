@@ -14,11 +14,11 @@ export async function GET(req: Request) {
     const student = await prisma.student.findUnique({
       where: { user_id: session.user.id },
       include: {
-        personal_profile: true,
+        PersonalProfile: true,
       },
     });
     
-    return NextResponse.json({ personal_profile: student?.personal_profile });
+    return NextResponse.json({ PersonalProfile: student?.PersonalProfile });
   } catch (error) {
     console.error('Personal info fetch error:', error);
     return NextResponse.json({ error: 'Failed to fetch personal info' }, { status: 500 });

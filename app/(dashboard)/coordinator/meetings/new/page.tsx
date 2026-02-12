@@ -8,7 +8,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 interface Student {
   user_id: string;
-  user: {
+  User: {
     first_name: string;
     last_name: string;
   };
@@ -97,7 +97,7 @@ export default function NewMeetingPage() {
                 <option value="">Select student</option>
                 {students.map((student) => (
                   <option key={student.user_id} value={student.user_id}>
-                    {student.user.first_name} {student.user.last_name}
+                    {student.User.first_name} {student.User.last_name}
                   </option>
                 ))}
               </select>

@@ -19,25 +19,25 @@ export default async function CounselorDashboard() {
   // Get all students in the organization
   const students = await prisma.student.findMany({
     where: {
-      user: {
+      User: {
         organization_id: session.user.organizationId,
       },
     },
     include: {
-      user: {
+      User: {
         select: {
           first_name: true,
           last_name: true,
           email: true,
         },
       },
-      personal_profile: true,
-      academic_profile: true,
-      transcripts: true,
-      activities: true,
+      PersonalProfile: true,
+      AcademicProfile: true,
+      Transcript: true,
+      Activity: true,
     },
     orderBy: {
-      user: {
+      User: {
         last_name: 'asc',
       },
     },
@@ -126,16 +126,16 @@ export default async function CounselorDashboard() {
                   {students.map((student) => (
                     <tr key={student.user_id}>
                       <td className="px-4 py-3 text-sm font-medium text-gray-900">
-                        {student.user.first_name} {student.user.last_name}
+                        {student.User.first_name} {student.User.last_name}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-600">
-                        {student.user.email}
+                        {student.User.email}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-600">
                         {student.current_grade}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-600">
-                        {student.academic_profile?.curriculum_type || '-'}
+                        {student.AcademicProfile?.curriculum_type || '-'}
                       </td>
                       <td className="px-4 py-3 text-sm">
                         <div className="flex items-center">

@@ -5,392 +5,372 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  //  directUrl = env("DIRECT_URL")
 }
 
-model AcademicProfile {
-  student_id          String            @id
-  curriculum_type     CurriculumType
-  grading_system_type GradingSystemType
-  current_gpa         String?
-  created_at          DateTime          @default(now())
-  Student             Student           @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
-}
-
-model Achievement {
-  id                String            @id
-  student_id        String
-  achievement_type  AchievementType
-  title             String
-  organization      String?
-  grade_level       GradeLevel?
-  date_achieved     DateTime?
-  description       String?
-  metrics           String?
-  recognition_level RecognitionLevel?
-  verifiable_link   String?
-  created_at        DateTime          @default(now())
-  updated_at        DateTime
-  Student           Student           @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
-}
-
-model Activity {
-  id             String   @id
-  student_id     String
-  activity_name  String
-  category       String
-  role           String?
-  grade_levels   Json
-  hours_per_week Int
-  weeks_per_year Int
-  description    String?
-  created_at     DateTime @default(now())
-  updated_at     DateTime
-  Student        Student  @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
-}
-
-model ChangeLog {
-  id          String       @id
-  student_id  String
-  change_type ChangeType
-  entity_type String
-  entity_id   String?
-  action      ChangeAction
-  field_name  String?
-  old_value   String?
-  new_value   String?
-  description String
-  created_at  DateTime     @default(now())
-  Student     Student      @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
-
-  @@index([created_at])
-  @@index([student_id])
-}
-
-model College {
-  id                 String               @id
-  name               String
-  country            String               @default("United States")
-  acceptance_rate    Float?
-  avg_gpa            Float?
-  avg_sat            Int?
-  avg_act            Int?
-  ranking_us_news    Int?
-  is_active          Boolean              @default(true)
-  created_at         DateTime             @default(now())
-  updated_at         DateTime
-  CollegeApplication CollegeApplication[]
-  TargetCollege      TargetCollege[]
-
-  @@index([country])
-  @@index([ranking_us_news])
-}
-
-model CollegeApplication {
-  id                      String    @id(map: "college_applications_pkey")
-  student_id              String
-  college_id              String
-  target_category         String
-  application_status      String    @default("Not_Started")
-  application_deadline    DateTime?
-  decision_deadline       DateTime?
-  essay_status            String    @default("Not Started")
-  supplements_status      String    @default("Not Started")
-  recommendation_status   String    @default("Not Requested")
-  test_scores_sent        Boolean   @default(false)
-  application_portal_link String?
-  notes                   String?
-  decision_received_date  DateTime?
-  created_at              DateTime  @default(now())
-  updated_at              DateTime
-  College                 College   @relation(fields: [college_id], references: [id], onDelete: Cascade)
-  Student                 Student   @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
-
-  @@index([application_status])
-  @@index([college_id])
-  @@index([student_id])
-  @@index([application_deadline], map: "college_applications_application_deadline_idx")
-  @@index([college_id], map: "college_applications_college_id_idx")
-  @@index([student_id], map: "college_applications_student_id_idx")
-}
-
-model Meeting {
-  id                String      @id
-  student_id        String
-  coordinator_id    String
-  meeting_date      DateTime
-  duration_minutes  Int?
-  meeting_type      MeetingType @default(Regular)
-  topics_discussed  String[]
-  notes             String?
-  action_items      String[]
-  next_meeting_date DateTime?
-  student_mood      String?
-  created_at        DateTime    @default(now())
-  updated_at        DateTime
-  User              User        @relation(fields: [coordinator_id], references: [id], onDelete: Cascade)
-  Student           Student     @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
-
-  @@index([coordinator_id])
-  @@index([meeting_date])
-  @@index([student_id])
-}
-
-model MeetingLog {
-  id               String   @id
-  student_id       String
-  coordinator_id   String
-  meeting_date     DateTime
-  duration_minutes Int
-  notes            String
-  action_items     String?
-  created_at       DateTime @default(now())
-  User             User     @relation(fields: [coordinator_id], references: [id], onDelete: Cascade)
-  Student          Student  @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
-}
+//===============================================================
+// --- Models ---
+//===============================================================
 
 model Organization {
-  id            String   @id
-  name          String
-  logo_url      String?
-  primary_color String   @default("#3B82F6")
-  created_at    DateTime @default(now())
-  User          User[]
-}
+  id           String   @id @default(uuid())
+  name         String
+  logoUrl      String?  @map("logo_url")
+  primaryColor String   @default("#3B82F6") @map("primary_color")
+  createdAt    DateTime @default(now()) @map("created_at")
+  users        User[]
 
-model PersonalProfile {
-  student_id      String    @id
-  preferred_name  String?
-  date_of_birth   DateTime?
-  phone           String?
-  current_school  String?
-  school_location String?
-  parent_name     String?
-  parent_email    String?
-  parent_phone    String?
-  created_at      DateTime  @default(now())
-  Student         Student   @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
-}
-
-model ProfileComment {
-  id           String   @id
-  student_id   String
-  author_id    String
-  comment_text String
-  section      String?
-  is_private   Boolean  @default(false)
-  created_at   DateTime @default(now())
-  updated_at   DateTime
-  User         User     @relation(fields: [author_id], references: [id], onDelete: Cascade)
-  Student      Student  @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
-
-  @@index([author_id])
-  @@index([student_id])
-}
-
-model ProfileGoal {
-  id            String     @id
-  student_id    String
-  goal_type     GoalType
-  category      String
-  target_value  String
-  current_value String?
-  deadline      DateTime?
-  status        GoalStatus @default(Not_Started)
-  priority      Int        @default(5)
-  notes         String?
-  created_at    DateTime   @default(now())
-  updated_at    DateTime
-  completed_at  DateTime?
-  Student       Student    @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
-
-  @@index([status])
-  @@index([student_id])
-}
-
-model ProfileOverride {
-  id              String   @id
-  student_id      String   @unique
-  override_score  Int
-  override_reason String
-  overridden_by   String
-  created_at      DateTime @default(now())
-  updated_at      DateTime
-  User            User     @relation(fields: [overridden_by], references: [id], onDelete: NoAction)
-  Student         Student  @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
-
-  @@index([overridden_by])
-  @@index([student_id])
-}
-
-model ProjectExperience {
-  id              String         @id
-  student_id      String
-  experience_type ExperienceType
-  title           String
-  organization    String?
-  location        String?
-  start_date      DateTime
-  end_date        DateTime?
-  is_ongoing      Boolean        @default(false)
-  role_title      String?
-  description     String?
-  outcomes        String?
-  skills_learned  Json?
-  project_link    String?
-  mentor_name     String?
-  mentor_email    String?
-  status          ProjectStatus  @default(Completed)
-  created_at      DateTime       @default(now())
-  updated_at      DateTime
-  Student         Student        @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
-}
-
-model Student {
-  user_id                                   String               @id
-  graduation_year                           Int
-  current_grade                             GradeLevel
-  primary_coordinator_id                    String?
-  profile_completion_pct                    Int                  @default(0)
-  coordinator_id                            String?
-  AcademicProfile                           AcademicProfile?
-  Achievement                               Achievement[]
-  Activity                                  Activity[]
-  ChangeLog                                 ChangeLog[]
-  CollegeApplication                        CollegeApplication[]
-  Meeting                                   Meeting[]
-  MeetingLog                                MeetingLog[]
-  PersonalProfile                           PersonalProfile?
-  ProfileComment                            ProfileComment[]
-  ProfileGoal                               ProfileGoal[]
-  ProfileOverride                           ProfileOverride?
-  ProjectExperience                         ProjectExperience[]
-  User_Student_coordinator_idToUser         User?                @relation("Student_coordinator_idToUser", fields: [coordinator_id], references: [id])
-  User_Student_primary_coordinator_idToUser User?                @relation("Student_primary_coordinator_idToUser", fields: [primary_coordinator_id], references: [id])
-  User_Student_user_idToUser                User                 @relation("Student_user_idToUser", fields: [user_id], references: [id], onDelete: Cascade)
-  TargetCollege                             TargetCollege[]
-  TestScore                                 TestScore[]
-  Transcript                                Transcript[]
-}
-
-model Subject {
-  id              String          @id
-  curriculum_type CurriculumType?
-  subject_name    String
-  is_default      Boolean         @default(false)
-
-  @@unique([subject_name, curriculum_type])
-}
-
-model TargetCollege {
-  id         String            @id
-  student_id String
-  college_id String
-  category   TargetCategory
-  priority   Int               @default(5)
-  status     ApplicationStatus @default(Planning)
-  notes      String?
-  created_at DateTime          @default(now())
-  updated_at DateTime
-  College    College           @relation(fields: [college_id], references: [id], onDelete: Cascade)
-  Student    Student           @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
-
-  @@unique([student_id, college_id])
-  @@index([college_id])
-  @@index([student_id])
-}
-
-model TestScore {
-  id              String   @id
-  student_id      String
-  test_type       String
-  test_name       String
-  test_date       DateTime
-  composite_score Int?
-  section_scores  Json?
-  created_at      DateTime @default(now())
-  updated_at      DateTime
-  Student         Student  @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
-}
-
-model Transcript {
-  id            String      @id
-  student_id    String
-  course_name   String
-  grade_level   GradeLevel
-  semester      Semester
-  grade_value   String
-  credits       Float?
-  honors_level  HonorsLevel @default(Standard)
-  is_board_exam Boolean     @default(false)
-  created_at    DateTime    @default(now())
-  updated_at    DateTime
-  Student       Student     @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
+  @@map("Organization")
 }
 
 model User {
-  id                                           String            @id
-  organization_id                              String
-  email                                        String            @unique
-  password_hash                                String
-  role                                         UserRole
-  first_name                                   String
-  last_name                                    String
-  created_at                                   DateTime          @default(now())
-  Meeting                                      Meeting[]
-  MeetingLog                                   MeetingLog[]
-  ProfileComment                               ProfileComment[]
-  ProfileOverride                              ProfileOverride[]
-  Student_Student_coordinator_idToUser         Student[]         @relation("Student_coordinator_idToUser")
-  Student_Student_primary_coordinator_idToUser Student[]         @relation("Student_primary_coordinator_idToUser")
-  Student_Student_user_idToUser                Student?          @relation("Student_user_idToUser")
-  Organization                                 Organization      @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  id             String   @id @default(uuid())
+  organizationId String   @map("organization_id")
+  email          String   @unique
+  passwordHash   String   @map("password_hash")
+  role           UserRole
+  firstName      String   @map("first_name")
+  lastName       String   @map("last_name")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  // Relations
+  organization Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  student      Student?          @relation("UserToStudent")
+  meetings     Meeting[]         @relation("CoordinatorMeetings")
+  meetingLogs  MeetingLog[]
+  comments     ProfileComment[]
+  overrides    ProfileOverride[]
+
+  @@map("User")
 }
 
-enum AchievementType {
-  Award_Honor
-  Competition
-  Leadership
-  Social_Impact
-  Extracurricular
+model Student {
+  userId               String     @id @map("user_id")
+  graduationYear       Int        @map("graduation_year")
+  currentGrade         GradeLevel @map("current_grade")
+  primaryCoordinatorId String?    @map("primary_coordinator_id")
+  profileCompletionPct Int        @default(0) @map("profile_completion_pct")
+  coordinatorId        String?    @map("coordinator_id")
+
+  // Relations
+  user               User                 @relation("UserToStudent", fields: [userId], references: [id], onDelete: Cascade)
+  academicProfile    AcademicProfile?
+  personalProfile    PersonalProfile?
+  achievements       Achievement[]
+  activities         Activity[]
+  transcripts        Transcript[]
+  testScores         TestScore[]
+  projectExperiences ProjectExperience[]
+  applications       CollegeApplication[]
+  meetings           Meeting[]
+  meetingLogs        MeetingLog[]
+  goals              ProfileGoal[]
+  changeLogs         ChangeLog[]
+  profileOverride    ProfileOverride?
+  targetColleges     TargetCollege[]
+
+  @@map("Student")
 }
 
-enum ActivityCategory {
-  Academic
-  Arts_Music
-  Athletics
-  Community_Service
-  Cultural
-  Leadership
-  Other
+// -------------------------------------------------
+// --- STUDENT PROFILE MODELS ---
+// -------------------------------------------------
+
+model PersonalProfile {
+  studentId      String    @id @map("student_id")
+  phone          String?
+  dateOfBirth    DateTime? @map("date_of_birth")
+  currentSchool  String?   @map("current_school")
+  schoolLocation String?   @map("school_location")
+  createdAt      DateTime  @default(now()) @map("created_at")
+
+  student Student @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+
+  @@map("PersonalProfile")
 }
 
-enum ApplicationStatus {
-  Planning
-  Researching
-  Preparing
-  In_Progress
-  Submitted
-  Accepted
-  Rejected
-  Waitlisted
-  Deferred
-  Withdrawn
-  Not_Started
+model AcademicProfile {
+  studentId         String            @id @map("student_id")
+  curriculumType    CurriculumType    @map("curriculum_type")
+  gradingSystemType GradingSystemType @map("grading_system_type")
+  currentGpa        String?           @map("current_gpa")
+  createdAt         DateTime          @default(now()) @map("created_at")
+  student           Student           @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+
+  @@map("AcademicProfile")
 }
 
-enum ChangeAction {
-  Created
-  Updated
-  Deleted
-  Completed
+model Subject {
+  id             String         @id @default(cuid())
+  subjectName    String         @map("subject_name")
+  curriculumType CurriculumType @map("curriculum_type")
+
+  @@unique([subjectName, curriculumType]) // Critical for seed-subjects.ts
+  @@map("Subject")
 }
 
-enum ChangeType {
-  Profile_Update
-  Goal_Progress
-  New_Addition
-  Improvement
-  Milestone
+model Transcript {
+  id          String      @id @default(cuid())
+  studentId   String      @map("student_id")
+  courseName  String      @map("course_name")
+  gradeLevel  GradeLevel  @map("grade_level")
+  semester    Semester
+  gradeValue  String      @map("grade_value")
+  honorsLevel HonorsLevel @default(Standard) @map("honors_level")
+  isBoardExam Boolean     @default(false) @map("is_board_exam")
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+  student     Student     @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+
+  @@unique([studentId, courseName, gradeLevel, semester])
+  @@map("Transcript")
+}
+
+model Activity {
+  id           String   @id @default(cuid())
+  studentId    String   @map("student_id")
+  activityName String   @map("activity_name")
+  category     ActivityCategory // Changed from String to the Enum
+  role         String?
+  gradeLevels  Json     @map("grade_levels")
+  hoursPerWeek Int      @map("hours_per_week")
+  weeksPerYear Int      @map("weeks_per_year")
+  description  String?
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  
+  student      Student  @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+
+  @@map("Activity")
+}
+
+model ProjectExperience {
+  id             String         @id @default(cuid())
+  studentId      String         @map("student_id")
+  title          String
+  experienceType ExperienceType @map("experience_type")
+  organization   String?
+  roleTitle      String?        @map("role_title")
+  startDate      DateTime       @map("start_date")
+  endDate        DateTime?      @map("end_date")
+  isOngoing      Boolean        @default(false) @map("is_ongoing")
+  description    String?
+  createdAt      DateTime       @default(now()) @map("created_at")
+
+  student Student @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+
+  @@map("ProjectExperience")
+}
+
+model Achievement {
+  id               String            @id @default(cuid())
+  studentId        String            @map("student_id")
+  achievementType  AchievementType   @map("achievement_type")
+  title            String
+  organization     String?
+  gradeLevel       GradeLevel?       @map("grade_level")
+  dateAchieved     DateTime?         @map("date_achieved")
+  description      String?
+  recognitionLevel RecognitionLevel? @map("recognition_level")
+  createdAt        DateTime          @default(now()) @map("created_at")
+  updatedAt        DateTime          @updatedAt @map("updated_at")
+  student          Student           @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+
+  @@map("Achievement")
+}
+
+// -------------------------------------------------
+// --- COLLEGE PREP MODELS ---
+// -------------------------------------------------
+
+model College {
+  id             String               @id @default(cuid())
+  name           String
+  country        String               @default("United States")
+  acceptanceRate Float?               @map("acceptance_rate")
+  avgGpa         Float?               @map("avg_gpa")
+  avgSat         Int?                 @map("avg_sat")
+  avgAct         Int?                 @map("avg_act")
+  rankingUsNews  Int?                 @map("ranking_us_news")
+  isActive       Boolean              @default(true) @map("is_active")
+  createdAt      DateTime             @default(now()) @map("created_at")
+  updatedAt      DateTime             @updatedAt @map("updated_at")
+  applications   CollegeApplication[]
+  targetColleges TargetCollege[]
+
+  @@unique([name])
+
+  @@map("College")
+}
+
+model CollegeApplication {
+  id                    String    @id @map("id")
+  studentId             String    @map("student_id")
+  collegeId             String    @map("college_id")
+  targetCategory        String    @map("target_category")
+  applicationStatus     String    @default("Not_Started") @map("application_status")
+  applicationDeadline   DateTime? @map("application_deadline")
+  decisionDeadline      DateTime? @map("decision_deadline")
+  essayStatus           String    @default("Not Started") @map("essay_status")
+  supplementsStatus     String    @default("Not Started") @map("supplements_status")
+  recommendationStatus  String    @default("Not Requested") @map("recommendation_status")
+  testScoresSent        Boolean   @default(false) @map("test_scores_sent")
+  applicationPortalLink String?   @map("application_portal_link")
+  notes                 String?
+  decisionReceivedDate  DateTime? @map("decision_received_date")
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+
+  college College @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+  student Student @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+
+  @@unique([studentId, collegeId])
+
+  @@map("CollegeApplication")
+}
+
+model TestScore {
+  id                  String   @id @default(cuid())
+  studentId           String   @map("student_id")
+  testType            String   @map("test_type") // e.g., SAT, ACT, Duolingo
+  testDate            DateTime @map("test_date")
+  compositeScore      Int      @map("composite_score")
+  mathScore           Int?     @map("math_score")
+  readingWritingScore Int?     @map("reading_writing_score")
+  createdAt           DateTime @default(now()) @map("created_at")
+
+  student Student @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+
+  @@map("TestScore")
+}
+
+model ProfileGoal {
+  id          String     @id @default(cuid())
+  studentId   String     @map("student_id")
+  goalType    GoalType   @map("goal_type")
+  title       String
+  description String?
+  status      GoalStatus @default(Not_Started)
+  deadline    DateTime?
+  createdAt   DateTime   @default(now()) @map("created_at")
+
+  student Student @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+
+  @@map("ProfileGoal")
+}
+
+model TargetCollege {
+  id             String         @id @default(cuid())
+  studentId      String         @map("student_id")
+  collegeId      String         @map("college_id")
+  targetCategory TargetCategory @map("target_category")
+
+  student Student @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+  college College @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, collegeId])
+
+  @@map("TargetCollege")
+}
+
+// -------------------------------------------------
+// --- MEETINGS & CHANGE LOGS MODELS ---
+// -------------------------------------------------
+
+model Meeting {
+  id              String      @id @default(cuid())
+  studentId       String      @map("student_id")
+  coordinatorId   String      @map("coordinator_id")
+  meetingDate     DateTime    @map("meeting_date")
+  durationMinutes Int?        @map("duration_minutes")
+  meetingType     MeetingType @default(Regular) @map("meeting_type")
+  topicsDiscussed String[]    @map("topics_discussed")
+  notes           String?
+  actionItems     String[]    @map("action_items")
+  nextMeetingDate DateTime?   @map("next_meeting_date")
+  studentMood     String?     @map("student_mood")
+  createdAt       DateTime    @default(now()) @map("created_at")
+  updatedAt       DateTime    @updatedAt @map("updated_at")
+
+  user    User    @relation("CoordinatorMeetings", fields: [coordinatorId], references: [id], onDelete: Cascade)
+  student Student @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+
+  @@map("Meeting")
+}
+
+model MeetingLog {
+  id        String   @id @default(cuid())
+  meetingId String?  @map("meeting_id")
+  userId    String   @map("user_id")
+  studentId String   @map("student_id")
+  logEntry  String   @map("log_entry")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user    User    @relation(fields: [userId], references: [id])
+  student Student @relation(fields: [studentId], references: [userId])
+
+  @@map("MeetingLog")
+}
+
+model ChangeLog {
+  id          String       @id @default(cuid())
+  studentId   String       @map("student_id")
+  changeType  ChangeType   @map("change_type")
+  entityType  String       @map("entity_type")
+  entityId    String?      @map("entity_id")
+  action      ChangeAction
+  fieldName   String?      @map("field_name")
+  oldValue    String?      @map("old_value")
+  newValue    String?      @map("new_value")
+  description String
+  createdAt   DateTime     @default(now()) @map("created_at")
+
+  student Student @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+
+  @@map("ChangeLog")
+}
+
+model ProfileOverride {
+  id             String   @id @default(cuid())
+  studentId      String   @unique @map("student_id")
+  overrideScore  Int      @map("override_score")
+  overrideReason String   @map("override_reason")
+  overriddenBy   String   @map("overridden_by")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  user    User    @relation(fields: [overriddenBy], references: [id])
+  student Student @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+
+  @@map("ProfileOverride")
+}
+
+model ProfileComment {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  content   String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("ProfileComment")
+}
+
+//===============================================================
+// --- Enums ---
+//===============================================================
+
+enum UserRole {
+  counselor
+  coordinator
+  student
+}
+
+enum GradeLevel {
+  ninth
+  tenth
+  eleventh
+  twelfth
 }
 
 enum CurriculumType {
@@ -401,39 +381,6 @@ enum CurriculumType {
   State_Board
   US_High_School
   Other
-}
-
-enum ExperienceType {
-  Academic_Project
-  Independent_Project
-  Research
-  Internship
-  Summer_Program
-  Work_Experience
-}
-
-enum GoalStatus {
-  Not_Started
-  In_Progress
-  Completed
-  Deferred
-  Cancelled
-}
-
-enum GoalType {
-  Academic
-  Testing
-  Activity
-  Achievement
-  Project
-  Other
-}
-
-enum GradeLevel {
-  ninth
-  tenth
-  eleventh
-  twelfth
 }
 
 enum GradingSystemType {
@@ -452,20 +399,18 @@ enum HonorsLevel {
   IB_SL
 }
 
-enum MeetingType {
-  Initial
-  Regular
-  Check_In
-  Goal_Review
-  Application_Review
-  Crisis
-  Final
+enum Semester {
+  Fall
+  Spring
+  Full_Year
 }
 
-enum ProjectStatus {
-  Completed
-  In_Progress
-  Planned
+enum AchievementType {
+  Award_Honor
+  Competition
+  Leadership
+  Social_Impact
+  Extracurricular
 }
 
 enum RecognitionLevel {
@@ -478,10 +423,69 @@ enum RecognitionLevel {
   International
 }
 
-enum Semester {
-  Fall
-  Spring
-  Full_Year
+enum ExperienceType {
+  Academic_Project
+  Independent_Project
+  Research
+  Internship
+  Summer_Program
+  Work_Experience
+}
+
+enum ApplicationStatus {
+  Planning
+  Researching
+  Preparing
+  In_Progress
+  Submitted
+  Accepted
+  Rejected
+  Waitlisted
+  Deferred
+  Withdrawn
+  Not_Started
+}
+
+enum GoalType {
+  Academic
+  Testing
+  Activity
+  Achievement
+  Project
+  Other
+}
+
+enum ChangeAction {
+  Created
+  Updated
+  Deleted
+  Completed
+}
+
+enum ChangeType {
+  Profile_Update
+  Goal_Progress
+  New_Addition
+  Improvement
+  Milestone
+}
+
+enum MeetingType {
+  Initial
+  Regular
+  Check_In
+  Goal_Review
+  Application_Review
+  Crisis
+  Final
+}
+
+enum GoalStatus {
+  Not_Started
+  In_Progress
+  Completed
+  Deferred
+  Cancelled
 }
 
 enum TargetCategory {
@@ -490,8 +494,12 @@ enum TargetCategory {
   Safety
 }
 
-enum UserRole {
-  counselor
-  coordinator
-  student
+enum ActivityCategory {
+  Academic
+  Arts_Music
+  Athletics
+  Community_Service
+  Cultural
+  Leadership
+  Other
 }

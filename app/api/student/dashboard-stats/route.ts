@@ -16,7 +16,7 @@ export async function GET(req: Request) {
       prisma.collegeApplication.findMany({
         where: { student_id: session.user.id },
         include: {
-          college: {
+          College: {
             select: {
               name: true,
             },
@@ -44,7 +44,7 @@ export async function GET(req: Request) {
     const upcomingDeadlines = applications
       .filter(app => app.application_deadline)
       .map(app => ({
-        college: app.college.name,
+        College: app.college.name,
         deadline: app.application_deadline,
         daysRemaining: Math.ceil(
           (new Date(app.application_deadline!).getTime() - Date.now()) / (1000 * 60 * 60 * 24)

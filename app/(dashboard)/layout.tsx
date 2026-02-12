@@ -21,12 +21,12 @@ export default async function DashboardLayout({
     const student = await prisma.student.findUnique({
       where: { user_id: session.user.id },
       include: {
-        personal_profile: true,
-        academic_profile: true,
+        PersonalProfile: true,
+        AcademicProfile: true,
       },
     });
 
-    hasCompletedOnboarding = !!(student?.personal_profile && student?.academic_profile);
+    hasCompletedOnboarding = !!(student?.PersonalProfile && student?.AcademicProfile);
   }
 
   return (

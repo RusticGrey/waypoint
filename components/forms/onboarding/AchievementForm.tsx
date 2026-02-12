@@ -77,7 +77,7 @@ export default function AchievementForm({ onNext, onBack, initialData = [] }: Pr
       date_achieved: dateAchieved,
     };
 
-    setAchievements([...achievements, achievementWithDate]);
+    setAchievements([...Achievement, achievementWithDate]);
     reset();
     setSelectedMonth('');
     setSelectedYear('');

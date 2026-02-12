@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 interface DashboardStats {
   upcomingDeadlines: Array<{
-    college: string;
+    College: string;
     deadline: string;
     daysRemaining: number;
   }>;
@@ -24,8 +24,8 @@ interface DashboardStats {
   };
   activeGoals: number;
   profileStats: {
-    activities: number;
-    achievements: number;
+    Activity: number;
+    Achievement: number;
     projects: number;
   };
 }
@@ -103,7 +103,7 @@ export default function StudentDashboard() {
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <div className="text-3xl font-bold text-purple-600">{stats?.profileStats.activities || 0}</div>
+              <div className="text-3xl font-bold text-purple-600">{stats?.profileStats.Activity || 0}</div>
               <p className="text-sm text-gray-600 mt-1">Activities</p>
             </div>
           </CardContent>

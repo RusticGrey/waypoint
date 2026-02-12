@@ -14,11 +14,11 @@ export async function GET(req: Request) {
     const student = await prisma.student.findUnique({
       where: { user_id: session.user.id },
       include: {
-        academic_profile: true,
+        AcademicProfile: true,
       },
     });
     
-    return NextResponse.json({ academic_profile: student?.academic_profile });
+    return NextResponse.json({ AcademicProfile: student?.AcademicProfile });
   } catch (error) {
     console.error('Academic info fetch error:', error);
     return NextResponse.json({ error: 'Failed to fetch academic info' }, { status: 500 });

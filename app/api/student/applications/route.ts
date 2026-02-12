@@ -14,7 +14,7 @@ export async function GET(req: Request) {
     const applications = await prisma.collegeApplication.findMany({
       where: { student_id: session.user.id },
       include: {
-        college: {
+        College: {
           select: {
             id: true,
             name: true,
@@ -67,12 +67,12 @@ export async function POST(req: Request) {
         essay_status: body.essay_status || 'Not Started',
         supplements_status: body.supplements_status || 'Not Started',
         recommendation_status: body.recommendation_status || 'Not Requested',
-        test_scores_sent: body.test_scores_sent || false,
+        test_scores_sent: body.TestScore_sent || false,
         application_portal_link: body.application_portal_link || null,
         notes: body.notes || null,
       },
       include: {
-        college: {
+        College: {
           select: {
             id: true,
             name: true,

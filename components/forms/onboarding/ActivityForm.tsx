@@ -47,7 +47,7 @@ export default function ActivityForm({ onNext, onBack, initialData = [] }: Props
   const totalHours = (hoursPerWeek || 0) * (weeksPerYear || 0);
 
   const onSubmitActivity = (data: ActivityInput) => {
-    setActivities([...activities, data]);
+    setActivities([...Activity, data]);
     reset();
     setShowForm(false);
   };

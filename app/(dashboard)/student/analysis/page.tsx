@@ -9,9 +9,9 @@ interface ProfileAnalysis {
   category_scores: {
     academic: number;
     testing: number;
-    activities: number;
+    Activity: number;
     leadership: number;
-    achievements: number;
+    Achievement: number;
     projects: number;
   };
   category_details: {
@@ -30,7 +30,7 @@ interface ProfileAnalysis {
       max: number;
       details: string[];
     };
-    activities: {
+    Activity: {
       quantity_score: number;
       commitment_score: number;
       diversity_score: number;
@@ -45,7 +45,7 @@ interface ProfileAnalysis {
       max: number;
       details: string[];
     };
-    achievements: {
+    Achievement: {
       quantity_score: number;
       recognition_score: number;
       total: number;
@@ -334,9 +334,9 @@ function getImprovementTip(category: string): string {
   const tips: Record<string, string> = {
     academic: "Focus on maintaining high grades and taking challenging courses like AP, IB, or Honors classes.",
     testing: "Consider taking SAT/ACT prep courses and aim for scores above 1400 (SAT) or 30 (ACT).",
-    activities: "Join more clubs or activities, commit to them long-term, and aim for variety across different areas.",
+    Activity: "Join more clubs or activities, commit to them long-term, and aim for variety across different areas.",
     leadership: "Take on leadership roles in your activities - become a club president, team captain, or project lead.",
-    achievements: "Participate in competitions, contests, and apply for awards at school, district, or state level.",
+    Achievement: "Participate in competitions, contests, and apply for awards at school, district, or state level.",
     projects: "Start independent research projects, internships, or create something meaningful in your area of interest.",
   };
   return tips[category] || "Focus on building this area of your profile.";

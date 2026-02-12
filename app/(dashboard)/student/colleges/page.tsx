@@ -17,7 +17,7 @@ interface TargetCollege {
   id: string;
   college_id: string;
   category: string;
-  college: College;
+  College: College;
 }
 
 export default function CollegesPage() {

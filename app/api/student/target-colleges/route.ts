@@ -24,7 +24,7 @@ export async function GET(req: Request) {
         student_id: session.user.id,
       },
       include: {
-        college: true,
+        College: true,
       },
       orderBy: {
         priority: 'desc',
@@ -58,7 +58,7 @@ export async function POST(req: Request) {
         ...validatedData,
       },
       include: {
-        college: true,
+        College: true,
       },
     });
     

@@ -4,7 +4,7 @@ interface Student {
     current_gpa?: number;
     curriculum_type: string;
   };
-  transcripts: any[];
+  Transcript: any[];
   activities?: any[];
   achievements?: any[];
   project_experiences?: any[];
@@ -16,9 +16,9 @@ interface StrengthAnalysis {
   category_scores: {
     academic: number;
     testing: number;
-    activities: number;
+    Activity: number;
     leadership: number;
-    achievements: number;
+    Achievement: number;
     projects: number;
   };
   strengths: string[];
@@ -31,18 +31,18 @@ export function analyzeProfileStrength(student: Student): StrengthAnalysis {
   const scores = {
     academic: calculateAcademicScore(student),
     testing: calculateTestingScore(student),
-    activities: calculateActivitiesScore(student),
+    Activity: calculateActivitiesScore(student),
     leadership: calculateLeadershipScore(student),
-    achievements: calculateAchievementsScore(student),
+    Achievement: calculateAchievementsScore(student),
     projects: calculateProjectsScore(student),
   };
 
   const overall_score = Math.round(
     (scores.academic * 0.30) +
     (scores.testing * 0.20) +
-    (scores.activities * 0.20) +
+    (scores.Activity * 0.20) +
     (scores.leadership * 0.10) +
-    (scores.achievements * 0.10) +
+    (scores.Achievement * 0.10) +
     (scores.projects * 0.10)
   );
 
@@ -64,7 +64,7 @@ export function analyzeProfileStrength(student: Student): StrengthAnalysis {
 function calculateAcademicScore(student: Student): number {
   let score = 0;
   
-  const gpa = student.academic_profile?.current_gpa;
+  const gpa = student.AcademicProfile?.current_gpa;
   if (gpa) {
     if (gpa >= 3.9) score += 40;
     else if (gpa >= 3.7) score += 35;
@@ -73,7 +73,7 @@ function calculateAcademicScore(student: Student): number {
     else score += 20;
   }
   
-  const transcripts = student.transcripts || [];
+  const transcripts = student.Transcript || [];
   const apCount = transcripts.filter(t => t.honors_level === 'AP').length;
   const ibCount = transcripts.filter(t => t.honors_level?.includes('IB')).length;
   const honorsCount = transcripts.filter(t => t.honors_level === 'Honors').length;
@@ -91,7 +91,7 @@ function calculateAcademicScore(student: Student): number {
 }
 
 function calculateTestingScore(student: Student): number {
-  const testScores = student.test_scores || [];
+  const testScores = student.TestScore || [];
   if (testScores.length === 0) return 0;
   
   let maxScore = 0;
@@ -124,7 +124,7 @@ function calculateTestingScore(student: Student): number {
 }
 
 function calculateActivitiesScore(student: Student): number {
-  const activities = student.activities || [];
+  const activities = student.Activity || [];
   if (activities.length === 0) return 0;
   
   let score = 0;
@@ -149,8 +149,8 @@ function calculateActivitiesScore(student: Student): number {
 }
 
 function calculateLeadershipScore(student: Student): number {
-  const activities = student.activities || [];
-  const achievements = student.achievements || [];
+  const activities = student.Activity || [];
+  const achievements = student.Achievement || [];
   
   let score = 0;
   
@@ -174,7 +174,7 @@ function calculateLeadershipScore(student: Student): number {
 }
 
 function calculateAchievementsScore(student: Student): number {
-  const achievements = student.achievements || [];
+  const achievements = student.Achievement || [];
   if (achievements.length === 0) return 0;
   
   let score = 0;
@@ -198,7 +198,7 @@ function calculateAchievementsScore(student: Student): number {
 }
 
 function calculateProjectsScore(student: Student): number {
-  const projects = student.project_experiences || [];
+  const projects = student.ProjectExperience || [];
   if (projects.length === 0) return 0;
   
   let score = 0;
@@ -250,8 +250,8 @@ function generateRecommendations(student: Student, scores: any): string[] {
     recs.push("Take SAT/ACT and aim for scores above 1400 SAT or 30 ACT");
   }
   
-  if (scores.activities < 70) {
-    const activityCount = student.activities?.length || 0;
+  if (scores.Activity < 70) {
+    const activityCount = student.Activity?.length || 0;
     if (activityCount < 3) {
       recs.push("Join at least 3-5 meaningful extracurricular activities");
     } else {
@@ -263,7 +263,7 @@ function generateRecommendations(student: Student, scores: any): string[] {
     recs.push("Seek leadership positions in your activities or start a new initiative");
   }
   
-  if (scores.achievements < 60) {
+  if (scores.Achievement < 60) {
     recs.push("Participate in competitions or pursue recognition for your work");
   }
   
@@ -272,7 +272,7 @@ function generateRecommendations(student: Student, scores: any): string[] {
   }
   
   if (scores.academic < 80) {
-    const apCount = student.transcripts?.filter(t => t.honors_level === 'AP').length || 0;
+    const apCount = student.Transcript?.filter(t => t.honors_level === 'AP').length || 0;
     if (apCount < 5) {
       recs.push("Take more AP or IB courses to demonstrate academic rigor");
     }

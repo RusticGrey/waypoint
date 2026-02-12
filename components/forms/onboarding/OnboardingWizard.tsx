@@ -13,9 +13,9 @@ type Step = 1 | 2 | 3 | 4 | 5 | 6;
 interface FormData {
   personal: any;
   academic: any;
-  transcripts: any[];
-  activities: any[];
-  achievements: any[];
+  Transcript: any[];
+  Activity: any[];
+  Achievement: any[];
   projects: any[];
 }
 
@@ -24,9 +24,9 @@ export default function OnboardingWizard() {
   const [formData, setFormData] = useState<FormData>({
     personal: {},
     academic: {},
-    transcripts: [],
-    activities: [],
-    achievements: [],
+    Transcript: [],
+    Activity: [],
+    Achievement: [],
     projects: [],
   });
 
@@ -74,7 +74,7 @@ export default function OnboardingWizard() {
           <TranscriptForm
             onNext={(data) => handleNext('transcripts', data)}
             onBack={handleBack}
-            initialData={formData.transcripts}
+            initialData={formData.Transcript}
             curriculum={formData.academic.curriculum_type}
             currentGrade={formData.personal.current_grade}
           />
@@ -84,7 +84,7 @@ export default function OnboardingWizard() {
           <ActivityForm
             onNext={(data) => handleNext('activities', data)}
             onBack={handleBack}
-            initialData={formData.activities}
+            initialData={formData.Activity}
             currentGrade={formData.personal.current_grade}
           />
         );
@@ -93,7 +93,7 @@ export default function OnboardingWizard() {
           <AchievementForm
             onNext={(data) => handleNext('achievements', data)}
             onBack={handleBack}
-            initialData={formData.achievements}
+            initialData={formData.Achievement}
             currentGrade={formData.personal.current_grade}
           />
         );

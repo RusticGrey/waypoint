@@ -32,47 +32,47 @@ export default async function CounselorStudentViewer({
   const student = await prisma.student.findUnique({
     where: { user_id: params.studentId },
     include: {
-      user: true,
-      coordinator: {
+      User: true,
+      Coordinator: {
         select: {
           first_name: true,
           last_name: true,
           email: true,
         },
       },
-      personal_profile: true,
-      academic_profile: true,
-      transcripts: {
+      PersonalProfile: true,
+      AcademicProfile: true,
+      Transcript: {
         orderBy: [
           { grade_level: 'asc' },
           { course_name: 'asc' }
         ]
       },
-      activities: {
+      Activity: {
         orderBy: {
           activity_name: 'asc'
         }
       },
-      achievements: {
+      Achievement: {
         orderBy: {
           grade_level: 'asc'
         }
       },
-      project_experiences: {
+      ProjectExperience: {
         orderBy: {
           start_date: 'desc'
         }
       },
-      test_scores: true,
-      target_colleges: {
+      TestScore: true,
+      TargetCollege: {
         include: {
-          college: true,
+          College: true,
         },
         orderBy: {
           category: 'asc',
         },
       },
-      profile_goals: {
+      ProfileGoal: {
         where: {
           status: {
             in: ['Not_Started', 'In_Progress'],
@@ -82,9 +82,9 @@ export default async function CounselorStudentViewer({
           priority: 'desc',
         },
       },
-      meetings: {
+      Meeting: {
         include: {
-          coordinator: {
+          Coordinator: {
             select: {
               first_name: true,
               last_name: true,
@@ -122,9 +122,9 @@ export default async function CounselorStudentViewer({
             ← Back to Dashboard
           </Link>
           <h1 className="text-3xl font-bold text-gray-900">
-            {student.user.first_name} {student.user.last_name}
+            {student.User.first_name} {student.User.last_name}
           </h1>
-          <p className="text-gray-600 mt-1">{student.user.email}</p>
+          <p className="text-gray-600 mt-1">{student.User.email}</p>
           {student.coordinator && (
             <p className="text-sm text-gray-500 mt-1">
               Coordinator: {student.coordinator.first_name} {student.coordinator.last_name}
@@ -188,25 +188,25 @@ export default async function CounselorStudentViewer({
         <Card>
           <CardContent className="pt-6">
             <p className="text-sm text-gray-600">Target Colleges</p>
-            <p className="text-3xl font-bold text-gray-900">{student.target_colleges?.length || 0}</p>
+            <p className="text-3xl font-bold text-gray-900">{student.TargetCollege?.length || 0}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6">
             <p className="text-sm text-gray-600">Activities</p>
-            <p className="text-3xl font-bold text-gray-900">{student.activities?.length || 0}</p>
+            <p className="text-3xl font-bold text-gray-900">{student.Activity?.length || 0}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6">
             <p className="text-sm text-gray-600">Achievements</p>
-            <p className="text-3xl font-bold text-gray-900">{student.achievements?.length || 0}</p>
+            <p className="text-3xl font-bold text-gray-900">{student.Achievement?.length || 0}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6">
             <p className="text-sm text-gray-600">Active Goals</p>
-            <p className="text-3xl font-bold text-gray-900">{student.profile_goals?.length || 0}</p>
+            <p className="text-3xl font-bold text-gray-900">{student.ProfileGoal?.length || 0}</p>
           </CardContent>
         </Card>
       </div>
@@ -221,11 +221,11 @@ export default async function CounselorStudentViewer({
             <dl className="space-y-2">
               <div className="flex justify-between">
                 <dt className="text-sm text-gray-600">School</dt>
-                <dd className="text-sm font-medium text-gray-900">{student.personal_profile?.current_school || 'Not set'}</dd>
+                <dd className="text-sm font-medium text-gray-900">{student.PersonalProfile?.current_school || 'Not set'}</dd>
               </div>
               <div className="flex justify-between">
                 <dt className="text-sm text-gray-600">Location</dt>
-                <dd className="text-sm font-medium text-gray-900">{student.personal_profile?.school_location || 'Not set'}</dd>
+                <dd className="text-sm font-medium text-gray-900">{student.PersonalProfile?.school_location || 'Not set'}</dd>
               </div>
               <div className="flex justify-between">
                 <dt className="text-sm text-gray-600">Current Grade</dt>
@@ -237,7 +237,7 @@ export default async function CounselorStudentViewer({
               </div>
               <div className="flex justify-between">
                 <dt className="text-sm text-gray-600">Curriculum</dt>
-                <dd className="text-sm font-medium text-gray-900">{student.academic_profile?.curriculum_type || 'Not set'}</dd>
+                <dd className="text-sm font-medium text-gray-900">{student.AcademicProfile?.curriculum_type || 'Not set'}</dd>
               </div>
             </dl>
           </CardContent>
@@ -246,12 +246,12 @@ export default async function CounselorStudentViewer({
         {/* Active Goals */}
         <Card>
           <CardHeader>
-            <CardTitle>Active Goals ({student.profile_goals?.length || 0})</CardTitle>
+            <CardTitle>Active Goals ({student.ProfileGoal?.length || 0})</CardTitle>
           </CardHeader>
           <CardContent>
-            {student.profile_goals && student.profile_goals.length > 0 ? (
+            {student.ProfileGoal && student.ProfileGoal.length > 0 ? (
               <div className="space-y-3">
-                {student.profile_goals.map((goal) => (
+                {student.ProfileGoal.map((goal) => (
                   <div key={goal.id} className="border-l-4 border-blue-500 pl-3 py-2">
                     <p className="text-sm font-semibold text-gray-900">{goal.category}</p>
                     <p className="text-xs text-gray-600">Target: {goal.target_value}</p>
@@ -272,12 +272,12 @@ export default async function CounselorStudentViewer({
         {/* Target Colleges */}
         <Card>
           <CardHeader>
-            <CardTitle>Target Colleges ({student.target_colleges?.length || 0})</CardTitle>
+            <CardTitle>Target Colleges ({student.TargetCollege?.length || 0})</CardTitle>
           </CardHeader>
           <CardContent>
-            {student.target_colleges && student.target_colleges.length > 0 ? (
+            {student.TargetCollege && student.TargetCollege.length > 0 ? (
               <div className="space-y-2">
-                {student.target_colleges.slice(0, 5).map((tc) => (
+                {student.TargetCollege.slice(0, 5).map((tc) => (
                   <div key={tc.id} className="flex items-center justify-between py-2 border-b last:border-0">
                     <span className="text-sm text-gray-900">{tc.college.name}</span>
                     <span className={`text-xs px-2 py-1 rounded font-medium ${
@@ -302,9 +302,9 @@ export default async function CounselorStudentViewer({
             <CardTitle>Recent Meetings</CardTitle>
           </CardHeader>
           <CardContent>
-            {student.meetings && student.meetings.length > 0 ? (
+            {student.Meeting && student.Meeting.length > 0 ? (
               <div className="space-y-3">
-                {student.meetings.map((meeting) => (
+                {student.Meeting.map((meeting) => (
                   <div key={meeting.id} className="border-b pb-3 last:border-0">
                     <p className="text-sm font-medium text-gray-900">
                       {new Date(meeting.meeting_date).toLocaleDateString('en-US', {

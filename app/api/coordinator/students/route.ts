@@ -16,7 +16,7 @@ export async function GET(req: Request) {
         coordinator_id: session.user.id,
       },
       include: {
-        user: {
+        User: {
           select: {
             first_name: true,
             last_name: true,
@@ -25,7 +25,7 @@ export async function GET(req: Request) {
         },
       },
       orderBy: {
-        user: {
+        User: {
           last_name: 'asc',
         },
       },

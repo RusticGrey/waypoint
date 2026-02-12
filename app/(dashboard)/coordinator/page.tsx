@@ -22,25 +22,25 @@ export default async function CoordinatorDashboard() {
       coordinator_id: session.user.id,
     },
     include: {
-      user: {
+      User: {
         select: {
           first_name: true,
           last_name: true,
           email: true,
         },
       },
-      personal_profile: true,
-      academic_profile: true,
-      transcripts: true,
-      activities: true,
-      achievements: true,
-      project_experiences: true,
-      target_colleges: {
+      PersonalProfile: true,
+      AcademicProfile: true,
+      Transcript: true,
+      Activity: true,
+      Achievement: true,
+      ProjectExperience: true,
+      TargetCollege: {
         include: {
-          college: true,
+          College: true,
         },
       },
-      meetings: {
+      Meeting: {
         orderBy: {
           meeting_date: 'desc',
         },
@@ -48,7 +48,7 @@ export default async function CoordinatorDashboard() {
       },
     },
     orderBy: {
-      user: {
+      User: {
         last_name: 'asc',
       },
     },
@@ -59,8 +59,8 @@ export default async function CoordinatorDashboard() {
   const completedProfiles = students.filter(s => s.profile_completion_pct >= 80).length;
   const needsAttention = students.filter(s => s.profile_completion_pct < 50).length;
   const recentMeetings = students.filter(s => {
-    if (s.meetings.length === 0) return false;
-    const lastMeeting = new Date(s.meetings[0].meeting_date);
+    if (s.Meeting.length === 0) return false;
+    const lastMeeting = new Date(s.Meeting[0].meeting_date);
     const weekAgo = new Date();
     weekAgo.setDate(weekAgo.getDate() - 7);
     return lastMeeting >= weekAgo;
@@ -160,10 +160,10 @@ export default async function CoordinatorDashboard() {
                   {students.map((student) => (
                     <tr key={student.user_id} className="hover:bg-gray-50">
                       <td className="px-4 py-3 text-sm font-medium text-gray-900">
-                        {student.user.first_name} {student.user.last_name}
+                        {student.User.first_name} {student.User.last_name}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-600">
-                        {student.user.email}
+                        {student.User.email}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-600">
                         {student.current_grade}
@@ -185,11 +185,11 @@ export default async function CoordinatorDashboard() {
                         </div>
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-600">
-                        {student.target_colleges?.length || 0}
+                        {student.TargetCollege?.length || 0}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-600">
-                        {student.meetings[0] 
-                          ? new Date(student.meetings[0].meeting_date).toLocaleDateString()
+                        {student.Meeting[0] 
+                          ? new Date(student.Meeting[0].meeting_date).toLocaleDateString()
                           : 'Never'
                         }
                       </td>

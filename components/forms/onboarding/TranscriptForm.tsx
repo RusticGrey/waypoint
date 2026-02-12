@@ -56,7 +56,7 @@ export default function TranscriptForm({ onNext, onBack, initialData = [], curri
   const selectedCourse = watch('course_name');
 
   const onSubmitCourse = (data: TranscriptInput) => {
-    setTranscripts([...transcripts, data]);
+    setTranscripts([...Transcript, data]);
     reset();
     setShowForm(false);
     setUseCustomCourse(false);

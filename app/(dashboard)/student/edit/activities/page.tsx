@@ -54,8 +54,8 @@ export default function EditActivitiesPage() {
       const res = await fetch('/api/student/activities');
       if (!res.ok) throw new Error('Failed to fetch activities');
       const data = await res.json();
-      console.log('Fetched activities:', data);
-      setActivities(data.activities || []);
+      console.log('Fetched Activity:', data);
+      setActivities(data.Activity || []);
     } catch (err) {
       console.error('Fetch error:', err);
       setError('Failed to load activities');

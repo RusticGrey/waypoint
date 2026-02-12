@@ -15,7 +15,7 @@ export async function GET(req: Request) {
     const students = await prisma.student.findMany({
       where: { coordinator_id: session.user.id },
       include: {
-        user: {
+        User: {
           select: {
             first_name: true,
             last_name: true,
@@ -35,9 +35,9 @@ export async function GET(req: Request) {
         },
       },
       include: {
-        student: {
+        Student: {
           include: {
-            user: {
+            User: {
               select: {
                 first_name: true,
                 last_name: true,
@@ -58,9 +58,9 @@ export async function GET(req: Request) {
         student_id: { in: studentIds },
       },
       include: {
-        student: {
+        Student: {
           include: {
-            user: {
+            User: {
               select: {
                 first_name: true,
                 last_name: true,
@@ -68,7 +68,7 @@ export async function GET(req: Request) {
             },
           },
         },
-        college: {
+        College: {
           select: {
             name: true,
           },
@@ -80,8 +80,8 @@ export async function GET(req: Request) {
     const upcomingDeadlines = applications
       .filter(app => app.application_deadline)
       .map(app => ({
-        student: `${app.student.user.first_name} ${app.student.user.last_name}`,
-        college: app.college.name,
+        Student: `${app.student.User.first_name} ${app.student.User.last_name}`,
+        College: app.college.name,
         deadline: app.application_deadline,
         daysRemaining: Math.ceil(
           (new Date(app.application_deadline!).getTime() - Date.now()) / (1000 * 60 * 60 * 24)

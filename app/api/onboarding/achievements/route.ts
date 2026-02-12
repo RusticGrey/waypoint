@@ -6,7 +6,7 @@ import { achievementSchema } from '@/lib/validations/activity';
 import { z } from 'zod';
 
 const achievementsArraySchema = z.object({
-  achievements: z.array(achievementSchema),
+  Achievement: z.array(achievementSchema),
 });
 
 export async function POST(req: Request) {

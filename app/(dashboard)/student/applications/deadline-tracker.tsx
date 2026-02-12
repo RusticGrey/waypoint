@@ -6,7 +6,7 @@ interface Application {
   id: string;
   application_deadline: string | null;
   decision_deadline: string | null;
-  college: {
+  College: {
     name: string;
   };
 }
@@ -17,7 +17,7 @@ interface DeadlineTrackerProps {
 
 export default function DeadlineTracker({ applications }: DeadlineTrackerProps) {
   const deadlines: Array<{
-    college: string;
+    College: string;
     type: string;
     date: Date;
     daysRemaining: number;
@@ -28,7 +28,7 @@ export default function DeadlineTracker({ applications }: DeadlineTrackerProps) 
       const date = new Date(app.application_deadline);
       const daysRemaining = Math.ceil((date.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
       deadlines.push({
-        college: app.college.name,
+        College: app.college.name,
         type: 'Application',
         date,
         daysRemaining,
@@ -38,7 +38,7 @@ export default function DeadlineTracker({ applications }: DeadlineTrackerProps) 
       const date = new Date(app.decision_deadline);
       const daysRemaining = Math.ceil((date.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
       deadlines.push({
-        college: app.college.name,
+        College: app.college.name,
         type: 'Decision',
         date,
         daysRemaining,

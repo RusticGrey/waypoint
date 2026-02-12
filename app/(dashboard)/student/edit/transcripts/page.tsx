@@ -68,9 +68,9 @@ export default function EditTranscriptsPage() {
     try {
       const res = await fetch('/api/student/academic');
       const data = await res.json();
-      if (data.academic_profile?.curriculum_type) {
-        setCurriculum(data.academic_profile.curriculum_type);
-        setGradingSystem(data.academic_profile.grading_system_type || 'Percentage');
+      if (data.AcademicProfile?.curriculum_type) {
+        setCurriculum(data.AcademicProfile.curriculum_type);
+        setGradingSystem(data.AcademicProfile.grading_system_type || 'Percentage');
       }
     } catch (err) {
       console.error('Failed to fetch curriculum:', err);
@@ -82,7 +82,7 @@ export default function EditTranscriptsPage() {
       const res = await fetch('/api/student/transcripts');
       if (!res.ok) throw new Error('Failed to fetch transcripts');
       const data = await res.json();
-      setTranscripts(data.transcripts || []);
+      setTranscripts(data.Transcript || []);
     } catch (err) {
       console.error('Fetch error:', err);
       setError('Failed to load transcripts');

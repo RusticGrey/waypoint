@@ -21,9 +21,9 @@ export default async function MeetingsPage() {
       coordinator_id: session.user.id,
     },
     include: {
-      student: {  // lowercase 'student'
+      Student: {  // lowercase 'student'
         include: {
-          user: true,  // lowercase 'user'
+          User: true,  // lowercase 'user'
         },
       },
     },
@@ -59,7 +59,7 @@ export default async function MeetingsPage() {
                   <div className="flex justify-between items-start">
                     <div>
                       <h3 className="font-semibold text-gray-900">
-                        {meeting.student.user.first_name} {meeting.student.user.last_name}
+                        {meeting.student.User.first_name} {meeting.student.User.last_name}
                       </h3>
                       <p className="text-sm text-gray-600">
                         {new Date(meeting.meeting_date).toLocaleDateString()} -{' '}

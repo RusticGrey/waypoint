@@ -20,7 +20,7 @@ interface Application {
   test_scores_sent: boolean;
   application_portal_link: string | null;
   notes: string | null;
-  college: {
+  College: {
     id: string;
     name: string;
     location: string;

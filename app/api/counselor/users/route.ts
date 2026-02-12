@@ -20,7 +20,7 @@ export async function GET(req: Request) {
         },
       },
       include: {
-        student: {
+        Student: {
           select: {
             coordinator_id: true,
           },

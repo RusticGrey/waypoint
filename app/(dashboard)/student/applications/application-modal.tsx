@@ -75,7 +75,7 @@ export default function ApplicationModal({
         essay_status: application.essay_status,
         supplements_status: application.supplements_status,
         recommendation_status: application.recommendation_status,
-        test_scores_sent: application.test_scores_sent,
+        test_scores_sent: application.TestScore_sent,
         application_portal_link: application.application_portal_link || '',
         notes: application.notes || '',
       });
@@ -247,7 +247,7 @@ export default function ApplicationModal({
           <label className="flex items-center cursor-pointer">
             <input
               type="checkbox"
-              checked={formData.test_scores_sent}
+              checked={formData.TestScore_sent}
               onChange={(e) => setFormData({ ...formData, test_scores_sent: e.target.checked })}
               className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
             />

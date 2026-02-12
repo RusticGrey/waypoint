@@ -6,7 +6,7 @@ import { transcriptSchema } from '@/lib/validations/student';
 import { z } from 'zod';
 
 const transcriptsArraySchema = z.object({
-  transcripts: z.array(transcriptSchema),
+  Transcript: z.array(transcriptSchema),
 });
 
 export async function POST(req: Request) {

@@ -23,12 +23,12 @@ export default function EditPersonalPage() {
   const fetchPersonalInfo = async () => {
     const res = await fetch('/api/student/personal');
     const data = await res.json();
-    if (data.personal_profile) {
+    if (data.PersonalProfile) {
       setFormData({
-        phone: data.personal_profile.phone || '',
-        date_of_birth: data.personal_profile.date_of_birth?.split('T')[0] || '',
-        current_school: data.personal_profile.current_school || '',
-        school_location: data.personal_profile.school_location || '',
+        phone: data.PersonalProfile.phone || '',
+        date_of_birth: data.PersonalProfile.date_of_birth?.split('T')[0] || '',
+        current_school: data.PersonalProfile.current_school || '',
+        school_location: data.PersonalProfile.school_location || '',
       });
     }
   };

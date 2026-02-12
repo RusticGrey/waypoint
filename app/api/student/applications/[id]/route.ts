@@ -29,13 +29,13 @@ export async function PATCH(
         essay_status: body.essay_status,
         supplements_status: body.supplements_status,
         recommendation_status: body.recommendation_status,
-        test_scores_sent: body.test_scores_sent,
+        test_scores_sent: body.TestScore_sent,
         application_portal_link: body.application_portal_link || null,
         notes: body.notes || null,
         decision_received_date: body.decision_received_date ? new Date(body.decision_received_date) : null,
       },
       include: {
-        college: true,
+        College: true,
       },
     });
     

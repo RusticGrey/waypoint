@@ -37,11 +37,11 @@ export default function EditAcademicPage() {
     try {
       const res = await fetch('/api/student/academic');
       const data = await res.json();
-      if (data.academic_profile) {
+      if (data.AcademicProfile) {
         setFormData({
-          curriculum_type: data.academic_profile.curriculum_type,
-          grading_system_type: data.academic_profile.grading_system_type,
-          current_gpa: data.academic_profile.current_gpa || '',
+          curriculum_type: data.AcademicProfile.curriculum_type,
+          grading_system_type: data.AcademicProfile.grading_system_type,
+          current_gpa: data.AcademicProfile.current_gpa || '',
         });
       }
     } catch (err) {

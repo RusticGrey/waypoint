@@ -60,8 +60,8 @@ export default function EditAchievementsPage() {
       const res = await fetch('/api/student/achievements');
       if (!res.ok) throw new Error('Failed to fetch achievements');
       const data = await res.json();
-      console.log('Fetched achievements:', data);
-      setAchievements(data.achievements || []);
+      console.log('Fetched Achievement:', data);
+      setAchievements(data.Achievement || []);
     } catch (err) {
       console.error('Fetch error:', err);
       setError('Failed to load achievements');

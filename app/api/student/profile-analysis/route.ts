@@ -15,13 +15,13 @@ export async function GET(req: Request) {
     const student = await prisma.student.findUnique({
       where: { user_id: session.user.id },
       include: {
-        personal_profile: true,
-        academic_profile: true,
-        transcripts: true,
-        activities: true,
-        achievements: true,
-        project_experiences: true,
-        test_scores: true,
+        PersonalProfile: true,
+        AcademicProfile: true,
+        Transcript: true,
+        Activity: true,
+        Achievement: true,
+        ProjectExperience: true,
+        TestScore: true,
       },
     });
     
@@ -35,7 +35,7 @@ export async function GET(req: Request) {
     const override = await prisma.profileOverride.findUnique({
       where: { student_id: session.user.id },
       include: {
-        overridden_by_user: {
+        User: {
           select: {
             first_name: true,
             last_name: true,
@@ -51,7 +51,7 @@ export async function GET(req: Request) {
           is_overridden: true,
           override_score: override.override_score,
           override_reason: override.override_reason,
-          overridden_by: `${override.overridden_by_user.first_name} ${override.overridden_by_user.last_name}`,
+          overridden_by: `${override.User.first_name} ${override.User.last_name}`,
           overridden_at: override.created_at,
         },
       });
