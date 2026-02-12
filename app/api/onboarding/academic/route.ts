@@ -16,11 +16,11 @@ export async function POST(req: Request) {
     const validatedData = academicProfileSchema.parse(body);
 
     // Create or update academic profile
-    const profile = await prisma.academicProfile.upsert({
-      where: { student_id: session.user.id },
+    const profile = await prisma.AcademicProfile.upsert({
+      where: { studentId: session.user.id },
       update: validatedData,
       create: {
-        student_id: session.user.id,
+        studentId: session.user.id,
         ...validatedData,
       },
     });

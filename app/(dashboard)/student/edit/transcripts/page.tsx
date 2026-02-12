@@ -9,11 +9,11 @@ import { useEnums } from '@/lib/hooks/useEnums';
 
 interface Transcript {
   id: string;
-  course_name: string;
-  grade_level: string;
+  courseName: string;
+  gradeLevel: string;
   semester: string;
-  grade_value: string;
-  honors_level: string;
+  gradeValue: string;
+  honorsLevel: string;
 }
 
 const gradeLabels: Record<string, string> = {
@@ -34,11 +34,11 @@ export default function EditTranscriptsPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [formData, setFormData] = useState({
-    course_name: '',
-    grade_level: '',
+    courseName: '',
+    gradeLevel: '',
     semester: '',
-    grade_value: '',
-    honors_level: '',
+    gradeValue: '',
+    honorsLevel: '',
   });
 
   useEffect(() => {
@@ -54,12 +54,12 @@ export default function EditTranscriptsPage() {
 
   // Set defaults when enums load
   useEffect(() => {
-    if (enums && enums.gradeLevels && enums.semesterTypes && enums.honorsLevels && !formData.grade_level) {
+    if (enums && enums.gradeLevels && enums.semesterTypes && enums.honorsLevels && !formData.gradeLevel) {
       setFormData(prev => ({
         ...prev,
-        grade_level: enums.gradeLevels[0],
+        gradeLevel: enums.gradeLevels[0],
         semester: enums.semesterTypes[0],
-        honors_level: enums.honorsLevels[0],
+        honorsLevel: enums.honorsLevels[0],
       }));
     }
   }, [enums]);
@@ -68,9 +68,9 @@ export default function EditTranscriptsPage() {
     try {
       const res = await fetch('/api/student/academic');
       const data = await res.json();
-      if (data.AcademicProfile?.curriculum_type) {
-        setCurriculum(data.AcademicProfile.curriculum_type);
-        setGradingSystem(data.AcademicProfile.grading_system_type || 'Percentage');
+      if (data.academicProfile?.curriculumType) {
+        setCurriculum(data.academicProfile.curriculumType);
+        setGradingSystem(data.academicProfile.gradingSystemType || 'Percentage');
       }
     } catch (err) {
       console.error('Failed to fetch curriculum:', err);
@@ -82,7 +82,7 @@ export default function EditTranscriptsPage() {
       const res = await fetch('/api/student/transcripts');
       if (!res.ok) throw new Error('Failed to fetch transcripts');
       const data = await res.json();
-      setTranscripts(data.Transcript || []);
+      setTranscripts(data.transcripts || []);
     } catch (err) {
       console.error('Fetch error:', err);
       setError('Failed to load transcripts');
@@ -135,11 +135,11 @@ export default function EditTranscriptsPage() {
   const handleEdit = (transcript: Transcript) => {
     setEditingId(transcript.id);
     setFormData({
-      course_name: transcript.course_name,
-      grade_level: transcript.grade_level,
+      courseName: transcript.courseName,
+      gradeLevel: transcript.gradeLevel,
       semester: transcript.semester,
-      grade_value: transcript.grade_value,
-      honors_level: transcript.honors_level,
+      gradeValue: transcript.gradeValue,
+      honorsLevel: transcript.honorsLevel,
     });
     setShowAdd(true);
   };
@@ -168,11 +168,11 @@ export default function EditTranscriptsPage() {
     setEditingId(null);
     setShowAdd(false);
     setFormData({
-      course_name: '',
-      grade_level: enums?.gradeLevels?.[0] || '',
+      courseName: '',
+      gradeLevel: enums?.gradeLevels?.[0] || '',
       semester: enums?.semesterTypes?.[0] || '',
-      grade_value: '',
-      honors_level: enums?.honorsLevels?.[0] || '',
+      gradeValue: '',
+      honorsLevel: enums?.honorsLevels?.[0] || '',
     });
   };
 
@@ -242,6 +242,8 @@ export default function EditTranscriptsPage() {
   }
 
   if (!enums || !enums.gradeLevels || !enums.semesterTypes || !enums.honorsLevels) {
+    
+    console.log(JSON.stringify(enums));
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <p className="text-red-600 text-center py-12">Failed to load form options</p>
@@ -259,8 +261,8 @@ export default function EditTranscriptsPage() {
       return (
         <input
           type="number"
-          value={formData.grade_value}
-          onChange={(e) => setFormData({ ...formData, grade_value: e.target.value })}
+          value={formData.gradeValue}
+          onChange={(e) => setFormData({ ...formData, gradeValue: e.target.value })}
           placeholder={gradeConfig.placeholder}
           min={gradeConfig.min}
           max={gradeConfig.max}
@@ -274,8 +276,8 @@ export default function EditTranscriptsPage() {
       return (
         <input
           type="text"
-          value={formData.grade_value}
-          onChange={(e) => setFormData({ ...formData, grade_value: e.target.value })}
+          value={formData.gradeValue}
+          onChange={(e) => setFormData({ ...formData, gradeValue: e.target.value })}
           placeholder={gradeConfig.placeholder}
           className={baseClasses}
           required
@@ -333,8 +335,8 @@ export default function EditTranscriptsPage() {
                     Course Name *
                   </label>
                   <select
-                    value={formData.course_name}
-                    onChange={(e) => setFormData({ ...formData, course_name: e.target.value })}
+                    value={formData.courseName}
+                    onChange={(e) => setFormData({ ...formData, courseName: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
                     required
                   >
@@ -356,8 +358,8 @@ export default function EditTranscriptsPage() {
                       Grade Level *
                     </label>
                     <select
-                      value={formData.grade_level}
-                      onChange={(e) => setFormData({ ...formData, grade_level: e.target.value })}
+                      value={formData.gradeLevel}
+                      onChange={(e) => setFormData({ ...formData, gradeLevel: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
                       required
                     >
@@ -402,8 +404,8 @@ export default function EditTranscriptsPage() {
                       Course Level *
                     </label>
                     <select
-                      value={formData.honors_level}
-                      onChange={(e) => setFormData({ ...formData, honors_level: e.target.value })}
+                      value={formData.honorsLevel}
+                      onChange={(e) => setFormData({ ...formData, honorsLevel: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
                       required
                     >
@@ -420,7 +422,7 @@ export default function EditTranscriptsPage() {
                   <Button 
                     type="submit" 
                     className="flex-1"
-                    disabled={loading || !formData.course_name}
+                    disabled={loading || !formData.courseName}
                   >
                     {loading ? 'Saving...' : editingId ? 'Update Course' : 'Add Course'}
                   </Button>
@@ -453,11 +455,11 @@ export default function EditTranscriptsPage() {
                 <tbody className="divide-y divide-gray-200">
                   {transcripts.map((transcript) => (
                     <tr key={transcript.id}>
-                      <td className="px-4 py-3 text-sm text-gray-900">{transcript.course_name}</td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{gradeLabels[transcript.grade_level]}</td>
+                      <td className="px-4 py-3 text-sm text-gray-900">{transcript.courseName}</td>
+                      <td className="px-4 py-3 text-sm text-gray-600">{gradeLabels[transcript.gradeLevel]}</td>
                       <td className="px-4 py-3 text-sm text-gray-600">{transcript.semester.replace(/_/g, ' ')}</td>
-                      <td className="px-4 py-3 text-sm font-medium text-gray-900">{transcript.grade_value}</td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{transcript.honors_level.replace(/_/g, ' ')}</td>
+                      <td className="px-4 py-3 text-sm font-medium text-gray-900">{transcript.gradeValue}</td>
+                      <td className="px-4 py-3 text-sm text-gray-600">{transcript.honorsLevel.replace(/_/g, ' ')}</td>
                       <td className="px-4 py-3 text-sm">
                         <button
                           onClick={() => handleEdit(transcript)}

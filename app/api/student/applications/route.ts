@@ -11,10 +11,10 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const applications = await prisma.collegeApplication.findMany({
-      where: { student_id: session.user.id },
+    const applications = await prisma.CollegeApplication.findMany({
+      where: { studentId: session.user.id },
       include: {
-        College: {
+        college: {
           select: {
             id: true,
             name: true,
@@ -23,8 +23,8 @@ export async function GET(req: Request) {
         },
       },
       orderBy: [
-        { application_deadline: 'asc' },
-        { created_at: 'desc' },
+        { applicationDeadline: 'asc' },
+        { createdAt: 'desc' },
       ],
     });
     
@@ -49,30 +49,30 @@ export async function POST(req: Request) {
     const body = await req.json();
     
     // Validate required fields
-    if (!body.college_id || !body.target_category) {
+    if (!body.collegeId || !body.targetCategory) {
       return NextResponse.json(
         { error: 'College and category are required' },
         { status: 400 }
       );
     }
     
-    const application = await prisma.collegeApplication.create({
+    const application = await prisma.CollegeApplication.create({
       data: {
-        student_id: session.user.id,
-        college_id: body.college_id,
-        target_category: body.target_category,
-        application_status: body.application_status || 'Not_Started',
-        application_deadline: body.application_deadline ? new Date(body.application_deadline) : null,
-        decision_deadline: body.decision_deadline ? new Date(body.decision_deadline) : null,
-        essay_status: body.essay_status || 'Not Started',
-        supplements_status: body.supplements_status || 'Not Started',
-        recommendation_status: body.recommendation_status || 'Not Requested',
-        test_scores_sent: body.TestScore_sent || false,
-        application_portal_link: body.application_portal_link || null,
+        studentId: session.user.id,
+        collegeId: body.collegeId,
+        targetCategory: body.targetCategory,
+        applicationStatus: body.applicationStatus || 'Not_Started',
+        applicationDeadline: body.applicationDeadline ? new Date(body.applicationDeadline) : null,
+        decisionDeadline: body.decisionDeadline ? new Date(body.decisionDeadline) : null,
+        essayStatus: body.essayStatus || 'Not Started',
+        supplementsStatus: body.supplementsStatus || 'Not Started',
+        recommendationStatus: body.recommendationStatus || 'Not Requested',
+        testScoresSent: body.testScoresSent || false,
+        applicationPortalLink: body.applicationPortalLink || null,
         notes: body.notes || null,
       },
       include: {
-        College: {
+        college: {
           select: {
             id: true,
             name: true,

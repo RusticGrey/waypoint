@@ -19,30 +19,30 @@ export default async function ProfilePage() {
     redirect('/login');
   }
 
-  const student = await prisma.student.findUnique({
-    where: { user_id: session.user.id },
+  const student = await prisma.Student.findUnique({
+    where: { userId: session.user.id },
     include: {
-      PersonalProfile: true,
-      AcademicProfile: true,
-      Transcript: {
+      personalProfile: true,
+      academicProfile: true,
+      transcripts: {
         orderBy: [
-          { grade_level: 'asc' },
-          { course_name: 'asc' }
+          { gradeLevel: 'asc' },
+          { courseName: 'asc' }
         ]
       },
-      Activity: {
+      activities: {
         orderBy: {
-          activity_name: 'asc'
+          activityName: 'asc'
         }
       },
-      Achievement: {
+      achievements: {
         orderBy: {
-          grade_level: 'asc'
+          gradeLevel: 'asc'
         }
       },
-      ProjectExperience: {
+      projectExperiences: {
         orderBy: {
-          start_date: 'desc'
+          startDate: 'desc'
         }
       },
     },
@@ -90,19 +90,19 @@ export default async function ProfilePage() {
               </div>
               <div>
                 <dt className="text-sm font-medium text-gray-500">Phone</dt>
-                <dd className="mt-1 text-sm text-gray-900">{student.PersonalProfile?.phone || '-'}</dd>
+                <dd className="mt-1 text-sm text-gray-900">{student.personalProfile?.phone || '-'}</dd>
               </div>
               <div>
                 <dt className="text-sm font-medium text-gray-500">Current School</dt>
-                <dd className="mt-1 text-sm text-gray-900">{student.PersonalProfile?.current_school}</dd>
+                <dd className="mt-1 text-sm text-gray-900">{student.personalProfile?.currentSchool}</dd>
               </div>
               <div>
                 <dt className="text-sm font-medium text-gray-500">Current Grade</dt>
-                <dd className="mt-1 text-sm text-gray-900">{gradeLabels[student.current_grade]}</dd>
+                <dd className="mt-1 text-sm text-gray-900">{gradeLabels[student.currentGrade]}</dd>
               </div>
               <div>
                 <dt className="text-sm font-medium text-gray-500">Expected Graduation</dt>
-                <dd className="mt-1 text-sm text-gray-900">{student.graduation_year}</dd>
+                <dd className="mt-1 text-sm text-gray-900">{student.graduationYear}</dd>
               </div>
             </dl>
           </CardContent>
@@ -125,17 +125,17 @@ export default async function ProfilePage() {
             <dl className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <dt className="text-sm font-medium text-gray-500">Curriculum</dt>
-                <dd className="mt-1 text-sm text-gray-900">{student.AcademicProfile?.curriculum_type}</dd>
+                <dd className="mt-1 text-sm text-gray-900">{student.academicProfile?.curriculumType}</dd>
               </div>
               <div>
                 <dt className="text-sm font-medium text-gray-500">Grading System</dt>
                 <dd className="mt-1 text-sm text-gray-900">
-                  {student.AcademicProfile?.grading_system_type.replace(/_/g, ' ')}
+                  {student.academicProfile?.gradingSystemType.replace(/_/g, ' ')}
                 </dd>
               </div>
               <div>
                 <dt className="text-sm font-medium text-gray-500">Current GPA/CGPA</dt>
-                <dd className="mt-1 text-sm text-gray-900">{student.AcademicProfile?.current_gpa || '-'}</dd>
+                <dd className="mt-1 text-sm text-gray-900">{student.academicProfile?.currentGpa || '-'}</dd>
               </div>
             </dl>
           </CardContent>
@@ -145,7 +145,7 @@ export default async function ProfilePage() {
         <Card>
           <CardHeader>
             <div className="flex justify-between items-center">
-              <CardTitle>Academic Transcripts ({student.Transcript.length} courses)</CardTitle>
+              <CardTitle>Academic Transcripts ({student.transcripts.length} courses)</CardTitle>
               <Link
                 href="/student/edit/transcripts"
                 className="text-sm text-blue-600 hover:text-blue-700 font-medium"
@@ -155,7 +155,7 @@ export default async function ProfilePage() {
             </div>
           </CardHeader>
           <CardContent>
-            {student.Transcript.length > 0 ? (
+            {student.transcripts.length > 0 ? (
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead>
@@ -168,15 +168,15 @@ export default async function ProfilePage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
-                    {student.Transcript.map((transcript) => (
+                    {student.transcripts.map((transcript) => (
                       <tr key={transcript.id}>
-                        <td className="px-4 py-3 text-sm text-gray-900">{transcript.course_name}</td>
+                        <td className="px-4 py-3 text-sm text-gray-900">{transcript.courseName}</td>
                         <td className="px-4 py-3 text-sm text-gray-600">
-                          {gradeLabels[transcript.grade_level]}
+                          {gradeLabels[transcript.gradeLevel]}
                         </td>
                         <td className="px-4 py-3 text-sm text-gray-600">{transcript.semester}</td>
-                        <td className="px-4 py-3 text-sm font-medium text-gray-900">{transcript.grade_value}</td>
-                        <td className="px-4 py-3 text-sm text-gray-600">{transcript.honors_level}</td>
+                        <td className="px-4 py-3 text-sm font-medium text-gray-900">{transcript.gradeValue}</td>
+                        <td className="px-4 py-3 text-sm text-gray-600">{transcript.honorsLevel}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -192,7 +192,7 @@ export default async function ProfilePage() {
         <Card>
           <CardHeader>
             <div className="flex justify-between items-center">
-              <CardTitle>Activities & Extracurriculars ({student.Activity?.length || 0})</CardTitle>
+              <CardTitle>Activities & Extracurriculars ({student.activities?.length || 0})</CardTitle>
               <Link
                 href="/student/edit/activities"
                 className="text-sm text-blue-600 hover:text-blue-700 font-medium"
@@ -202,13 +202,13 @@ export default async function ProfilePage() {
             </div>
           </CardHeader>
           <CardContent>
-            {student.Activity && student.Activity.length > 0 ? (
+            {student.activities && student.activities.length > 0 ? (
               <div className="space-y-4">
-                {student.Activity.map((activity) => (
+                {student.activities.map((activity) => (
                   <div key={activity.id} className="border-b pb-4 last:border-0">
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
-                        <h4 className="text-base font-semibold text-gray-900">{activity.activity_name}</h4>
+                        <h4 className="text-base font-semibold text-gray-900">{activity.activityName}</h4>
                         <p className="text-sm text-gray-600 mt-1">
                           {activity.category}
                           {activity.role && ` • ${activity.role}`}
@@ -216,10 +216,10 @@ export default async function ProfilePage() {
                       </div>
                       <div className="text-right">
                         <p className="text-sm text-gray-600">
-                          {activity.hours_per_week}h/week × {activity.weeks_per_year} weeks
+                          {activity.hoursPerWeek}h/week × {activity.weeksPerYear} weeks
                         </p>
                         <p className="text-xs text-gray-500">
-                          {activity.hours_per_week * activity.weeks_per_year} total hours
+                          {activity.hoursPerWeek * activity.weeksPerYear} total hours
                         </p>
                       </div>
                     </div>
@@ -237,7 +237,7 @@ export default async function ProfilePage() {
         <Card>
           <CardHeader>
             <div className="flex justify-between items-center">
-              <CardTitle>Achievements & Honors ({student.Achievement?.length || 0})</CardTitle>
+              <CardTitle>Achievements & Honors ({student.achievements?.length || 0})</CardTitle>
               <Link
                 href="/student/edit/achievements"
                 className="text-sm text-blue-600 hover:text-blue-700 font-medium"
@@ -247,15 +247,15 @@ export default async function ProfilePage() {
             </div>
           </CardHeader>
           <CardContent>
-            {student.Achievement && student.Achievement.length > 0 ? (
+            {student.achievements && student.achievements.length > 0 ? (
               <div className="space-y-4">
-                {student.Achievement.map((achievement) => (
+                {student.achievements.map((achievement) => (
                   <div key={achievement.id} className="border-b pb-4 last:border-0">
                     <h4 className="text-base font-semibold text-gray-900">{achievement.title}</h4>
                     <p className="text-sm text-gray-600 mt-1">
-                      {achievement.achievement_type.replace('_', ' ')}
+                      {achievement.achievementType.replace('_', ' ')}
                       {achievement.organization && ` • ${achievement.organization}`}
-                      {achievement.recognition_level && ` • ${achievement.recognition_level} Level`}
+                      {achievement.recognitionLevel && ` • ${achievement.recognitionLevel} Level`}
                     </p>
                     <p className="text-sm text-gray-700 mt-2">{achievement.description}</p>
                   </div>
@@ -271,7 +271,7 @@ export default async function ProfilePage() {
         <Card>
           <CardHeader>
             <div className="flex justify-between items-center">
-              <CardTitle>Projects & Experiences ({student.ProjectExperience?.length || 0})</CardTitle>
+              <CardTitle>Projects & Experiences ({student.projectExperiences?.length || 0})</CardTitle>
               <Link
                 href="/student/edit/projects"
                 className="text-sm text-blue-600 hover:text-blue-700 font-medium"
@@ -281,13 +281,13 @@ export default async function ProfilePage() {
             </div>
           </CardHeader>
           <CardContent>
-            {student.ProjectExperience && student.ProjectExperience.length > 0 ? (
+            {student.projectExperiences && student.projectExperiences.length > 0 ? (
               <div className="space-y-4">
-                {student.ProjectExperience.map((project) => (
+                {student.projectExperiences.map((project) => (
                   <div key={project.id} className="border-b pb-4 last:border-0">
                     <h4 className="text-base font-semibold text-gray-900">{project.title}</h4>
                     <p className="text-sm text-gray-600 mt-1">
-                      {project.experience_type.replace('_', ' ')}
+                      {project.experienceType.replace('_', ' ')}
                       {project.organization && ` • ${project.organization}`}
                     </p>
                     <p className="text-sm text-gray-700 mt-2">{project.description}</p>

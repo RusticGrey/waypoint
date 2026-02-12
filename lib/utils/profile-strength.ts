@@ -40,9 +40,9 @@ export function analyzeProfileStrength(student: Student): StrengthAnalysis {
   const overall_score = Math.round(
     (scores.academic * 0.30) +
     (scores.testing * 0.20) +
-    (scores.Activity * 0.20) +
+    (scores.activities * 0.20) +
     (scores.leadership * 0.10) +
-    (scores.Achievement * 0.10) +
+    (scores.achievements * 0.10) +
     (scores.projects * 0.10)
   );
 
@@ -64,7 +64,7 @@ export function analyzeProfileStrength(student: Student): StrengthAnalysis {
 function calculateAcademicScore(student: Student): number {
   let score = 0;
   
-  const gpa = student.AcademicProfile?.current_gpa;
+  const gpa = student.academicProfile?.currentGpa;
   if (gpa) {
     if (gpa >= 3.9) score += 40;
     else if (gpa >= 3.7) score += 35;
@@ -73,7 +73,7 @@ function calculateAcademicScore(student: Student): number {
     else score += 20;
   }
   
-  const transcripts = student.Transcript || [];
+  const transcripts = student.transcripts || [];
   const apCount = transcripts.filter(t => t.honors_level === 'AP').length;
   const ibCount = transcripts.filter(t => t.honors_level?.includes('IB')).length;
   const honorsCount = transcripts.filter(t => t.honors_level === 'Honors').length;
@@ -91,7 +91,7 @@ function calculateAcademicScore(student: Student): number {
 }
 
 function calculateTestingScore(student: Student): number {
-  const testScores = student.TestScore || [];
+  const testScores = student.testScores || [];
   if (testScores.length === 0) return 0;
   
   let maxScore = 0;
@@ -99,16 +99,16 @@ function calculateTestingScore(student: Student): number {
   testScores.forEach(test => {
     let score = 0;
     
-    if (test.test_type === 'SAT' && test.composite_score) {
-      const sat = test.composite_score;
+    if (test.testType === 'SAT' && test.compositeScore) {
+      const sat = test.compositeScore;
       if (sat >= 1500) score = 100;
       else if (sat >= 1450) score = 90;
       else if (sat >= 1400) score = 80;
       else if (sat >= 1350) score = 70;
       else if (sat >= 1300) score = 60;
       else score = 50;
-    } else if (test.test_type === 'ACT' && test.composite_score) {
-      const act = test.composite_score;
+    } else if (test.testType === 'ACT' && test.compositeScore) {
+      const act = test.compositeScore;
       if (act >= 34) score = 100;
       else if (act >= 32) score = 90;
       else if (act >= 30) score = 80;
@@ -124,7 +124,7 @@ function calculateTestingScore(student: Student): number {
 }
 
 function calculateActivitiesScore(student: Student): number {
-  const activities = student.Activity || [];
+  const activities = student.activities || [];
   if (activities.length === 0) return 0;
   
   let score = 0;
@@ -135,7 +135,7 @@ function calculateActivitiesScore(student: Student): number {
   else score += (activities.length * 6);
   
   const totalHours = activities.reduce((sum, a) => 
-    sum + (a.hours_per_week * a.weeks_per_year), 0
+    sum + (a.hoursPerWeek * a.weeksPerYear), 0
   );
   if (totalHours >= 1000) score += 40;
   else if (totalHours >= 600) score += 35;
@@ -149,8 +149,8 @@ function calculateActivitiesScore(student: Student): number {
 }
 
 function calculateLeadershipScore(student: Student): number {
-  const activities = student.Activity || [];
-  const achievements = student.Achievement || [];
+  const activities = student.activities || [];
+  const achievements = student.achievements || [];
   
   let score = 0;
   
@@ -166,7 +166,7 @@ function calculateLeadershipScore(student: Student): number {
   score += Math.min(60, leadershipRoles.length * 15);
   
   const leadershipAchievements = achievements.filter((a: any) => 
-    a.achievement_type === 'Leadership'
+    a.achievementType === 'Leadership'
   );
   score += Math.min(40, leadershipAchievements.length * 10);
   
@@ -174,7 +174,7 @@ function calculateLeadershipScore(student: Student): number {
 }
 
 function calculateAchievementsScore(student: Student): number {
-  const achievements = student.Achievement || [];
+  const achievements = student.achievements || [];
   if (achievements.length === 0) return 0;
   
   let score = 0;
@@ -185,7 +185,7 @@ function calculateAchievementsScore(student: Student): number {
   else score += (achievements.length * 6);
   
   achievements.forEach((a: any) => {
-    const level = a.recognition_level;
+    const level = a.recognitionLevel;
     if (level === 'International') score += 15;
     else if (level === 'National') score += 12;
     else if (level === 'State') score += 10;
@@ -198,7 +198,7 @@ function calculateAchievementsScore(student: Student): number {
 }
 
 function calculateProjectsScore(student: Student): number {
-  const projects = student.ProjectExperience || [];
+  const projects = student.projectExperiences || [];
   if (projects.length === 0) return 0;
   
   let score = 0;
@@ -208,9 +208,9 @@ function calculateProjectsScore(student: Student): number {
   else if (projects.length >= 2) score += 20;
   else score += 15;
   
-  const hasResearch = projects.some((p: any) => p.experience_type === 'Research');
-  const hasInternship = projects.some((p: any) => p.experience_type === 'Internship');
-  const hasIndependent = projects.some((p: any) => p.experience_type === 'Independent_Project');
+  const hasResearch = projects.some((p: any) => p.experienceType === 'Research');
+  const hasInternship = projects.some((p: any) => p.experienceType === 'Internship');
+  const hasIndependent = projects.some((p: any) => p.experienceType === 'Independent_Project');
   
   if (hasResearch) score += 25;
   if (hasInternship) score += 20;
@@ -250,8 +250,8 @@ function generateRecommendations(student: Student, scores: any): string[] {
     recs.push("Take SAT/ACT and aim for scores above 1400 SAT or 30 ACT");
   }
   
-  if (scores.Activity < 70) {
-    const activityCount = student.Activity?.length || 0;
+  if (scores.activities < 70) {
+    const activityCount = student.activities?.length || 0;
     if (activityCount < 3) {
       recs.push("Join at least 3-5 meaningful extracurricular activities");
     } else {
@@ -263,7 +263,7 @@ function generateRecommendations(student: Student, scores: any): string[] {
     recs.push("Seek leadership positions in your activities or start a new initiative");
   }
   
-  if (scores.Achievement < 60) {
+  if (scores.achievements < 60) {
     recs.push("Participate in competitions or pursue recognition for your work");
   }
   
@@ -272,7 +272,7 @@ function generateRecommendations(student: Student, scores: any): string[] {
   }
   
   if (scores.academic < 80) {
-    const apCount = student.Transcript?.filter(t => t.honors_level === 'AP').length || 0;
+    const apCount = student.transcripts?.filter(t => t.honors_level === 'AP').length || 0;
     if (apCount < 5) {
       recs.push("Take more AP or IB courses to demonstrate academic rigor");
     }

@@ -12,9 +12,9 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const achievements = await prisma.achievement.findMany({
-      where: { student_id: session.user.id },
-      orderBy: { date_achieved: 'desc' }, // Fixed: date_achieved not date_received
+    const achievements = await prisma.Achievement.findMany({
+      where: { studentId: session.user.id },
+      orderBy: { dateAchieved: 'desc' }, // Fixed: date_achieved not date_received
     });
     
     return NextResponse.json({ achievements });
@@ -37,22 +37,22 @@ export async function POST(req: Request) {
     // Map form fields to database schema
     const achievement = await prisma.achievement.create({
       data: {
-        student_id: session.user.id,
+        studentId: session.user.id,
         title: body.title,
-        achievement_type: body.achievement_type,
+        achievementType: body.achievementType,
         organization: body.organization || null,
-        recognition_level: body.recognition_level || null,
-        grade_level: body.grade_level || null,
-        date_achieved: body.date_received ? new Date(body.date_received) : null, // Map date_received to date_achieved
+        recognitionLevel: body.recognitionLevel || null,
+        gradeLevel: body.gradeLevel || null,
+        dateAchieved: body.dateReceived ? new Date(body.dateReceived) : null, // Map date_received to date_achieved
         description: body.description || null,
       },
     });
     
     await logChange({
-      student_id: session.user.id,
-      change_type: 'New_Addition',
-      entity_type: 'Achievement',
-      entity_id: achievement.id,
+      studentId: session.user.id,
+      changeType: 'New_Addition',
+      entityType: 'Achievement',
+      entityId: achievement.id,
       action: 'Created',
       description: `Added new achievement: ${body.title}`,
     });

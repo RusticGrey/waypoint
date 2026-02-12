@@ -7,15 +7,15 @@ import { Input } from '@/components/ui/input';
 
 interface Goal {
   id: string;
-  goal_type: string;
+  goalType: string;
   category: string;
-  target_value: string;
-  current_value?: string;
+  targetValue: string;
+  currentValue?: string;
   deadline?: string;
   status: string;
   priority: number;
   notes?: string;
-  created_at: string;
+  createdAt: string;
 }
 
 const GOAL_TYPES = ['Academic', 'Testing', 'Activity', 'Achievement', 'Project', 'Other'];
@@ -25,10 +25,10 @@ export default function GoalsPage() {
   const [goals, setGoals] = useState<Goal[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [formData, setFormData] = useState({
-    goal_type: 'Academic',
+    goalType: 'Academic',
     category: '',
-    target_value: '',
-    current_value: '',
+    targetValue: '',
+    currentValue: '',
     deadline: '',
     priority: 5,
     notes: '',
@@ -53,10 +53,10 @@ export default function GoalsPage() {
     
     setShowAddModal(false);
     setFormData({
-      goal_type: 'Academic',
+      goalType: 'Academic',
       category: '',
-      target_value: '',
-      current_value: '',
+      targetValue: '',
+      currentValue: '',
       deadline: '',
       priority: 5,
       notes: '',
@@ -163,7 +163,7 @@ export default function GoalsPage() {
                           {goal.status.replace('_', ' ')}
                         </span>
                         <span className="px-2 py-1 bg-purple-100 text-purple-800 rounded text-xs font-medium">
-                          {goal.goal_type}
+                          {goal.goalType}
                         </span>
                         <span className={`text-xs font-bold ${getPriorityColor(goal.priority)}`}>
                           Priority: {goal.priority}/10
@@ -172,12 +172,12 @@ export default function GoalsPage() {
                       
                       <h3 className="font-semibold text-gray-900 mb-1">{goal.category}</h3>
                       <p className="text-sm text-gray-700 mb-2">
-                        <span className="font-medium">Target:</span> {goal.target_value}
+                        <span className="font-medium">Target:</span> {goal.targetValue}
                       </p>
                       
-                      {goal.current_value && (
+                      {goal.currentValue && (
                         <p className="text-sm text-gray-600 mb-2">
-                          <span className="font-medium">Current:</span> {goal.current_value}
+                          <span className="font-medium">Current:</span> {goal.currentValue}
                         </p>
                       )}
                       
@@ -233,7 +233,7 @@ export default function GoalsPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <h4 className="font-semibold text-gray-900">{goal.category}</h4>
-                      <p className="text-sm text-gray-700">Target: {goal.target_value}</p>
+                      <p className="text-sm text-gray-700">Target: {goal.targetValue}</p>
                     </div>
                     <span className="text-xs text-green-600 font-medium">✓ Completed</span>
                   </div>
@@ -256,8 +256,8 @@ export default function GoalsPage() {
                   Goal Type *
                 </label>
                 <select
-                  value={formData.goal_type}
-                  onChange={(e) => setFormData({ ...formData, goal_type: e.target.value })}
+                  value={formData.goalType}
+                  onChange={(e) => setFormData({ ...formData, goalType: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
                 >
                   {GOAL_TYPES.map(type => (
@@ -276,15 +276,15 @@ export default function GoalsPage() {
               <Input
                 label="Target Value *"
                 placeholder="e.g., 3.9 GPA, Club President, 1500 SAT"
-                value={formData.target_value}
-                onChange={(e) => setFormData({ ...formData, target_value: e.target.value })}
+                value={formData.targetValue}
+                onChange={(e) => setFormData({ ...formData, targetValue: e.target.value })}
               />
 
               <Input
                 label="Current Value (optional)"
                 placeholder="e.g., 3.7 GPA, Vice President"
-                value={formData.current_value}
-                onChange={(e) => setFormData({ ...formData, current_value: e.target.value })}
+                value={formData.currentValue}
+                onChange={(e) => setFormData({ ...formData, currentValue: e.target.value })}
               />
 
               <div className="grid grid-cols-2 gap-4">
@@ -327,7 +327,7 @@ export default function GoalsPage() {
             <div className="flex gap-2 mt-6">
               <Button
                 onClick={addGoal}
-                disabled={!formData.category || !formData.target_value}
+                disabled={!formData.category || !formData.targetValue}
                 className="flex-1"
               >
                 Add Goal
@@ -336,10 +336,10 @@ export default function GoalsPage() {
                 onClick={() => {
                   setShowAddModal(false);
                   setFormData({
-                    goal_type: 'Academic',
+                    goalType: 'Academic',
                     category: '',
-                    target_value: '',
-                    current_value: '',
+                    targetValue: '',
+                    currentValue: '',
                     deadline: '',
                     priority: 5,
                     notes: '',

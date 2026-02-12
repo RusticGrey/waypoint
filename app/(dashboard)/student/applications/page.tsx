@@ -9,18 +9,18 @@ import DeadlineTracker from './deadline-tracker';
 
 interface Application {
   id: string;
-  college_id: string;
-  target_category: string;
-  application_status: string;
-  application_deadline: string | null;
-  decision_deadline: string | null;
-  essay_status: string;
-  supplements_status: string;
-  recommendation_status: string;
-  test_scores_sent: boolean;
-  application_portal_link: string | null;
+  collegeId: string;
+  targetCategory: string;
+  applicationStatus: string;
+  applicationDeadline: string | null;
+  decisionDeadline: string | null;
+  essayStatus: string;
+  supplementsStatus: string;
+  recommendationStatus: string;
+  testScoresSent: boolean;
+  applicationPortalLink: string | null;
   notes: string | null;
-  College: {
+  college: {
     id: string;
     name: string;
     location: string;
@@ -58,12 +58,12 @@ export default function ApplicationsPage() {
   const filterApplications = () => {
     let filtered = applications;
 
-    if (filter === 'Safety') filtered = applications.filter(a => a.target_category === 'Safety');
-    else if (filter === 'Match') filtered = applications.filter(a => a.target_category === 'Match');
-    else if (filter === 'Reach') filtered = applications.filter(a => a.target_category === 'Reach');
-    else if (filter === 'In Progress') filtered = applications.filter(a => a.application_status === 'In_Progress');
-    else if (filter === 'Submitted') filtered = applications.filter(a => ['Submitted', 'Under_Review'].includes(a.application_status));
-    else if (filter === 'Decisions') filtered = applications.filter(a => ['Accepted', 'Rejected', 'Waitlisted', 'Deferred'].includes(a.application_status));
+    if (filter === 'Safety') filtered = applications.filter(a => a.targetCategory === 'Safety');
+    else if (filter === 'Match') filtered = applications.filter(a => a.targetCategory === 'Match');
+    else if (filter === 'Reach') filtered = applications.filter(a => a.targetCategory === 'Reach');
+    else if (filter === 'In Progress') filtered = applications.filter(a => a.applicationStatus === 'In_Progress');
+    else if (filter === 'Submitted') filtered = applications.filter(a => ['Submitted', 'Under_Review'].includes(a.applicationStatus));
+    else if (filter === 'Decisions') filtered = applications.filter(a => ['Accepted', 'Rejected', 'Waitlisted', 'Deferred'].includes(a.applicationStatus));
 
     setFilteredApplications(filtered);
   };
@@ -191,24 +191,24 @@ export default function ApplicationsPage() {
                             <div className="text-xs text-gray-500">{app.college.country}</div>
                           </td>
                           <td className="px-4 py-3">
-                            <span className={`px-2 py-1 text-xs rounded ${getCategoryBadge(app.target_category)}`}>
-                              {app.target_category}
+                            <span className={`px-2 py-1 text-xs rounded ${getCategoryBadge(app.targetCategory)}`}>
+                              {app.targetCategory}
                             </span>
                           </td>
                           <td className="px-4 py-3">
-                            <span className={`px-2 py-1 text-xs rounded ${getStatusBadge(app.application_status)}`}>
-                              {app.application_status.replace(/_/g, ' ')}
+                            <span className={`px-2 py-1 text-xs rounded ${getStatusBadge(app.applicationStatus)}`}>
+                              {app.applicationStatus.replace(/_/g, ' ')}
                             </span>
                           </td>
                           <td className="px-4 py-3">
-                            {app.application_deadline ? (
+                            {app.applicationDeadline ? (
                               <div className={`text-sm ${
-                                isOverdue(app.application_deadline) ? 'text-red-600 font-medium' :
-                                isDeadlineNear(app.application_deadline) ? 'text-yellow-600 font-medium' :
+                                isOverdue(app.applicationDeadline) ? 'text-red-600 font-medium' :
+                                isDeadlineNear(app.applicationDeadline) ? 'text-yellow-600 font-medium' :
                                 'text-gray-900'
                               }`}>
-                                {isOverdue(app.application_deadline) && '⚠️ '}
-                                {new Date(app.application_deadline).toLocaleDateString()}
+                                {isOverdue(app.applicationDeadline) && '⚠️ '}
+                                {new Date(app.applicationDeadline).toLocaleDateString()}
                               </div>
                             ) : (
                               <span className="text-sm text-gray-400">No deadline</span>

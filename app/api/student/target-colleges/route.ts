@@ -5,10 +5,10 @@ import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 
 const targetCollegeSchema = z.object({
-  college_id: z.string(),
-  category: z.enum(['Reach', 'Match', 'Safety']),
+  collegeId: z.string(),
+  targetCategory: z.enum(['Reach', 'Match', 'Safety']),
   priority: z.number().min(1).max(10).default(5),
-  notes: z.string().optional(),
+  // notes: z.string().optional(),
 });
 
 export async function GET(req: Request) {
@@ -19,12 +19,12 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const targetColleges = await prisma.targetCollege.findMany({
+    const targetColleges = await prisma.TargetCollege.findMany({
       where: {
-        student_id: session.user.id,
+        studentId: session.user.id,
       },
       include: {
-        College: true,
+        college: true,
       },
       orderBy: {
         priority: 'desc',
@@ -52,13 +52,13 @@ export async function POST(req: Request) {
     const body = await req.json();
     const validatedData = targetCollegeSchema.parse(body);
     
-    const targetCollege = await prisma.targetCollege.create({
+    const targetCollege = await prisma.TargetCollege.create({
       data: {
-        student_id: session.user.id,
+        studentId: session.user.id,
         ...validatedData,
       },
       include: {
-        College: true,
+        college: true,
       },
     });
     
@@ -87,10 +87,10 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: 'ID required' }, { status: 400 });
     }
     
-    await prisma.targetCollege.delete({
+    await prisma.TargetCollege.delete({
       where: {
         id,
-        student_id: session.user.id, // Ensure student owns this target
+        studentId: session.user.id, // Ensure student owns this target
       },
     });
     

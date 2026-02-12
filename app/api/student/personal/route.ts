@@ -11,14 +11,15 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const student = await prisma.student.findUnique({
-      where: { user_id: session.user.id },
+    const student = await prisma.Student.findUnique({
+      where: { userId: session.user.id },
       include: {
-        PersonalProfile: true,
+        personalProfile: true,
       },
     });
-    
-    return NextResponse.json({ PersonalProfile: student?.PersonalProfile });
+
+    console.log("API - KARTHIK DATA ="+JSON.stringify(student));    
+    return NextResponse.json({ personalProfile: student?.personalProfile });
   } catch (error) {
     console.error('Personal info fetch error:', error);
     return NextResponse.json({ error: 'Failed to fetch personal info' }, { status: 500 });
@@ -35,11 +36,11 @@ export async function PATCH(req: Request) {
     
     const body = await req.json();
     
-    const personal = await prisma.personalProfile.update({
-      where: { student_id: session.user.id },
+    const personal = await prisma.PersonalProfile.update({
+      where: { studentId: session.user.id },
       data: {
         ...body,
-        date_of_birth: body.date_of_birth ? new Date(body.date_of_birth) : null,
+        dateOfBirth: body.dateOfBirth ? new Date(body.dateOfBirth) : null,
       },
     });
     

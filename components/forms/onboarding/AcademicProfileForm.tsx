@@ -14,7 +14,7 @@ interface Props {
 }
 
 export default function AcademicProfileForm({ onNext, onBack, initialData }: Props) {
-  const [selectedCurriculum, setSelectedCurriculum] = useState(initialData?.curriculum_type || '');
+  const [selectedCurriculum, setSelectedCurriculum] = useState(initialData?.curriculumType || '');
   
   const {
     register,
@@ -62,7 +62,7 @@ export default function AcademicProfileForm({ onNext, onBack, initialData }: Pro
           What curriculum do you follow? *
         </label>
         <select
-          {...register('curriculum_type')}
+          {...register('curriculumType')}
           onChange={(e) => setSelectedCurriculum(e.target.value)}
           className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
         >
@@ -75,8 +75,8 @@ export default function AcademicProfileForm({ onNext, onBack, initialData }: Pro
           <option value="US_High_School">US High School</option>
           <option value="Other">Other</option>
         </select>
-        {errors.curriculum_type && (
-          <p className="mt-1 text-sm text-red-600">{errors.curriculum_type.message}</p>
+        {errors.curriculumType && (
+          <p className="mt-1 text-sm text-red-600">{errors.curriculumType.message}</p>
         )}
       </div>
 
@@ -96,8 +96,8 @@ export default function AcademicProfileForm({ onNext, onBack, initialData }: Pro
             <option value="Letter_Grade">Letter Grades (A, B, C, etc.)</option>
             <option value="Other">Other</option>
           </select>
-          {errors.grading_system_type && (
-            <p className="mt-1 text-sm text-red-600">{errors.grading_system_type.message}</p>
+          {errors.gradingSystemType && (
+            <p className="mt-1 text-sm text-red-600">{errors.gradingSystemType.message}</p>
           )}
           
           <p className="mt-2 text-sm text-gray-500">
@@ -110,7 +110,7 @@ export default function AcademicProfileForm({ onNext, onBack, initialData }: Pro
         label="Current GPA/CGPA (optional)"
         placeholder="e.g., 3.8/4.0 or 9.5/10"
         {...register('current_gpa')}
-        error={errors.current_gpa?.message}
+        error={errors.currentGpa?.message}
       />
       <p className="text-sm text-gray-500">
         If your school provides a GPA or CGPA, enter it here. Otherwise, leave blank.

@@ -16,17 +16,17 @@ export async function GET(req: Request) {
     const change_type = searchParams.get('type');
     
     const where: any = {
-      student_id: session.user.id,
+      studentId: session.user.id,
     };
     
     if (change_type) {
-      where.change_type = change_type;
+      where.changeType = change_type;
     }
     
-    const changes = await prisma.changeLog.findMany({
+    const changes = await prisma.ChangeLog.findMany({
       where,
       orderBy: {
-        created_at: 'desc',
+        createdAt: 'desc',
       },
       take: limit,
     });

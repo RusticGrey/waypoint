@@ -19,7 +19,7 @@ export async function PATCH(
     const transcript = await prisma.transcript.update({
       where: {
         id: params.id,
-        student_id: session.user.id,
+        studentId: session.user.id,
       },
       data: body,
     });
@@ -45,7 +45,7 @@ export async function DELETE(
     await prisma.transcript.delete({
       where: {
         id: params.id,
-        student_id: session.user.id,
+        studentId: session.user.id,
       },
     });
     

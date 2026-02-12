@@ -11,19 +11,19 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const coordinators = await prisma.user.findMany({
+    const coordinators = await prisma.User.findMany({
       where: {
-        organization_id: session.user.organizationId,
+        organizationId: session.user.organizationId,
         role: 'coordinator',
       },
       select: {
         id: true,
-        first_name: true,
-        last_name: true,
+        firstName: true,
+        lastName: true,
         email: true,
       },
       orderBy: {
-        last_name: 'asc',
+        lastName: 'asc',
       },
     });
     

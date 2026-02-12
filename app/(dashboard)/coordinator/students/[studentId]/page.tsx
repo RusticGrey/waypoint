@@ -31,19 +31,19 @@ export default async function StudentProfileViewer({
   }
 
   const student = await prisma.student.findUnique({
-    where: { user_id: params.studentId },
+    where: { userId: params.studentId },
     include: {
-      User: true,
-      PersonalProfile: true,
-      AcademicProfile: true,
-      Transcript: true,
-      Activity: true,
-      Achievement: true,
-      ProjectExperience: true,
-      TestScore: true,
+      user: true,
+      personalProfile: true,
+      academicProfile: true,
+      transcripts: true,
+      activities: true,
+      achievements: true,
+      projectExperiences: true,
+      testScores: true,
       TargetCollege: {
         include: {
-          College: true,
+          college: true,
         },
         orderBy: {
           category: 'asc',
@@ -69,8 +69,8 @@ export default async function StudentProfileViewer({
         include: {
           User: {
             select: {
-              first_name: true,
-              last_name: true,
+              firstName: true,
+              lastName: true,
             },
           },
         },
@@ -92,7 +92,7 @@ export default async function StudentProfileViewer({
   }
 
   // Check if this coordinator has access to this student
-  if (session.user.role === 'coordinator' && student.coordinator_id !== session.user.id) {
+  if (session.user.role === 'coordinator' && student.coordinatorId !== session.user.id) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center py-12">
@@ -107,11 +107,11 @@ export default async function StudentProfileViewer({
 
   const analysis = analyzeProfileStrength(student);
   
-  const displayScore = student.ProfileOverride 
-    ? student.ProfileOverride.override_score 
+  const displayScore = student.profileOverride 
+    ? student.profileOverride.overrideScore 
     : analysis.overall_score;
   
-  const isOverridden = !!student.ProfileOverride;
+  const isOverridden = !!student.profileOverride;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -121,9 +121,9 @@ export default async function StudentProfileViewer({
             ← Back to Dashboard
           </Link>
           <h1 className="text-3xl font-bold text-gray-900">
-            {student.User.first_name} {student.User.last_name}
+            {student.user.firstName} {student.user.lastName}
           </h1>
-          <p className="text-gray-600 mt-1">{student.User.email}</p>
+          <p className="text-gray-600 mt-1">{student.user.email}</p>
         </div>
         <Link
           href={`/coordinator/meetings/new?student=${params.studentId}`}
@@ -141,7 +141,7 @@ export default async function StudentProfileViewer({
             <OverrideButton 
               studentId={params.studentId}
               currentScore={analysis.overall_score}
-              existingOverride={student.ProfileOverride}
+              existingOverride={student.profileOverride}
             />
           </div>
         </CardHeader>
@@ -171,16 +171,16 @@ export default async function StudentProfileViewer({
                 }>{analysis.college_readiness}</span>
               </p>
               
-              {isOverridden && student.ProfileOverride && (
+              {isOverridden && student.profileOverride && (
                 <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded">
                   <p className="text-xs font-medium text-blue-900">
                     Original Score: {analysis.overall_score}/100
                   </p>
                   <p className="text-xs text-blue-800 mt-1">
-                    <strong>Override Reason:</strong> {student.ProfileOverride.override_reason}
+                    <strong>Override Reason:</strong> {student.profileOverride.overrideReason}
                   </p>
                   <p className="text-xs text-blue-700 mt-1">
-                    By {student.ProfileOverride.overridden_by_user.first_name} {student.ProfileOverride.overridden_by_user.last_name} on {new Date(student.ProfileOverride.created_at).toLocaleDateString()}
+                    By {student.profileOverride.overriddenBy_user.firstName} {student.profileOverride.overriddenBy_user.lastName} on {new Date(student.profileOverride.createdAt).toLocaleDateString()}
                   </p>
                 </div>
               )}

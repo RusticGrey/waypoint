@@ -12,22 +12,22 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const users = await prisma.user.findMany({
+    const users = await prisma.User.findMany({
       where: {
-        organization_id: session.user.organizationId,
+        organizationId: session.user.organizationId,
         role: {
           in: ['student', 'coordinator'],
         },
       },
       include: {
-        Student: {
+        student: {
           select: {
-            coordinator_id: true,
+            coordinatorId: true,
           },
         },
       },
       orderBy: {
-        created_at: 'desc',
+        createdAt: 'desc',
       },
     });
     
@@ -50,10 +50,10 @@ export async function POST(req: Request) {
     }
     
     const body = await req.json();
-    const { email, password, first_name, last_name, role, current_grade, graduation_year, coordinator_id } = body;
+    const { email, password, firstName, lastName, role, currentGrade, graduationYear, coordinatorId } = body;
     
     // Check if user already exists
-    const existingUser = await prisma.user.findUnique({
+    const existingUser = await prisma.User.findUnique({
       where: { email },
     });
     
@@ -64,25 +64,25 @@ export async function POST(req: Request) {
     const hashedPassword = await bcrypt.hash(password, 10);
     
     // Create user
-    const user = await prisma.user.create({
+    const user = await prisma.User.create({
       data: {
         email,
-        password_hash: hashedPassword,
-        first_name,
-        last_name,
+        passwordHash: hashedPassword,
+        firstName,
+        lastName,
         role,
-        organization_id: session.user.organizationId,
+        organizationId: session.user.organizationId,
       },
     });
     
     // If student, create student record
     if (role === 'student') {
-      await prisma.student.create({
+      await prisma.Student.create({
         data: {
-          user_id: user.id,
-          current_grade: current_grade || 'eleventh',
-          graduation_year: graduation_year || new Date().getFullYear() + 2,
-          coordinator_id: coordinator_id || null,
+          userId: user.id,
+          currentGrade: currentGrade || 'eleventh',
+          graduationYear: graduationYear || new Date().getFullYear() + 2,
+          coordinatorId: coordinatorIdd || null,
         },
       });
     }
@@ -115,7 +115,7 @@ export async function DELETE(req: Request) {
     await prisma.user.delete({
       where: {
         id,
-        organization_id: session.user.organizationId,
+        organizationId: session.user.organizationId,
       },
     });
     

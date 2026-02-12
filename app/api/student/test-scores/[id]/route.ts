@@ -15,26 +15,22 @@ export async function PATCH(
     }
     
     const body = await req.json();
-    
-    // Build section_scores JSON object
-    const sectionScores: any = {};
-    if (body.math_score) sectionScores.math = body.math_score;
-    if (body.reading_writing_score) sectionScores.reading_writing = body.reading_writing_score;
-    if (body.english_score) sectionScores.english = body.english_score;
-    if (body.science_score) sectionScores.science = body.science_score;
-    if (body.essay_score) sectionScores.essay = body.essay_score;
-    
-    const testScore = await prisma.testScore.update({
+        
+    const testScore = await prisma.TestScore.update({
       where: {
         id: params.id,
-        student_id: session.user.id,
+        studentId: session.user.id,
       },
       data: {
-        test_type: body.test_type,
-        test_name: body.test_type,
-        test_date: new Date(body.test_date),
-        composite_score: body.composite_score,
-        section_scores: Object.keys(sectionScores).length > 0 ? sectionScores : null,
+        testType: body.testType,
+        // testName: body.testType,
+        testDate: new Date(body.testDate),
+        compositeScore: body.compositeScore,
+        mathScore: body.mathScore,
+        readingWritingScore: body.readingWritingScore,
+        englishScore: body.englishScore,
+        scienceScore: body.scienceScore,
+
       },
     });
     
@@ -59,10 +55,10 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    await prisma.testScore.delete({
+    await prisma.TestScore.delete({
       where: {
         id: params.id,
-        student_id: session.user.id,
+        studentId: session.user.id,
       },
     });
     

@@ -9,12 +9,12 @@ import { useEnums } from '@/lib/hooks/useEnums';
 
 interface Activity {
   id: string;
-  activity_name: string;
+  activityName: string;
   category: string;
   role: string | null;
-  grade_levels: string[];
-  hours_per_week: number;
-  weeks_per_year: number;
+  gradeLevel: string;
+  hoursPerWeek: number;
+  weeksPerYear: number;
   description: string;
 }
 
@@ -26,12 +26,12 @@ export default function EditActivitiesPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [formData, setFormData] = useState({
-    activity_name: '',
+    activityName: '',
     category: '',
     role: '',
-    grade_levels: [] as string[],
-    hours_per_week: 1,
-    weeks_per_year: 1,
+    gradeLevel: '',
+    hoursPerWeek: 1,
+    weeksPerYear: 1,
     description: '',
   });
 
@@ -41,10 +41,14 @@ export default function EditActivitiesPage() {
 
   // Set default category once enums load
   useEffect(() => {
-    if (enums && enums.activityCategories && enums.activityCategories.length > 0 && !formData.category) {
+    if (enums && 
+        enums.activityCategories && enums.activityCategories.length > 0 && 
+        enums.gradeLevels && enums.gradeLevels.length > 0 && 
+        !formData.category && !formData.gradeLevel) {
       setFormData(prev => ({
         ...prev,
         category: enums.activityCategories[0],
+        gradeLevel: enums.gradeLevels[0],
       }));
     }
   }, [enums]);
@@ -55,7 +59,7 @@ export default function EditActivitiesPage() {
       if (!res.ok) throw new Error('Failed to fetch activities');
       const data = await res.json();
       console.log('Fetched Activity:', data);
-      setActivities(data.Activity || []);
+      setActivities(data.activities || []);
     } catch (err) {
       console.error('Fetch error:', err);
       setError('Failed to load activities');
@@ -104,12 +108,12 @@ export default function EditActivitiesPage() {
   const handleEdit = (activity: Activity) => {
     setEditingId(activity.id);
     setFormData({
-      activity_name: activity.activity_name,
+      activityName: activity.activityName,
       category: activity.category,
       role: activity.role || '',
-      grade_levels: activity.grade_levels,
-      hours_per_week: activity.hours_per_week,
-      weeks_per_year: activity.weeks_per_year,
+      gradeLevel: activity.gradeLevel,
+      hoursPerWeek: activity.hoursPerWeek,
+      weeksPerYear: activity.weeksPerYear,
       description: activity.description,
     });
     setShowAdd(true);
@@ -135,25 +139,25 @@ export default function EditActivitiesPage() {
     }
   };
 
-  const toggleGrade = (grade: string) => {
-    setFormData(prev => ({
-      ...prev,
-      grade_levels: prev.grade_levels.includes(grade)
-        ? prev.grade_levels.filter(g => g !== grade)
-        : [...prev.grade_levels, grade]
-    }));
-  };
+  // const toggleGrade = (grade: string) => {
+  //   setFormData(prev => ({
+  //     ...prev,
+  //     grade_levels: prev.gradeLevels.includes(grade)
+  //       ? prev.gradeLevels.filter(g => g !== grade)
+  //       : [...prev.gradeLevels, grade]
+  //   }));
+  // };
 
   const resetForm = () => {
     setEditingId(null);
     setShowAdd(false);
     setFormData({
-      activity_name: '',
+      activityName: '',
       category: enums?.activityCategories?.[0] || '',
       role: '',
-      grade_levels: [],
-      hours_per_week: 1,
-      weeks_per_year: 1,
+      gradeLevel: enums?.gradeLevels?.[0] || '',
+      hoursPerWeek: 1,
+      weeksPerYear: 1,
       description: '',
     });
   };
@@ -166,7 +170,7 @@ export default function EditActivitiesPage() {
     );
   }
 
-  if (!enums || !enums.activityCategories || enums.activityCategories.length === 0) {
+  if (!enums || !enums.activityCategories || enums.activityCategories.length === 0 || !enums.gradeLevels || enums.gradeLevels.length=== 0) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <p className="text-red-600 text-center py-12">Failed to load form options</p>
@@ -213,8 +217,8 @@ export default function EditActivitiesPage() {
               <div className="space-y-4">
                 <Input
                   label="Activity Name *"
-                  value={formData.activity_name}
-                  onChange={(e) => setFormData({ ...formData, activity_name: e.target.value })}
+                  value={formData.activityName}
+                  onChange={(e) => setFormData({ ...formData, activityName: e.target.value })}
                   required
                 />
 
@@ -242,28 +246,22 @@ export default function EditActivitiesPage() {
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-900 mb-2">
-                    Grade Levels * (select at least one)
-                  </label>
-                  <div className="flex gap-3">
-                    {enums.gradeLevels.map(grade => (
-                      <label key={grade} className="flex items-center">
-                        <input
-                          type="checkbox"
-                          checked={formData.grade_levels.includes(grade)}
-                          onChange={() => toggleGrade(grade)}
-                          className="mr-2"
-                        />
-                        <span className="text-sm text-gray-900">
-                          {grade.charAt(0).toUpperCase() + grade.slice(1)}
-                        </span>
-                      </label>
-                    ))}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-900 mb-1">
+                      Grade Level *
+                    </label>
+                    <select
+                      value={formData.gradeLevel}
+                      onChange={(e) => setFormData({ ...formData, gradeLevel: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
+                      required
+                    >
+                      {enums.gradeLevels.map(cat => (
+                        <option key={cat} value={cat}>{cat.replace(/_/g, ' ')}</option>
+                      ))}
+                    </select>
                   </div>
-                  {formData.grade_levels.length === 0 && (
-                    <p className="text-xs text-red-600 mt-1">Please select at least one grade level</p>
-                  )}
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -272,8 +270,8 @@ export default function EditActivitiesPage() {
                     type="number"
                     min="1"
                     max="168"
-                    value={formData.hours_per_week}
-                    onChange={(e) => setFormData({ ...formData, hours_per_week: parseInt(e.target.value) })}
+                    value={formData.hoursPerWeek}
+                    onChange={(e) => setFormData({ ...formData, hoursPerWeek: parseInt(e.target.value) })}
                     required
                   />
 
@@ -282,8 +280,8 @@ export default function EditActivitiesPage() {
                     type="number"
                     min="1"
                     max="52"
-                    value={formData.weeks_per_year}
-                    onChange={(e) => setFormData({ ...formData, weeks_per_year: parseInt(e.target.value) })}
+                    value={formData.weeksPerYear}
+                    onChange={(e) => setFormData({ ...formData, weeksPerYear: parseInt(e.target.value) })}
                     required
                   />
                 </div>
@@ -307,7 +305,7 @@ export default function EditActivitiesPage() {
                   <Button 
                     type="submit" 
                     className="flex-1"
-                    disabled={loading || formData.grade_levels.length === 0}
+                    // disabled={loading || formData.gradeLevels.length === 0}
                   >
                     {loading ? 'Saving...' : editingId ? 'Update Activity' : 'Add Activity'}
                   </Button>
@@ -330,13 +328,13 @@ export default function EditActivitiesPage() {
                 <div key={activity.id} className="border rounded-lg p-4 hover:bg-gray-50">
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900">{activity.activity_name}</h3>
+                      <h3 className="font-semibold text-gray-900">{activity.activityName}</h3>
                       <p className="text-sm text-gray-600 mt-1">
                         {activity.category.replace(/_/g, ' ')} {activity.role && `• ${activity.role}`}
                       </p>
                       <p className="text-sm text-gray-700 mt-2">{activity.description}</p>
                       <p className="text-xs text-gray-500 mt-2">
-                        {activity.hours_per_week}h/week × {activity.weeks_per_year} weeks = {activity.hours_per_week * activity.weeks_per_year} total hours
+                        {activity.hoursPerWeek}h/week × {activity.weeksPerYear} weeks = {activity.hoursPerWeek * activity.weeksPerYear} total hours
                       </p>
                     </div>
                     <div className="flex gap-2 ml-4">

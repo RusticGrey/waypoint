@@ -17,28 +17,28 @@ export default async function CounselorDashboard() {
   }
 
   // Get all students in the organization
-  const students = await prisma.student.findMany({
+  const students = await prisma.Student.findMany({
     where: {
-      User: {
-        organization_id: session.user.organizationId,
+      user: {
+        organizationId: session.user.organizationId,
       },
     },
     include: {
-      User: {
+      user: {
         select: {
-          first_name: true,
-          last_name: true,
+          firstName: true,
+          lastName: true,
           email: true,
         },
       },
-      PersonalProfile: true,
-      AcademicProfile: true,
-      Transcript: true,
-      Activity: true,
+      personalProfile: true,
+      academicProfile: true,
+      transcripts: true,
+      activities: true,
     },
     orderBy: {
-      User: {
-        last_name: 'asc',
+      user: {
+        lastName: 'asc',
       },
     },
   });
@@ -76,7 +76,7 @@ export default async function CounselorDashboard() {
               <div>
                 <p className="text-sm font-medium text-gray-600">Profiles Complete</p>
                 <p className="text-3xl font-bold text-gray-900">
-                  {students.filter(s => s.profile_completion_pct >= 80).length}
+                  {students.filter(s => s.profileCompletionPct >= 80).length}
                 </p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
@@ -92,7 +92,7 @@ export default async function CounselorDashboard() {
               <div>
                 <p className="text-sm font-medium text-gray-600">Needs Attention</p>
                 <p className="text-3xl font-bold text-gray-900">
-                  {students.filter(s => s.profile_completion_pct < 50).length}
+                  {students.filter(s => s.profileCompletionPct < 50).length}
                 </p>
               </div>
               <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
@@ -124,35 +124,35 @@ export default async function CounselorDashboard() {
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {students.map((student) => (
-                    <tr key={student.user_id}>
+                    <tr key={student.userId}>
                       <td className="px-4 py-3 text-sm font-medium text-gray-900">
-                        {student.User.first_name} {student.User.last_name}
+                        {student.user.firstName} {student.user.lastName}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-600">
-                        {student.User.email}
+                        {student.user.email}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-600">
-                        {student.current_grade}
+                        {student.currentGrade}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-600">
-                        {student.AcademicProfile?.curriculum_type || '-'}
+                        {student.academicProfile?.curriculumType || '-'}
                       </td>
                       <td className="px-4 py-3 text-sm">
                         <div className="flex items-center">
                           <div className="w-16 bg-gray-200 rounded-full h-2 mr-2">
                             <div
                               className="bg-blue-600 h-2 rounded-full"
-                              style={{ width: `${student.profile_completion_pct || 0}%` }}
+                              style={{ width: `${student.profileCompletionPct || 0}%` }}
                             />
                           </div>
                           <span className="text-xs text-gray-600">
-                            {student.profile_completion_pct || 0}%
+                            {student.profileCompletionPct || 0}%
                           </span>
                         </div>
                       </td>
                       <td className="px-4 py-3 text-sm">
                         <Link
-                          href={`/counselor/students/${student.user_id}`}
+                          href={`/counselor/students/${student.userId}`}
                           className="text-blue-600 hover:text-blue-700"
                         >
                           View Profile

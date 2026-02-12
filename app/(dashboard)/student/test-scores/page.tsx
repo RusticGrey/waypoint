@@ -7,10 +7,10 @@ import TestScoreModal from './test-score-modal';
 
 interface TestScore {
   id: string;
-  test_type: string;
-  test_date: string;
-  composite_score: number;
-  section_scores: any;
+  testType: string;
+  testDate: string;
+  compositeScore: number;
+  sectionScores: any;
 }
 
 export default function TestScoresPage() {
@@ -53,20 +53,20 @@ export default function TestScoresPage() {
   };
 
   const getBestSAT = () => {
-    const satScores = testScores.filter(s => s.test_type === 'SAT');
+    const satScores = testScores.filter(s => s.testType === 'SAT');
     if (satScores.length === 0) return null;
-    return Math.max(...satScores.map(s => s.composite_score));
+    return Math.max(...satScores.map(s => s.compositeScore));
   };
 
   const getBestACT = () => {
-    const actScores = testScores.filter(s => s.test_type === 'ACT');
+    const actScores = testScores.filter(s => s.testType === 'ACT');
     if (actScores.length === 0) return null;
-    return Math.max(...actScores.map(s => s.composite_score));
+    return Math.max(...actScores.map(s => s.compositeScore));
   };
 
   const groupedScores = testScores.reduce((acc, score) => {
-    if (!acc[score.test_type]) acc[score.test_type] = [];
-    acc[score.test_type].push(score);
+    if (!acc[score.testType]) acc[score.testType] = [];
+    acc[score.testType].push(score);
     return acc;
   }, {} as Record<string, TestScore[]>);
 
@@ -131,29 +131,26 @@ export default function TestScoresPage() {
                   <h3 className="font-semibold text-gray-900 mb-3">{testType} Scores</h3>
                   <div className="space-y-2">
                     {scores.map(score => {
-                      const sections = score.section_scores || {};
+                      // const sections = score.sectionScores || {};
                       return (
                         <div key={score.id} className="flex justify-between items-center p-4 border rounded-lg hover:bg-gray-50">
                           <div className="flex-1">
                             <div className="flex items-center gap-4">
                               <div className="text-3xl font-bold text-gray-900">
-                                {score.composite_score}
+                                {score.compositeScore}
                               </div>
                               <div>
                                 <p className="text-sm text-gray-600">
-                                  {new Date(score.test_date).toLocaleDateString()}
+                                  {new Date(score.testDate).toLocaleDateString()}
                                 </p>
-                                {score.test_type === 'SAT' && sections.math && sections.reading_writing && (
+                                {score.testType === 'SAT' && score.mathScore && score.readingWritingScore && (
                                   <p className="text-xs text-gray-500">
-                                    Math: {sections.math} | R&W: {sections.reading_writing}
+                                    Math: {score.mathScore} | Reading & Writing: {score.readingWritingScore}
                                   </p>
                                 )}
-                                {score.test_type === 'ACT' && (
+                                {score.testType === 'ACT' && (
                                   <p className="text-xs text-gray-500">
-                                    {sections.math && `M: ${sections.math}`}
-                                    {sections.english && ` | E: ${sections.english}`}
-                                    {sections.reading_writing && ` | R: ${sections.reading_writing}`}
-                                    {sections.science && ` | S: ${sections.science}`}
+                                    Math: {score.mathScore} | English: {score.englishScore} | Reading: {score.readingWritingScore} | Science: {score.scienceScore}
                                   </p>
                                 )}
                               </div>

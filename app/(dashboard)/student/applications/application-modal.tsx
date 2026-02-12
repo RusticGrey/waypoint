@@ -14,23 +14,23 @@ interface College {
 
 interface Application {
   id: string;
-  college_id: string;
-  target_category: string;
-  application_status: string;
-  application_deadline: string | null;
-  decision_deadline: string | null;
-  essay_status: string;
-  supplements_status: string;
-  recommendation_status: string;
-  test_scores_sent: boolean;
-  application_portal_link: string | null;
+  collegeId: string;
+  targetCategory: string;
+  applicationStatus: string;
+  applicationDeadline: string | null;
+  decisionDeadline: string | null;
+  essayStatus: string;
+  supplementsStatus: string;
+  recommendationStatus: string;
+  testScoresSent: boolean;
+  applicationPortalLink: string | null;
   notes: string | null;
 }
 
 interface ApplicationModalProps {
   application?: Application;
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: () => void; 
 }
 
 export default function ApplicationModal({
@@ -43,16 +43,16 @@ export default function ApplicationModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [formData, setFormData] = useState({
-    college_id: '',
-    target_category: '',
-    application_status: 'Not_Started',
-    application_deadline: '',
-    decision_deadline: '',
-    essay_status: 'Not Started',
-    supplements_status: 'Not Started',
-    recommendation_status: 'Not Requested',
-    test_scores_sent: false,
-    application_portal_link: '',
+    collegeId: '',
+    targetCategory: 'Reach',
+    applicationStatus: 'Not_Started',
+    applicationDeadline: '',
+    decisionDeadline: '',
+    essayStatus: 'Not Started',
+    supplementsStatus: 'Not Started',
+    recommendationStatus: 'Not Requested',
+    testScoresSent: false,
+    applicationPortalLink: '',
     notes: '',
   });
 
@@ -63,27 +63,27 @@ export default function ApplicationModal({
   useEffect(() => {
     if (application) {
       setFormData({
-        college_id: application.college_id,
-        target_category: application.target_category,
-        application_status: application.application_status,
-        application_deadline: application.application_deadline 
-          ? application.application_deadline.split('T')[0] 
+        collegeId: application.collegeId,
+        targetCategory: application.targetCategory,
+        applicationStatus: application.applicationStatus,
+        applicationDeadline: application.applicationDeadline 
+          ? application.applicationDeadline.split('T')[0] 
           : '',
-        decision_deadline: application.decision_deadline 
-          ? application.decision_deadline.split('T')[0] 
+        decisionDeadline: application.decisionDeadline 
+          ? application.decisionDeadline.split('T')[0] 
           : '',
-        essay_status: application.essay_status,
-        supplements_status: application.supplements_status,
-        recommendation_status: application.recommendation_status,
-        test_scores_sent: application.TestScore_sent,
-        application_portal_link: application.application_portal_link || '',
+        essayStatus: application.essayStatus,
+        supplementsStatus: application.supplementsStatus,
+        recommendationStatus: application.recommendationStatus,
+        testScoresSent: application.testScores_sent,
+        applicationPortalLink: application.applicationPortalLink || '',
         notes: application.notes || '',
       });
     } else if (enums?.targetCategories && enums?.applicationStatuses) {
       setFormData(prev => ({
         ...prev,
-        target_category: enums.targetCategories[0] || '',
-        application_status: enums.applicationStatuses[0] || 'Not_Started',
+        targetCategory: enums.targetCategories[0] || '',
+        applicationStatus: enums.applicationStatuses[0] || 'Not_Started',
       }));
     }
   }, [application, enums]);
@@ -157,8 +157,8 @@ export default function ApplicationModal({
         <form onSubmit={handleSubmit} className="space-y-4">
           <Select
             label="College *"
-            value={formData.college_id}
-            onChange={(e) => setFormData({ ...formData, college_id: e.target.value })}
+            value={formData.collegeId}
+            onChange={(e) => setFormData({ ...formData, collegeId: e.target.value })}
             required
             disabled={!!application}
           >
@@ -173,8 +173,8 @@ export default function ApplicationModal({
           <div className="grid grid-cols-2 gap-4">
             <Select
               label="Category *"
-              value={formData.target_category}
-              onChange={(e) => setFormData({ ...formData, target_category: e.target.value })}
+              value={formData.targetCategory}
+              onChange={(e) => setFormData({ ...formData, targetCategory: e.target.value })}
               required
             >
               {enums?.targetCategories?.map(cat => (
@@ -184,8 +184,8 @@ export default function ApplicationModal({
 
             <Select
               label="Status *"
-              value={formData.application_status}
-              onChange={(e) => setFormData({ ...formData, application_status: e.target.value })}
+              value={formData.applicationStatus}
+              onChange={(e) => setFormData({ ...formData, applicationStatus: e.target.value })}
               required
             >
               {enums?.applicationStatuses?.map(status => (
@@ -200,23 +200,23 @@ export default function ApplicationModal({
             <Input
               label="Application Deadline"
               type="date"
-              value={formData.application_deadline}
-              onChange={(e) => setFormData({ ...formData, application_deadline: e.target.value })}
+              value={formData.applicationDeadline}
+              onChange={(e) => setFormData({ ...formData, applicationDeadline: e.target.value })}
             />
 
             <Input
               label="Decision Deadline"
               type="date"
-              value={formData.decision_deadline}
-              onChange={(e) => setFormData({ ...formData, decision_deadline: e.target.value })}
+              value={formData.decisionDeadline}
+              onChange={(e) => setFormData({ ...formData, decisionDeadline: e.target.value })}
             />
           </div>
 
           <div className="grid grid-cols-3 gap-4">
             <Select
               label="Essay Status"
-              value={formData.essay_status}
-              onChange={(e) => setFormData({ ...formData, essay_status: e.target.value })}
+              value={formData.essayStatus}
+              onChange={(e) => setFormData({ ...formData, essayStatus: e.target.value })}
             >
               <option value="Not Started">Not Started</option>
               <option value="In Progress">In Progress</option>
@@ -225,8 +225,8 @@ export default function ApplicationModal({
 
             <Select
               label="Supplements"
-              value={formData.supplements_status}
-              onChange={(e) => setFormData({ ...formData, supplements_status: e.target.value })}
+              value={formData.supplementsStatus}
+              onChange={(e) => setFormData({ ...formData, supplementsStatus: e.target.value })}
             >
               <option value="Not Started">Not Started</option>
               <option value="In Progress">In Progress</option>
@@ -235,8 +235,8 @@ export default function ApplicationModal({
 
             <Select
               label="Recommendations"
-              value={formData.recommendation_status}
-              onChange={(e) => setFormData({ ...formData, recommendation_status: e.target.value })}
+              value={formData.recommendationStatus}
+              onChange={(e) => setFormData({ ...formData, recommendationStatus: e.target.value })}
             >
               <option value="Not Requested">Not Requested</option>
               <option value="Requested">Requested</option>
@@ -247,8 +247,8 @@ export default function ApplicationModal({
           <label className="flex items-center cursor-pointer">
             <input
               type="checkbox"
-              checked={formData.TestScore_sent}
-              onChange={(e) => setFormData({ ...formData, test_scores_sent: e.target.checked })}
+              checked={formData.testScoresSent}
+              onChange={(e) => setFormData({ ...formData, testScoresSent: e.target.checked })}
               className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
             />
             <span className="text-sm text-gray-900">Test scores sent</span>
@@ -257,8 +257,8 @@ export default function ApplicationModal({
           <Input
             label="Application Portal Link"
             type="url"
-            value={formData.application_portal_link}
-            onChange={(e) => setFormData({ ...formData, application_portal_link: e.target.value })}
+            value={formData.applicationPortalLink}
+            onChange={(e) => setFormData({ ...formData, applicationPortalLink: e.target.value })}
             placeholder="https://..."
           />
 

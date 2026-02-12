@@ -10,20 +10,20 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'Curriculum parameter required' }, { status: 400 });
     }
 
-    const subjects = await prisma.subject.findMany({
+    const subjects = await prisma.Subject.findMany({
       where: {
-        curriculum_type: curriculum,
+        curriculumType: curriculum,
       },
       select: {
-        subject_name: true, // Only select the name
+        subjectName: true, // Only select the name
       },
       orderBy: {
-        subject_name: 'asc',
+        subjectName: 'asc',
       },
     });
 
     // Extract just the subject names as strings
-    const subjectNames = subjects.map(s => s.subject_name);
+    const subjectNames = subjects.map(s => s.subjectName);
 
     return NextResponse.json({ subjects: subjectNames });
   } catch (error) {

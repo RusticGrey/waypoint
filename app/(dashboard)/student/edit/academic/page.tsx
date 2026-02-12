@@ -11,9 +11,9 @@ export default function EditAcademicPage() {
   const router = useRouter();
   const { enums, loading: enumsLoading } = useEnums();
   const [formData, setFormData] = useState({
-    curriculum_type: '',
-    grading_system_type: '',
-    current_gpa: '',
+    curriculumType: '',
+    gradingSystemType: '',
+    currentGpa: '',
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -24,11 +24,11 @@ export default function EditAcademicPage() {
 
   // Set defaults once enums load
   useEffect(() => {
-    if (enums && enums.curriculumTypes && enums.gradingSystemTypes && !formData.curriculum_type) {
+    if (enums && enums.curriculumTypes && enums.gradingSystemTypes && !formData.curriculumType) {
       setFormData(prev => ({
         ...prev,
-        curriculum_type: prev.curriculum_type || enums.curriculumTypes[0],
-        grading_system_type: prev.grading_system_type || enums.gradingSystemTypes[0],
+        curriculumType: prev.curriculumType || enums.curriculumTypes[0],
+        gradingSystemType: prev.gradingSystemType || enums.gradingSystemTypes[0],
       }));
     }
   }, [enums]);
@@ -37,11 +37,11 @@ export default function EditAcademicPage() {
     try {
       const res = await fetch('/api/student/academic');
       const data = await res.json();
-      if (data.AcademicProfile) {
+      if (data.academicProfile) {
         setFormData({
-          curriculum_type: data.AcademicProfile.curriculum_type,
-          grading_system_type: data.AcademicProfile.grading_system_type,
-          current_gpa: data.AcademicProfile.current_gpa || '',
+          curriculumType: data.academicProfile.curriculumType,
+          gradingSystemType: data.academicProfile.gradingSystemType,
+          currentGpa: data.academicProfile.currentGpa || '',
         });
       }
     } catch (err) {
@@ -59,9 +59,9 @@ export default function EditAcademicPage() {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          curriculum_type: formData.curriculum_type,
-          grading_system_type: formData.grading_system_type,
-          current_gpa: formData.current_gpa || null,
+          curriculumType: formData.curriculumType,
+          gradingSystemType: formData.gradingSystemType,
+          currentGpa: formData.currentGpa || null,
         }),
       });
 
@@ -103,7 +103,7 @@ export default function EditAcademicPage() {
 
   // Get field config based on grading system
   const getGradeFieldConfig = () => {
-    switch (formData.grading_system_type) {
+    switch (formData.gradingSystemType) {
       case 'Marks_Out_Of_100':
         return {
           label: 'Current Marks (out of 100)',
@@ -168,8 +168,8 @@ export default function EditAcademicPage() {
       return (
         <input
           type="number"
-          value={formData.current_gpa}
-          onChange={(e) => setFormData({ ...formData, current_gpa: e.target.value })}
+          value={formData.currentGpa}
+          onChange={(e) => setFormData({ ...formData, currentGpa: e.target.value })}
           placeholder={gradeConfig.placeholder}
           min={gradeConfig.min}
           max={gradeConfig.max}
@@ -182,8 +182,8 @@ export default function EditAcademicPage() {
       return (
         <input
           type="text"
-          value={formData.current_gpa}
-          onChange={(e) => setFormData({ ...formData, current_gpa: e.target.value })}
+          value={formData.currentGpa}
+          onChange={(e) => setFormData({ ...formData, currentGpa: e.target.value })}
           placeholder={gradeConfig.placeholder}
           className={baseClasses}
         />
@@ -217,8 +217,8 @@ export default function EditAcademicPage() {
                 Curriculum Type *
               </label>
               <select
-                value={formData.curriculum_type}
-                onChange={(e) => setFormData({ ...formData, curriculum_type: e.target.value })}
+                value={formData.curriculumType}
+                onChange={(e) => setFormData({ ...formData, curriculumType: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
                 required
               >
@@ -235,12 +235,12 @@ export default function EditAcademicPage() {
                 Grading System *
               </label>
               <select
-                value={formData.grading_system_type}
+                value={formData.gradingSystemType}
                 onChange={(e) => {
                   setFormData({ 
                     ...formData, 
-                    grading_system_type: e.target.value,
-                    current_gpa: '' // Clear GPA when changing grading system
+                    gradingSystemType: e.target.value,
+                    currentGpa: '' // Clear GPA when changing grading system
                   });
                 }}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"

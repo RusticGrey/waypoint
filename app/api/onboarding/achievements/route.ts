@@ -21,17 +21,17 @@ export async function POST(req: Request) {
     const { achievements } = achievementsArraySchema.parse(body);
 
     await prisma.achievement.deleteMany({
-      where: { student_id: session.user.id },
+      where: { studentId: session.user.id },
     });
 
-    const createdAchievements = await prisma.achievement.createMany({
+    const createdAchievements = await prisma.Achievement.createMany({
       data: achievements.map((achievement) => ({
         ...achievement,
         // Convert empty string dates to null, convert valid dates to Date objects
-        date_achieved: achievement.date_achieved && achievement.date_achieved.trim() !== '' 
-          ? new Date(achievement.date_achieved) 
+        dateAchieved: achievement.dateAchieved && achievement.dateAchieved.trim() !== '' 
+          ? new Date(achievement.dateAchieved) 
           : null,
-        student_id: session.user.id,
+        studentId: session.user.id,
       })),
     });
 

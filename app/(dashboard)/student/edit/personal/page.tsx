@@ -11,9 +11,9 @@ export default function EditPersonalPage() {
   const router = useRouter();
   const [formData, setFormData] = useState({
     phone: '',
-    date_of_birth: '',
-    current_school: '',
-    school_location: '',
+    dateOfBirth: '',
+    currentSchool: '',
+    schoolLocation: '',
   });
 
   useEffect(() => {
@@ -23,14 +23,17 @@ export default function EditPersonalPage() {
   const fetchPersonalInfo = async () => {
     const res = await fetch('/api/student/personal');
     const data = await res.json();
-    if (data.PersonalProfile) {
+    
+
+
+    if (data.personalProfile) {
       setFormData({
-        phone: data.PersonalProfile.phone || '',
-        date_of_birth: data.PersonalProfile.date_of_birth?.split('T')[0] || '',
-        current_school: data.PersonalProfile.current_school || '',
-        school_location: data.PersonalProfile.school_location || '',
+        phone: data.personalProfile.phone || '',
+        dateOfBirth: data.personalProfile.dateOfBirth?.split('T')[0] || '',
+        currentSchool: data.personalProfile.currentSchool || '',
+        schoolLocation: data.personalProfile.schoolLocation || '',
       });
-    }
+      console.log("FORM DATA ="+JSON.stringify(formData));    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -71,22 +74,22 @@ export default function EditPersonalPage() {
             <Input
               label="Date of Birth"
               type="date"
-              value={formData.date_of_birth}
-              onChange={(e) => setFormData({ ...formData, date_of_birth: e.target.value })}
+              value={formData.dateOfBirth}
+              onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
             />
 
             <Input
               label="Current School *"
-              value={formData.current_school}
-              onChange={(e) => setFormData({ ...formData, current_school: e.target.value })}
+              value={formData.currentSchool}
+              onChange={(e) => setFormData({ ...formData, currentSchool: e.target.value })}
               required
             />
 
             <Input
               label="School Location *"
               placeholder="City, State/Country"
-              value={formData.school_location}
-              onChange={(e) => setFormData({ ...formData, school_location: e.target.value })}
+              value={formData.schoolLocation}
+              onChange={(e) => setFormData({ ...formData, schoolLocation: e.target.value })}
               required
             />
 
@@ -108,3 +111,4 @@ export default function EditPersonalPage() {
     </div>
   );
 }
+

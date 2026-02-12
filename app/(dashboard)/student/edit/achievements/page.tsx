@@ -10,11 +10,11 @@ import { useEnums } from '@/lib/hooks/useEnums';
 interface Achievement {
   id: string;
   title: string;
-  achievement_type: string;
+  achievementType: string;
   organization: string | null;
-  recognition_level: string | null;
-  grade_level: string | null;
-  date_achieved: string | null;
+  recognitionLevel: string | null;
+  gradeLevel: string | null;
+  dateAchieved: string | null;
   description: string | null;
 }
 
@@ -27,11 +27,11 @@ export default function EditAchievementsPage() {
   const [error, setError] = useState('');
   const [formData, setFormData] = useState({
     title: '',
-    achievement_type: '',
+    achievementType: '',
     organization: '',
-    recognition_level: '',
-    grade_level: '',
-    date_received: '',
+    recognitionLevel: '',
+    gradeLevel: '',
+    dateReceived: '',
     description: '',
   });
 
@@ -45,12 +45,12 @@ export default function EditAchievementsPage() {
         enums.achievementTypes && 
         enums.recognitionLevels && 
         enums.gradeLevels &&
-        !formData.achievement_type) {
+        !formData.achievementType) {
       setFormData(prev => ({
         ...prev,
-        achievement_type: enums.achievementTypes[0] || '',
-        recognition_level: enums.recognitionLevels[0] || '',
-        grade_level: enums.gradeLevels[0] || '',
+        achievementType: enums.achievementTypes[0] || '',
+        recognitionLevel: enums.recognitionLevels[0] || '',
+        gradeLevel: enums.gradeLevels[0] || '',
       }));
     }
   }, [enums]);
@@ -61,7 +61,7 @@ export default function EditAchievementsPage() {
       if (!res.ok) throw new Error('Failed to fetch achievements');
       const data = await res.json();
       console.log('Fetched Achievement:', data);
-      setAchievements(data.Achievement || []);
+      setAchievements(data.achievements || []);
     } catch (err) {
       console.error('Fetch error:', err);
       setError('Failed to load achievements');
@@ -111,11 +111,11 @@ export default function EditAchievementsPage() {
     setEditingId(achievement.id);
     setFormData({
       title: achievement.title,
-      achievement_type: achievement.achievement_type,
+      achievementType: achievement.achievementType,
       organization: achievement.organization || '',
-      recognition_level: achievement.recognition_level || (enums?.recognitionLevels?.[0] || ''),
-      grade_level: achievement.grade_level || (enums?.gradeLevels?.[0] || ''),
-      date_received: achievement.date_achieved ? achievement.date_achieved.split('T')[0] : '',
+      recognitionLevel: achievement.recognitionLevel || (enums?.recognitionLevels?.[0] || ''),
+      gradeLevel: achievement.gradeLevel || (enums?.gradeLevels?.[0] || ''),
+      dateReceived: achievement.dateAchieved ? achievement.dateAchieved.split('T')[0] : '',
       description: achievement.description || '',
     });
     setShowAdd(true);
@@ -146,11 +146,11 @@ export default function EditAchievementsPage() {
     setShowAdd(false);
     setFormData({
       title: '',
-      achievement_type: enums?.achievementTypes?.[0] || '',
+      achievementType: enums?.achievementTypes?.[0] || '',
       organization: '',
-      recognition_level: enums?.recognitionLevels?.[0] || '',
-      grade_level: enums?.gradeLevels?.[0] || '',
-      date_received: '',
+      recognitionLevel: enums?.recognitionLevels?.[0] || '',
+      gradeLevel: enums?.gradeLevels?.[0] || '',
+      dateReceived: '',
       description: '',
     });
   };
@@ -221,8 +221,8 @@ export default function EditAchievementsPage() {
                       Type *
                     </label>
                     <select
-                      value={formData.achievement_type}
-                      onChange={(e) => setFormData({ ...formData, achievement_type: e.target.value })}
+                      value={formData.achievementType}
+                      onChange={(e) => setFormData({ ...formData, achievementType: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
                       required
                     >
@@ -245,8 +245,8 @@ export default function EditAchievementsPage() {
                       Recognition Level *
                     </label>
                     <select
-                      value={formData.recognition_level}
-                      onChange={(e) => setFormData({ ...formData, recognition_level: e.target.value })}
+                      value={formData.recognitionLevel}
+                      onChange={(e) => setFormData({ ...formData, recognitionLevel: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
                       required
                     >
@@ -261,7 +261,7 @@ export default function EditAchievementsPage() {
                       Grade Level
                     </label>
                     <select
-                      value={formData.grade_level}
+                      value={formData.gradeLevel}
                       onChange={(e) => setFormData({ ...formData, grade_level: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
                     >
@@ -277,8 +277,8 @@ export default function EditAchievementsPage() {
                 <Input
                   label="Date Received"
                   type="date"
-                  value={formData.date_received}
-                  onChange={(e) => setFormData({ ...formData, date_received: e.target.value })}
+                  value={formData.dateReceived}
+                  onChange={(e) => setFormData({ ...formData, dateReceived: e.target.value })}
                 />
 
                 <div>
@@ -322,18 +322,18 @@ export default function EditAchievementsPage() {
                     <div className="flex-1">
                       <h3 className="font-semibold text-gray-900">{achievement.title}</h3>
                       <p className="text-sm text-gray-600 mt-1">
-                        {achievement.achievement_type.replace(/_/g, ' ')}
+                        {achievement.achievementType.replace(/_/g, ' ')}
                         {achievement.organization && ` • ${achievement.organization}`}
                       </p>
                       <div className="flex gap-3 mt-2">
-                        {achievement.recognition_level && (
+                        {achievement.recognitionLevel && (
                           <span className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded">
-                            {achievement.recognition_level.replace(/_/g, ' ')}
+                            {achievement.recognitionLevel.replace(/_/g, ' ')}
                           </span>
                         )}
-                        {achievement.date_achieved && (
+                        {achievement.dateAchieved && (
                           <span className="text-xs text-gray-500">
-                            {new Date(achievement.date_achieved).toLocaleDateString()}
+                            {new Date(achievement.dateAchieved).toLocaleDateString()}
                           </span>
                         )}
                       </div>

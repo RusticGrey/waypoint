@@ -6,12 +6,12 @@ import { z } from 'zod';
 import { logChange } from '@/lib/utils/change-log';
 
 const activitySchema = z.object({
-  activity_name: z.string().min(1),
+  activityName: z.string().min(1),
   category: z.string().min(1),
   role: z.string().optional(),
-  grade_levels: z.array(z.enum(['ninth', 'tenth', 'eleventh', 'twelfth'])),
-  hours_per_week: z.number().min(0).max(168),
-  weeks_per_year: z.number().min(0).max(52),
+  gradeLevel: z.string().min(1),
+  hoursPerWeek: z.number().min(0).max(168),
+  weeksPerYear: z.number().min(0).max(52),
   description: z.string().min(10),
 });
 
@@ -23,9 +23,9 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const activities = await prisma.activity.findMany({
-      where: { student_id: session.user.id },
-      orderBy: { activity_name: 'asc' },
+    const activities = await prisma.Activity.findMany({
+      where: { studentId: session.user.id },
+      orderBy: { activityName: 'asc' },
     });
     
     return NextResponse.json({ activities });
@@ -46,20 +46,20 @@ export async function POST(req: Request) {
     const body = await req.json();
     const validated = activitySchema.parse(body);
     
-    const activity = await prisma.activity.create({
+    const activity = await prisma.Activity.create({
       data: {
-        student_id: session.user.id,
+        studentId: session.user.id,
         ...validated,
       },
     });
     
     await logChange({
-      student_id: session.user.id,
-      change_type: 'New_Addition',
-      entity_type: 'Activity',
-      entity_id: activity.id,
+      studentId: session.user.id,
+      changeType: 'New_Addition',
+      entityType: 'Activity',
+      entityId: activity.id,
       action: 'Created',
-      description: `Added new activity: ${validated.activity_name}`,
+      description: `Added new activity: ${validated.activityName}`,
     });
     
     return NextResponse.json(activity);

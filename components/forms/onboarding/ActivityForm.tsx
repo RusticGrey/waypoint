@@ -47,7 +47,7 @@ export default function ActivityForm({ onNext, onBack, initialData = [] }: Props
   const totalHours = (hoursPerWeek || 0) * (weeksPerYear || 0);
 
   const onSubmitActivity = (data: ActivityInput) => {
-    setActivities([...Activity, data]);
+    setActivities([...activities, data]);
     reset();
     setShowForm(false);
   };
@@ -83,12 +83,12 @@ export default function ActivityForm({ onNext, onBack, initialData = [] }: Props
             {activities.map((activity, index) => (
               <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded border">
                 <div>
-                  <p className="font-medium text-gray-900">{activity.activity_name}</p>
+                  <p className="font-medium text-gray-900">{activity.activityName}</p>
                   <p className="text-sm text-gray-600">
-                    {activity.category} • {activity.role || 'Member'} • {activity.grade_levels.length} grade(s)
+                    {activity.category} • {activity.role || 'Member'} • {activity.gradeLevels.length} grade(s)
                   </p>
                   <p className="text-xs text-gray-500">
-                    {activity.hours_per_week}h/week × {activity.weeks_per_year} weeks = {activity.hours_per_week * activity.weeks_per_year} total hours
+                    {activity.hoursPerWeek}h/week × {activity.weeksPerYear} weeks = {activity.hoursPerWeek * activity.weeksPerYear} total hours
                   </p>
                 </div>
                 <button
@@ -122,7 +122,7 @@ export default function ActivityForm({ onNext, onBack, initialData = [] }: Props
               label="Activity Name *"
               placeholder="e.g., Varsity Basketball, Robotics Club"
               {...register('activity_name')}
-              error={errors.activity_name?.message}
+              error={errors.activityName?.message}
             />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -169,8 +169,8 @@ export default function ActivityForm({ onNext, onBack, initialData = [] }: Props
                   </label>
                 ))}
               </div>
-              {errors.grade_levels && (
-                <p className="mt-1 text-sm text-red-600">{errors.grade_levels.message}</p>
+              {errors.gradeLevels && (
+                <p className="mt-1 text-sm text-red-600">{errors.gradeLevels.message}</p>
               )}
             </div>
 
@@ -180,7 +180,7 @@ export default function ActivityForm({ onNext, onBack, initialData = [] }: Props
                 type="number"
                 placeholder="e.g., 5"
                 {...register('hours_per_week', { valueAsNumber: true })}
-                error={errors.hours_per_week?.message}
+                error={errors.hoursPerWeek?.message}
               />
 
               <Input
@@ -188,7 +188,7 @@ export default function ActivityForm({ onNext, onBack, initialData = [] }: Props
                 type="number"
                 placeholder="e.g., 30"
                 {...register('weeks_per_year', { valueAsNumber: true })}
-                error={errors.weeks_per_year?.message}
+                error={errors.weeksPerYear?.message}
               />
             </div>
 

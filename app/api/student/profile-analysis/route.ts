@@ -12,16 +12,16 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const student = await prisma.student.findUnique({
-      where: { user_id: session.user.id },
+    const student = await prisma.Student.findUnique({
+      where: { userId: session.user.id },
       include: {
-        PersonalProfile: true,
-        AcademicProfile: true,
-        Transcript: true,
-        Activity: true,
-        Achievement: true,
-        ProjectExperience: true,
-        TestScore: true,
+        personalProfile: true,
+        academicProfile: true,
+        transcripts: true,
+        activities: true,
+        achievements: true,
+        projectExperiences: true,
+        testScores: true,
       },
     });
     
@@ -32,13 +32,13 @@ export async function GET(req: Request) {
     const analysis = analyzeProfileDetailed(student);
     
     // Check for counselor override
-    const override = await prisma.profileOverride.findUnique({
-      where: { student_id: session.user.id },
+    const override = await prisma.ProfileOverride.findUnique({
+      where: { studentId: session.user.id },
       include: {
-        User: {
+        user: {
           select: {
-            first_name: true,
-            last_name: true,
+            firstName: true,
+            lastName: true,
           },
         },
       },
@@ -48,11 +48,11 @@ export async function GET(req: Request) {
       return NextResponse.json({
         ...analysis,
         override: {
-          is_overridden: true,
-          override_score: override.override_score,
-          override_reason: override.override_reason,
-          overridden_by: `${override.User.first_name} ${override.User.last_name}`,
-          overridden_at: override.created_at,
+          isOverridden: true,
+          overrideScore: override.overrideScore,
+          overrideReason: override.overrideReason,
+          overriddenBy: `${override.user.firstName} ${override.user.lastName}`,
+          overriddenAt: override.createdAt,
         },
       });
     }

@@ -22,13 +22,13 @@ export async function POST(req: Request) {
 
     // Delete existing transcripts and create new ones
     await prisma.transcript.deleteMany({
-      where: { student_id: session.user.id },
+      where: { studentId: session.user.id },
     });
 
-    const createdTranscripts = await prisma.transcript.createMany({
+    const createdTranscripts = await prisma.Transcript.createMany({
       data: transcripts.map((transcript) => ({
         ...transcript,
-        student_id: session.user.id,
+        studentId: session.user.id,
       })),
     });
 

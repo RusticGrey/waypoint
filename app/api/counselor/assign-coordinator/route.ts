@@ -12,14 +12,14 @@ export async function POST(req: Request) {
     }
     
     const body = await req.json();
-    const { student_id, coordinator_id } = body;
+    const { studentId, coordinatorId } = body;
     
-    await prisma.student.update({
+    await prisma.Student.update({
       where: {
-        user_id: student_id,
+        userId: student_id,
       },
       data: {
-        coordinator_id: coordinator_id || null,
+        coordinatorId: coordinator_id || null,
       },
     });
     

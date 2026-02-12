@@ -1,37 +1,37 @@
 import { prisma } from '@/lib/prisma';
 
 export async function logChange({
-  student_id,
-  change_type,
-  entity_type,
-  entity_id,
+  studentId,
+  changeType,
+  entityType,
+  entityId,
   action,
-  field_name,
-  old_value,
-  new_value,
+  fieldName,
+  oldValue,
+  newValue,
   description,
 }: {
-  student_id: string;
-  change_type: 'Profile_Update' | 'Goal_Progress' | 'New_Addition' | 'Improvement' | 'Milestone';
-  entity_type: string;
-  entity_id?: string;
+  studentId: string;
+  changeType: 'Profile_Update' | 'Goal_Progress' | 'New_Addition' | 'Improvement' | 'Milestone';
+  entityType: string;
+  entityId?: string;
   action: 'Created' | 'Updated' | 'Deleted' | 'Completed';
-  field_name?: string;
-  old_value?: string;
-  new_value?: string;
+  fieldName?: string;
+  oldValue?: string;
+  newValue?: string;
   description: string;
 }) {
   try {
     await prisma.changeLog.create({
       data: {
-        student_id,
-        change_type,
-        entity_type,
-        entity_id,
+        studentId,
+        changeType,
+        entityType,
+        entityId,
         action,
-        field_name,
-        old_value,
-        new_value,
+        fieldName,
+        oldValue,
+        newValue,
         description,
       },
     });
@@ -42,25 +42,25 @@ export async function logChange({
 
 export function generateChangeDescription(
   action: string,
-  entity_type: string,
-  entity_name: string,
+  entityType: string,
+  entityName: string,
   field?: string,
-  old_value?: string,
-  new_value?: string
+  oldValue?: string,
+  newValue?: string
 ): string {
   switch (action) {
     case 'Created':
-      return `Added new ${entity_type.toLowerCase()}: ${entity_name}`;
+      return `Added new ${entityType.toLowerCase()}: ${entityName}`;
     case 'Updated':
-      if (field && old_value && new_value) {
-        return `Updated ${entity_type.toLowerCase()} "${entity_name}" - ${field}: ${old_value} → ${new_value}`;
+      if (field && oldValue && newValue) {
+        return `Updated ${entityType.toLowerCase()} "${entityName}" - ${field}: ${oldValue} → ${newValue}`;
       }
-      return `Updated ${entity_type.toLowerCase()}: ${entity_name}`;
+      return `Updated ${entityType.toLowerCase()}: ${entityName}`;
     case 'Deleted':
-      return `Removed ${entity_type.toLowerCase()}: ${entity_name}`;
+      return `Removed ${entityType.toLowerCase()}: ${entityName}`;
     case 'Completed':
-      return `Completed ${entity_type.toLowerCase()}: ${entity_name}`;
+      return `Completed ${entityType.toLowerCase()}: ${entityName}`;
     default:
-      return `${action} ${entity_type.toLowerCase()}: ${entity_name}`;
+      return `${action} ${entityType.toLowerCase()}: ${entityName}`;
   }
 }

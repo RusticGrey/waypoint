@@ -11,11 +11,11 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const transcripts = await prisma.transcript.findMany({
-      where: { student_id: session.user.id },
+    const transcripts = await prisma.Transcript.findMany({
+      where: { studentId: session.user.id },
       orderBy: [
-        { grade_level: 'asc' },
-        { course_name: 'asc' }
+        { gradeLevel: 'asc' },
+        { courseName: 'asc' }
       ],
     });
     
@@ -36,9 +36,9 @@ export async function POST(req: Request) {
     
     const body = await req.json();
     
-    const transcript = await prisma.transcript.create({
+    const transcript = await prisma.Transcript.create({
       data: {
-        student_id: session.user.id,
+        studentId: session.user.id,
         ...body,
       },
     });

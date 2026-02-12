@@ -13,41 +13,41 @@ export async function GET(req: Request) {
     
     // Fetch all relevant data
     const [applications, goals, activities, achievements, projects] = await Promise.all([
-      prisma.collegeApplication.findMany({
-        where: { student_id: session.user.id },
+      prisma.CollegeApplication.findMany({
+        where: { studentId: session.user.id },
         include: {
-          College: {
+          college: {
             select: {
               name: true,
             },
           },
         },
       }),
-      prisma.profileGoal.findMany({
+      prisma.ProfileGoal.findMany({
         where: { 
-          student_id: session.user.id,
+          studentId: session.user.id,
           status: { in: ['Not_Started', 'In_Progress'] },
         },
       }),
-      prisma.activity.count({
-        where: { student_id: session.user.id },
+      prisma.Activity.count({
+        where: { studentId: session.user.id },
       }),
-      prisma.achievement.count({
-        where: { student_id: session.user.id },
+      prisma.Achievement.count({
+        where: { studentId: session.user.id },
       }),
-      prisma.projectExperience.count({
-        where: { student_id: session.user.id },
+      prisma.ProjectExperience.count({
+        where: { studentId: session.user.id },
       }),
     ]);
     
     // Calculate upcoming deadlines
     const upcomingDeadlines = applications
-      .filter(app => app.application_deadline)
+      .filter(app => app.applicationDeadline)
       .map(app => ({
         College: app.college.name,
-        deadline: app.application_deadline,
+        deadline: app.applicationDeadline,
         daysRemaining: Math.ceil(
-          (new Date(app.application_deadline!).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+          (new Date(app.applicationDeadline!).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
         ),
       }))
       .filter(d => d.daysRemaining >= 0)
@@ -57,14 +57,14 @@ export async function GET(req: Request) {
     // Application stats
     const applicationStats = {
       total: applications.length,
-      submitted: applications.filter(a => ['Submitted', 'Accepted', 'Rejected', 'Waitlisted', 'Deferred'].includes(a.application_status)).length,
-      inProgress: applications.filter(a => a.application_status === 'In_Progress').length,
-      notStarted: applications.filter(a => a.application_status === 'Not_Started').length,
+      submitted: applications.filter(a => ['Submitted', 'Accepted', 'Rejected', 'Waitlisted', 'Deferred'].includes(a.applicationStatus)).length,
+      inProgress: applications.filter(a => a.applicationStatus === 'In_Progress').length,
+      notStarted: applications.filter(a => a.applicationStatus === 'Not_Started').length,
       decisions: {
-        accepted: applications.filter(a => a.application_status === 'Accepted').length,
-        rejected: applications.filter(a => a.application_status === 'Rejected').length,
-        waitlisted: applications.filter(a => a.application_status === 'Waitlisted').length,
-        pending: applications.filter(a => ['Submitted'].includes(a.application_status)).length,
+        accepted: applications.filter(a => a.applicationStatus === 'Accepted').length,
+        rejected: applications.filter(a => a.applicationStatus === 'Rejected').length,
+        waitlisted: applications.filter(a => a.applicationStatus === 'Waitlisted').length,
+        pending: applications.filter(a => ['Submitted'].includes(a.applicationStatus)).length,
       },
     };
     

@@ -18,32 +18,32 @@ export async function PATCH(
     const body = await req.json();
     
     // Map form fields to database schema
-    const project = await prisma.projectExperience.update({
+    const project = await prisma.ProjectExperience.update({
       where: {
         id: params.id,
-        student_id: session.user.id,
+        studentId: session.user.id,
       },
       data: {
         title: body.title,
-        experience_type: body.experience_type,
+        experienceType: body.experienceType,
         organization: body.organization || null,
-        role_title: body.role || null, // Map 'role' to 'role_title'
-        location: body.location || null,
-        start_date: new Date(body.start_date),
-        end_date: body.end_date ? new Date(body.end_date) : null,
-        is_ongoing: body.is_ongoing,
+        roleTitle: body.role || null, // Map 'role' to 'role_title'
+        // location: body.location || null,
+        startDate: new Date(body.startDate),
+        endDate: body.endDate ? new Date(body.endDate) : null,
+        isOngoing: body.isOngoing,
         description: body.description,
-        outcomes: body.outcomes || null,
-        skills_learned: body.skills_learned || null,
-        project_link: body.project_link || null,
+        // outcomes: body.outcomes || null,
+        // skillsLearned: body.skillsLearned || null,
+        // projectLink: body.projectLink || null,
       },
     });
     
     await logChange({
-      student_id: session.user.id,
-      change_type: 'Profile_Update',
-      entity_type: 'Project',
-      entity_id: project.id,
+      studentId: session.user.id,
+      changeType: 'Profile_Update',
+      entityType: 'Project',
+      entityId: project.id,
       action: 'Updated',
       description: `Updated project: ${body.title}`,
     });
@@ -66,25 +66,25 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const project = await prisma.projectExperience.findUnique({
+    const project = await prisma.ProjectExperience.findUnique({
       where: { id: params.id },
     });
     
     if (project) {
       await logChange({
-        student_id: session.user.id,
-        change_type: 'Profile_Update',
-        entity_type: 'Project',
-        entity_id: project.id,
+        studentId: session.user.id,
+        changeType: 'Profile_Update',
+        entityType: 'Project',
+        entityId: project.id,
         action: 'Deleted',
         description: `Removed project: ${project.title}`,
       });
     }
     
-    await prisma.projectExperience.delete({
+    await prisma.ProjectExperience.delete({
       where: {
         id: params.id,
-        student_id: session.user.id,
+        studentId: session.user.id,
       },
     });
     

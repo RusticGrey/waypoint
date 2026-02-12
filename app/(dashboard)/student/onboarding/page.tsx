@@ -12,16 +12,16 @@ export default async function OnboardingPage() {
   }
 
   // Check if student has already completed onboarding
-  const student = await prisma.student.findUnique({
-    where: { user_id: session.user.id },
+  const student = await prisma.Student.findUnique({
+    where: { userId: session.user.id },
     include: {
-      PersonalProfile: true,
-      AcademicProfile: true,
+      personalProfile: true,
+      academicProfile: true,
     },
   });
 
   // If both profiles exist, onboarding is complete - redirect to dashboard
-  if (student?.PersonalProfile && student?.AcademicProfile) {
+  if (student?.personalProfile && student?.academicProfile) {
     redirect('/student');
   }
 

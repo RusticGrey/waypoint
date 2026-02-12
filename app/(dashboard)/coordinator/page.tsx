@@ -24,20 +24,20 @@ export default async function CoordinatorDashboard() {
     include: {
       User: {
         select: {
-          first_name: true,
-          last_name: true,
+          firstName: true,
+          lastName: true,
           email: true,
         },
       },
-      PersonalProfile: true,
-      AcademicProfile: true,
-      Transcript: true,
-      Activity: true,
-      Achievement: true,
-      ProjectExperience: true,
+      personalProfile: true,
+      academicProfile: true,
+      transcripts: true,
+      activities: true,
+      achievements: true,
+      projectExperiences: true,
       TargetCollege: {
         include: {
-          College: true,
+          college: true,
         },
       },
       Meeting: {
@@ -49,18 +49,18 @@ export default async function CoordinatorDashboard() {
     },
     orderBy: {
       User: {
-        last_name: 'asc',
+        lastName: 'asc',
       },
     },
   });
 
   // Calculate stats
   const totalStudents = students.length;
-  const completedProfiles = students.filter(s => s.profile_completion_pct >= 80).length;
-  const needsAttention = students.filter(s => s.profile_completion_pct < 50).length;
+  const completedProfiles = students.filter(s => s.profileCompletionPct >= 80).length;
+  const needsAttention = students.filter(s => s.profileCompletionPct < 50).length;
   const recentMeetings = students.filter(s => {
-    if (s.Meeting.length === 0) return false;
-    const lastMeeting = new Date(s.Meeting[0].meeting_date);
+    if (s.meetings.length === 0) return false;
+    const lastMeeting = new Date(s.meetings[0].meetingDate);
     const weekAgo = new Date();
     weekAgo.setDate(weekAgo.getDate() - 7);
     return lastMeeting >= weekAgo;
@@ -158,44 +158,44 @@ export default async function CoordinatorDashboard() {
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {students.map((student) => (
-                    <tr key={student.user_id} className="hover:bg-gray-50">
+                    <tr key={student.userId} className="hover:bg-gray-50">
                       <td className="px-4 py-3 text-sm font-medium text-gray-900">
-                        {student.User.first_name} {student.User.last_name}
+                        {student.user.firstName} {student.user.lastName}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-600">
-                        {student.User.email}
+                        {student.user.email}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-600">
-                        {student.current_grade}
+                        {student.currentGrade}
                       </td>
                       <td className="px-4 py-3 text-sm">
                         <div className="flex items-center">
                           <div className="w-16 bg-gray-200 rounded-full h-2 mr-2">
                             <div
                               className={`h-2 rounded-full ${
-                                student.profile_completion_pct >= 80 ? 'bg-green-600' :
-                                student.profile_completion_pct >= 50 ? 'bg-yellow-600' : 'bg-red-600'
+                                student.profileCompletionPct >= 80 ? 'bg-green-600' :
+                                student.profileCompletionPct >= 50 ? 'bg-yellow-600' : 'bg-red-600'
                               }`}
-                              style={{ width: `${student.profile_completion_pct || 0}%` }}
+                              style={{ width: `${student.profileCompletionPct || 0}%` }}
                             />
                           </div>
                           <span className="text-xs text-gray-600">
-                            {student.profile_completion_pct || 0}%
+                            {student.profileCompletionPct || 0}%
                           </span>
                         </div>
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-600">
-                        {student.TargetCollege?.length || 0}
+                        {student.targetColleges?.length || 0}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-600">
-                        {student.Meeting[0] 
-                          ? new Date(student.Meeting[0].meeting_date).toLocaleDateString()
+                        {student.meetings[0] 
+                          ? new Date(student.meetings[0].meetingDate).toLocaleDateString()
                           : 'Never'
                         }
                       </td>
                       <td className="px-4 py-3 text-sm">
                         <Link
-                          href={`/coordinator/students/${student.user_id}`}
+                          href={`/coordinator/students/${student.userId}`}
                           className="text-blue-600 hover:text-blue-700 font-medium"
                         >
                           View Profile

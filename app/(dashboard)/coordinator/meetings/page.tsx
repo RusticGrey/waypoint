@@ -16,14 +16,14 @@ export default async function MeetingsPage() {
     redirect('/student');
   }
 
-  const meetings = await prisma.meeting.findMany({
+  const meetings = await prisma.Meeting.findMany({
     where: {
       coordinator_id: session.user.id,
     },
     include: {
       Student: {  // lowercase 'student'
         include: {
-          User: true,  // lowercase 'user'
+          user: true,  // lowercase 'user'
         },
       },
     },
@@ -59,24 +59,24 @@ export default async function MeetingsPage() {
                   <div className="flex justify-between items-start">
                     <div>
                       <h3 className="font-semibold text-gray-900">
-                        {meeting.student.User.first_name} {meeting.student.User.last_name}
+                        {meeting.student.user.firstName} {meeting.student.user.lastName}
                       </h3>
                       <p className="text-sm text-gray-600">
-                        {new Date(meeting.meeting_date).toLocaleDateString()} -{' '}
-                        {meeting.meeting_type.replace(/_/g, ' ')}
+                        {new Date(meeting.meetingDate).toLocaleDateString()} -{' '}
+                        {meeting.meetingType.replace(/_/g, ' ')}
                       </p>
                     </div>
                     <span className="text-xs text-gray-500">
-                      {meeting.duration_minutes} minutes
+                      {meeting.durationMinutes} minutes
                     </span>
                   </div>
                   {meeting.notes && (
                     <p className="mt-2 text-sm text-gray-700">{meeting.notes}</p>
                   )}
-                  {meeting.action_items && (
+                  {meeting.actionItems && (
                     <div className="mt-2">
                       <p className="text-xs font-medium text-gray-600">Action Items:</p>
-                      <p className="text-sm text-gray-700">{meeting.action_items}</p>
+                      <p className="text-sm text-gray-700">{meeting.actionItems}</p>
                     </div>
                   )}
                 </div>

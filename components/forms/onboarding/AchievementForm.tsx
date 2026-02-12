@@ -77,7 +77,7 @@ export default function AchievementForm({ onNext, onBack, initialData = [] }: Pr
       date_achieved: dateAchieved,
     };
 
-    setAchievements([...Achievement, achievementWithDate]);
+    setAchievements([...achievements, achievementWithDate]);
     reset();
     setSelectedMonth('');
     setSelectedYear('');
@@ -119,15 +119,15 @@ export default function AchievementForm({ onNext, onBack, initialData = [] }: Pr
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
-                      {achievement.achievement_type.replace('_', ' ')}
+                      {achievement.achievementType.replace('_', ' ')}
                     </span>
                     <p className="font-medium text-gray-900">{achievement.title}</p>
                   </div>
                   <p className="text-sm text-gray-600 mt-1">
                     {achievement.organization && `${achievement.organization} • `}
-                    {achievement.grade_level}
-                    {achievement.date_achieved && ` • ${new Date(achievement.date_achieved).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`}
-                    {achievement.recognition_level && ` • ${achievement.recognition_level}`}
+                    {achievement.gradeLevel}
+                    {achievement.dateAchieved && ` • ${new Date(achievement.dateAchieved).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`}
+                    {achievement.recognitionLevel && ` • ${achievement.recognitionLevel}`}
                   </p>
                 </div>
                 <button
@@ -172,8 +172,8 @@ export default function AchievementForm({ onNext, onBack, initialData = [] }: Pr
                 <option value="Social_Impact">Social Impact</option>
                 <option value="Extracurricular">Extracurricular</option>
               </select>
-              {errors.achievement_type && (
-                <p className="mt-1 text-sm text-red-600">{errors.achievement_type.message}</p>
+              {errors.achievementType && (
+                <p className="mt-1 text-sm text-red-600">{errors.achievementType.message}</p>
               )}
               {achievementType && (
                 <p className="mt-1 text-xs text-gray-500">{getTypeDescription(achievementType)}</p>
@@ -209,8 +209,8 @@ export default function AchievementForm({ onNext, onBack, initialData = [] }: Pr
                   <option value="eleventh">11th Grade</option>
                   <option value="twelfth">12th Grade</option>
                 </select>
-                {errors.grade_level && (
-                  <p className="mt-1 text-sm text-red-600">{errors.grade_level.message}</p>
+                {errors.gradeLevel && (
+                  <p className="mt-1 text-sm text-red-600">{errors.gradeLevel.message}</p>
                 )}
               </div>
             </div>
@@ -300,7 +300,7 @@ export default function AchievementForm({ onNext, onBack, initialData = [] }: Pr
               label="Verification Link (optional)"
               placeholder="https://..."
               {...register('verifiable_link')}
-              error={errors.verifiable_link?.message}
+              error={errors.verifiableLink?.message}
             />
 
             <div className="flex gap-2">

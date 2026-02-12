@@ -56,7 +56,7 @@ export default function TranscriptForm({ onNext, onBack, initialData = [], curri
   const selectedCourse = watch('course_name');
 
   const onSubmitCourse = (data: TranscriptInput) => {
-    setTranscripts([...Transcript, data]);
+    setTranscripts([...transcripts, data]);
     reset();
     setShowForm(false);
     setUseCustomCourse(false);
@@ -115,7 +115,7 @@ export default function TranscriptForm({ onNext, onBack, initialData = [], curri
                 <div>
                   <p className="font-medium text-gray-900">{transcript.course_name}</p>
                   <p className="text-sm text-gray-600">
-                    Grade: {transcript.grade_value} | {gradeLabels[transcript.grade_level]} | {transcript.semester}
+                    Grade: {transcript.grade_value} | {gradeLabels[transcript.gradeLevel]} | {transcript.semester}
                   </p>
                 </div>
                 <button
@@ -209,8 +209,8 @@ export default function TranscriptForm({ onNext, onBack, initialData = [], curri
                     <option key={grade} value={grade}>{gradeLabels[grade]}</option>
                   ))}
                 </select>
-                {errors.grade_level && (
-                  <p className="mt-1 text-sm text-red-600">{errors.grade_level.message}</p>
+                {errors.gradeLevel && (
+                  <p className="mt-1 text-sm text-red-600">{errors.gradeLevel.message}</p>
                 )}
               </div>
 

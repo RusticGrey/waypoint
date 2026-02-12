@@ -8,19 +8,19 @@ import { Input } from '@/components/ui/input';
 interface User {
   id: string;
   email: string;
-  first_name: string;
-  last_name: string;
+  firstName: string;
+  lastName: string;
   role: string;
   created_at: string;
   student?: {
-    coordinator_id: string | null;
+    coordinatorId: string | null;
   };
 }
 
 interface Coordinator {
   id: string;
-  first_name: string;
-  last_name: string;
+  firstName: string;
+  lastName: string;
   email: string;
 }
 
@@ -32,12 +32,12 @@ export default function ManageUsersPage() {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    first_name: '',
-    last_name: '',
+    firstName: '',
+    lastName: '',
     role: 'student',
-    current_grade: 'eleventh',
-    graduation_year: new Date().getFullYear() + 2,
-    coordinator_id: '',
+    currentGrade: 'eleventh',
+    graduationYear: new Date().getFullYear() + 2,
+    coordinatorId: '',
   });
 
   useEffect(() => {
@@ -71,12 +71,12 @@ export default function ManageUsersPage() {
       setFormData({
         email: '',
         password: '',
-        first_name: '',
-        last_name: '',
+        firstName: '',
+        lastName: '',
         role: 'student',
-        current_grade: 'eleventh',
-        graduation_year: new Date().getFullYear() + 2,
-        coordinator_id: '',
+        currentGrade: 'eleventh',
+        graduationYear: new Date().getFullYear() + 2,
+        coordinatorId: '',
       });
       fetchUsers();
       fetchCoordinators();
@@ -90,7 +90,7 @@ export default function ManageUsersPage() {
     await fetch('/api/counselor/assign-coordinator', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ student_id: studentId, coordinator_id: coordinatorId }),
+      body: JSON.stringify({ studentId: studentId, coordinatorId: coordinatorId }),
     });
     fetchUsers();
   };
@@ -133,7 +133,7 @@ export default function ManageUsersPage() {
           <CardContent className="pt-6">
             <p className="text-sm text-gray-600">Unassigned Students</p>
             <p className="text-3xl font-bold text-yellow-600">
-              {students.filter(s => !s.student?.coordinator_id).length}
+              {students.filter(s => !s.student?.coordinatorId).length}
             </p>
           </CardContent>
         </Card>
@@ -184,14 +184,14 @@ export default function ManageUsersPage() {
                   {coordinatorUsers.map((user) => (
                     <tr key={user.id}>
                       <td className="px-4 py-3 text-sm font-medium text-gray-900">
-                        {user.first_name} {user.last_name}
+                        {user.firstName} {user.lastName}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-600">{user.email}</td>
                       <td className="px-4 py-3 text-sm text-gray-600">
-                        {students.filter(s => s.student?.coordinator_id === user.id).length}
+                        {students.filter(s => s.student?.coordinatorId === user.id).length}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-600">
-                        {new Date(user.created_at).toLocaleDateString()}
+                        {new Date(user.createdAt).toLocaleDateString()}
                       </td>
                       <td className="px-4 py-3 text-sm">
                         <button
@@ -234,25 +234,25 @@ export default function ManageUsersPage() {
                   {students.map((user) => (
                     <tr key={user.id}>
                       <td className="px-4 py-3 text-sm font-medium text-gray-900">
-                        {user.first_name} {user.last_name}
+                        {user.firstName} {user.lastName}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-600">{user.email}</td>
                       <td className="px-4 py-3 text-sm">
                         <select
-                          value={user.student?.coordinator_id || ''}
+                          value={user.student?.coordinatorId || ''}
                           onChange={(e) => assignCoordinator(user.id, e.target.value)}
                           className="text-sm px-2 py-1 border rounded text-gray-900"
                         >
                           <option value="">Unassigned</option>
                           {coordinators.map((coord) => (
                             <option key={coord.id} value={coord.id}>
-                              {coord.first_name} {coord.last_name}
+                              {coord.firstName} {coord.lastName}
                             </option>
                           ))}
                         </select>
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-600">
-                        {new Date(user.created_at).toLocaleDateString()}
+                        {new Date(user.createdAt).toLocaleDateString()}
                       </td>
                       <td className="px-4 py-3 text-sm">
                         <button
@@ -285,14 +285,14 @@ export default function ManageUsersPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Input
                   label="First Name *"
-                  value={formData.first_name}
-                  onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
+                  value={formData.firstName}
+                  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                   required
                 />
                 <Input
                   label="Last Name *"
-                  value={formData.last_name}
-                  onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
+                  value={formData.lastName}
+                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                   required
                 />
               </div>
@@ -321,7 +321,7 @@ export default function ManageUsersPage() {
                         Current Grade *
                       </label>
                       <select
-                        value={formData.current_grade}
+                        value={formData.currentGrade}
                         onChange={(e) => setFormData({ ...formData, current_grade: e.target.value })}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
                       >
@@ -335,8 +335,8 @@ export default function ManageUsersPage() {
                     <Input
                       label="Graduation Year *"
                       type="number"
-                      value={formData.graduation_year}
-                      onChange={(e) => setFormData({ ...formData, graduation_year: parseInt(e.target.value) })}
+                      value={formData.graduationYear}
+                      onChange={(e) => setFormData({ ...formData, graduationYear: parseInt(e.target.value) })}
                       required
                     />
                   </div>
@@ -346,14 +346,14 @@ export default function ManageUsersPage() {
                       Assign to Coordinator (optional)
                     </label>
                     <select
-                      value={formData.coordinator_id}
+                      value={formData.coordinatorId}
                       onChange={(e) => setFormData({ ...formData, coordinator_id: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
                     >
                       <option value="">Assign later</option>
                       {coordinators.map((coord) => (
                         <option key={coord.id} value={coord.id}>
-                          {coord.first_name} {coord.last_name}
+                          {coord.firstName} {coord.lastName}
                         </option>
                       ))}
                     </select>

@@ -12,15 +12,15 @@ export async function POST(req: Request) {
     }
 
     // Calculate profile completion
-    const student = await prisma.student.findUnique({
-      where: { user_id: session.user.id },
+    const student = await prisma.Student.findUnique({
+      where: { userId: session.user.id },
       include: {
-        PersonalProfile: true,
-        AcademicProfile: true,
-        Transcript: true,
-        Activity: true,
-        Achievement: true,
-        ProjectExperience: true,
+        personalProfile: true,
+        academicProfile: true,
+        transcripts: true,
+        activities: true,
+        achievements: true,
+        projectExperiences: true,
       },
     });
 
@@ -30,18 +30,18 @@ export async function POST(req: Request) {
 
     // Simple completion calculation
     let completion = 0;
-    if (student.PersonalProfile) completion += 15;
-    if (student.AcademicProfile) completion += 15;
-    if (student.Transcript.length > 0) completion += 25;
-    if (student.Activity && student.Activity.length >= 3) completion += 20;
-    if (student.Achievement && student.Achievement.length >= 2) completion += 15;
-    if (student.ProjectExperience && student.ProjectExperience.length > 0) completion += 10;
+    if (student.personalProfile) completion += 15;
+    if (student.academicProfile) completion += 15;
+    if (student.transcripts.length > 0) completion += 25;
+    if (student.activities && student.activities.length >= 3) completion += 20;
+    if (student.achievements && student.achievements.length >= 2) completion += 15;
+    if (student.projectExperiences && student.projectExperiences.length > 0) completion += 10;
 
     // Update student profile completion
-    await prisma.student.update({
-      where: { user_id: session.user.id },
+    await prisma.Student.update({
+      where: { userId: session.user.id },
       data: {
-        profile_completion_pct: completion,
+        profileCompletionPct: completion,
       },
     });
 

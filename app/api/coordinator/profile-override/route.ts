@@ -20,18 +20,18 @@ export async function POST(req: Request) {
     }
     
     // Upsert override
-    const override = await prisma.profileOverride.upsert({
-      where: { student_id },
+    const override = await prisma.ProfileOverride.upsert({
+      where: { studentId },
       create: {
-        student_id,
-        override_score,
-        override_reason,
-        overridden_by: session.user.id,
+        studentId,
+        overrideScore,
+        overrideReason,
+        overriddenBy: session.user.id,
       },
       update: {
-        override_score,
-        override_reason,
-        overridden_by: session.user.id,
+        overrideScore,
+        overrideReason,
+        overriddenBy: session.user.id,
       },
     });
     
@@ -54,14 +54,14 @@ export async function DELETE(req: Request) {
     }
     
     const { searchParams } = new URL(req.url);
-    const student_id = searchParams.get('student_id');
+    const student_id = searchParams.get('studentId');
     
     if (!student_id) {
       return NextResponse.json({ error: 'student_id required' }, { status: 400 });
     }
     
-    await prisma.profileOverride.delete({
-      where: { student_id },
+    await prisma.ProfileOverride.delete({
+      where: { studentId },
     });
     
     return NextResponse.json({ success: true });

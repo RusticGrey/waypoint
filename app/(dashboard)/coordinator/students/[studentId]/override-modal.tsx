@@ -23,10 +23,10 @@ export default function OverrideModal({
   onSuccess,
 }: OverrideModalProps) {
   const [overrideScore, setOverrideScore] = useState(
-    existingOverride?.override_score?.toString() || currentScore.toString()
+    existingOverride?.overrideScore?.toString() || currentScore.toString()
   );
   const [overrideReason, setOverrideReason] = useState(
-    existingOverride?.override_reason || ''
+    existingOverride?.overrideReason || ''
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -41,7 +41,7 @@ export default function OverrideModal({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          student_id: studentId,
+          studentId: studentId,
           override_score: parseInt(overrideScore),
           override_reason: overrideReason,
         }),

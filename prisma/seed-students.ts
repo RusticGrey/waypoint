@@ -94,7 +94,7 @@ async function main() {
 
   // 3. Activity Seeding
   const allActivities = [
-    { studentId: s1.student!.userId, activityName: 'Debate Team', category: ActivityCategory.Academic, role: 'Team Captain', gradeLevels: ['tenth', 'eleventh', 'twelfth'], hoursPerWeek: 8, weeksPerYear: 36 },
+    { studentId: s1.student!.userId, activityName: 'Debate Team', category: ActivityCategory.Academic, role: 'Team Captain', gradeLevel: GradeLevel.twelfth, hoursPerWeek: 8, weeksPerYear: 36 },
   ];
 
   for (const act of allActivities) {

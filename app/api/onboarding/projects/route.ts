@@ -20,17 +20,17 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { projects } = projectsArraySchema.parse(body);
 
-    await prisma.projectExperience.deleteMany({
-      where: { student_id: session.user.id },
+    await prisma.ProjectExperience.deleteMany({
+      where: { studentId: session.user.id },
     });
 
     if (projects.length > 0) {
-      const createdProjects = await prisma.projectExperience.createMany({
+      const createdProjects = await prisma.ProjectExperience.createMany({
         data: projects.map((project) => ({
           ...project,
-          start_date: new Date(project.start_date),
-          end_date: project.end_date ? new Date(project.end_date) : null,
-          student_id: session.user.id,
+          startDate: new Date(project.startDate),
+          endDate: project.endDate ? new Date(project.endDate) : null,
+          studentId: session.user.id,
         })),
       });
 

@@ -7,10 +7,10 @@ import { Input } from '@/components/ui/input';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 interface Student {
-  user_id: string;
+  userId: string;
   User: {
-    first_name: string;
-    last_name: string;
+    firstName: string;
+    lastName: string;
   };
 }
 
@@ -21,7 +21,7 @@ export default function NewMeetingPage() {
 
   const [students, setStudents] = useState<Student[]>([]);
   const [formData, setFormData] = useState({
-    student_id: preselectedStudent || '',
+    studentId: preselectedStudent || '',
     meeting_date: '',
     meeting_time: '',
     duration_minutes: 60,
@@ -46,18 +46,18 @@ export default function NewMeetingPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const meetingDateTime = `${formData.meeting_date}T${formData.meeting_time}`;
+    const meetingDateTime = `${formData.meetingDate}T${formData.meeting_time}`;
     
     const payload = {
-      student_id: formData.student_id,
+      studentId: formData.studentId,
       meeting_date: new Date(meetingDateTime).toISOString(),
-      duration_minutes: formData.duration_minutes,
-      meeting_type: formData.meeting_type,
-      topics_discussed: formData.topics_discussed.split(',').map(t => t.trim()).filter(Boolean),
+      duration_minutes: formData.durationMinutes,
+      meeting_type: formData.meetingType,
+      topics_discussed: formData.topicsDiscussed.split(',').map(t => t.trim()).filter(Boolean),
       notes: formData.notes,
-      action_items: formData.action_items.split('\n').filter(Boolean),
-      next_meeting_date: formData.next_meeting_date ? new Date(formData.next_meeting_date).toISOString() : null,
-      student_mood: formData.student_mood || null,
+      action_items: formData.actionItems.split('\n').filter(Boolean),
+      next_meeting_date: formData.nextMeetingDate ? new Date(formData.nextMeetingDate).toISOString() : null,
+      student_mood: formData.studentMood || null,
     };
 
     const res = await fetch('/api/coordinator/meetings', {
@@ -89,15 +89,15 @@ export default function NewMeetingPage() {
                 Student *
               </label>
               <select
-                value={formData.student_id}
-                onChange={(e) => setFormData({ ...formData, student_id: e.target.value })}
+                value={formData.studentId}
+                onChange={(e) => setFormData({ ...formData, studentId: e.target.value })}
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
               >
                 <option value="">Select student</option>
                 {students.map((student) => (
-                  <option key={student.user_id} value={student.user_id}>
-                    {student.User.first_name} {student.User.last_name}
+                  <option key={student.userId} value={student.userId}>
+                    {student.user.firstName} {student.user.lastName}
                   </option>
                 ))}
               </select>
@@ -107,7 +107,7 @@ export default function NewMeetingPage() {
               <Input
                 label="Meeting Date *"
                 type="date"
-                value={formData.meeting_date}
+                value={formData.meetingDate}
                 onChange={(e) => setFormData({ ...formData, meeting_date: e.target.value })}
                 required
               />
@@ -128,7 +128,7 @@ export default function NewMeetingPage() {
                 </label>
                 <input
                   type="number"
-                  value={formData.duration_minutes}
+                  value={formData.durationMinutes}
                   onChange={(e) => setFormData({ ...formData, duration_minutes: parseInt(e.target.value) })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
                 />
@@ -139,7 +139,7 @@ export default function NewMeetingPage() {
                   Meeting Type
                 </label>
                 <select
-                  value={formData.meeting_type}
+                  value={formData.meetingType}
                   onChange={(e) => setFormData({ ...formData, meeting_type: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
                 >
@@ -157,7 +157,7 @@ export default function NewMeetingPage() {
             <Input
               label="Topics Discussed (comma-separated)"
               placeholder="e.g., College list, Test prep, Activities"
-              value={formData.topics_discussed}
+              value={formData.topicsDiscussed}
               onChange={(e) => setFormData({ ...formData, topics_discussed: e.target.value })}
             />
 
@@ -179,7 +179,7 @@ export default function NewMeetingPage() {
                 Action Items (one per line)
               </label>
               <textarea
-                value={formData.action_items}
+                value={formData.actionItems}
                 onChange={(e) => setFormData({ ...formData, action_items: e.target.value })}
                 rows={4}
                 placeholder="Research 3 colleges&#10;Complete SAT practice test&#10;Draft personal statement"
@@ -191,14 +191,14 @@ export default function NewMeetingPage() {
               <Input
                 label="Student Mood (optional)"
                 placeholder="e.g., Confident, Stressed, Motivated"
-                value={formData.student_mood}
+                value={formData.studentMood}
                 onChange={(e) => setFormData({ ...formData, student_mood: e.target.value })}
               />
 
               <Input
                 label="Next Meeting Date (optional)"
                 type="date"
-                value={formData.next_meeting_date}
+                value={formData.nextMeetingDate}
                 onChange={(e) => setFormData({ ...formData, next_meeting_date: e.target.value })}
               />
             </div>

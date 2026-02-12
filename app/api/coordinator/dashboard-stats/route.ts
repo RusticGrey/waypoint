@@ -12,63 +12,63 @@ export async function GET(req: Request) {
     }
     
     // Get students assigned to this coordinator
-    const students = await prisma.student.findMany({
-      where: { coordinator_id: session.user.id },
+    const students = await prisma.Student.findMany({
+      where: { coordinatorId: session.user.id },
       include: {
         User: {
           select: {
-            first_name: true,
-            last_name: true,
+            firstName: true,
+            lastName: true,
           },
         },
       },
     });
     
-    const studentIds = students.map(s => s.user_id);
+    const studentIds = students.map(s => s.userId);
     
     // Get upcoming meetings
-    const upcomingMeetings = await prisma.meeting.findMany({
+    const upcomingMeetings = await prisma.Meeting.findMany({
       where: {
-        coordinator_id: session.user.id,
-        meeting_date: {
+        coordinatorId: session.user.id,
+        meetingDate: {
           gte: new Date(),
         },
       },
       include: {
-        Student: {
+        student: {
           include: {
-            User: {
+            user: {
               select: {
-                first_name: true,
-                last_name: true,
+                firstName: true,
+                lastName: true,
               },
             },
           },
         },
       },
       orderBy: {
-        meeting_date: 'asc',
+        meetingDate: 'asc',
       },
       take: 5,
     });
     
     // Get all applications for assigned students
-    const applications = await prisma.collegeApplication.findMany({
+    const applications = await prisma.CollegeApplication.findMany({
       where: {
-        student_id: { in: studentIds },
+        studentId: { in: studentIds },
       },
       include: {
-        Student: {
+        student: {
           include: {
-            User: {
+            user: {
               select: {
-                first_name: true,
-                last_name: true,
+                firstName: true,
+                lastName: true,
               },
             },
           },
         },
-        College: {
+        college: {
           select: {
             name: true,
           },
@@ -78,13 +78,13 @@ export async function GET(req: Request) {
     
     // Calculate deadlines across all students
     const upcomingDeadlines = applications
-      .filter(app => app.application_deadline)
+      .filter(app => app.applicationDeadline)
       .map(app => ({
-        Student: `${app.student.User.first_name} ${app.student.User.last_name}`,
+        Student: `${app.student.user.firstName} ${app.student.user.lastName}`,
         College: app.college.name,
-        deadline: app.application_deadline,
+        deadline: app.applicationDeadline,
         daysRemaining: Math.ceil(
-          (new Date(app.application_deadline!).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+          (new Date(app.applicationDeadline!).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
         ),
       }))
       .filter(d => d.daysRemaining >= 0 && d.daysRemaining <= 30)
@@ -97,8 +97,8 @@ export async function GET(req: Request) {
       upcomingDeadlines,
       applicationStats: {
         total: applications.length,
-        submitted: applications.filter(a => ['Submitted', 'Accepted', 'Rejected', 'Waitlisted'].includes(a.application_status)).length,
-        inProgress: applications.filter(a => a.application_status === 'In_Progress').length,
+        submitted: applications.filter(a => ['Submitted', 'Accepted', 'Rejected', 'Waitlisted'].includes(a.applicationStatus)).length,
+        inProgress: applications.filter(a => a.applicationStatus === 'In_Progress').length,
       },
     });
   } catch (error) {

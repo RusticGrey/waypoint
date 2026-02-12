@@ -17,16 +17,16 @@ export async function GET(req: Request) {
     }
 
     // Check if student has completed onboarding
-    const student = await prisma.student.findUnique({
-      where: { user_id: session.user.id },
+    const student = await prisma.Student.findUnique({
+      where: { userId: session.user.id },
       include: {
-        PersonalProfile: true,
-        AcademicProfile: true,
+        personalProfile: true,
+        academicProfile: true,
       },
     });
 
     // Onboarding is complete if both profiles exist
-    const isComplete = !!(student?.PersonalProfile && student?.AcademicProfile);
+    const isComplete = !!(student?.personalProfile && student?.academicProfile);
 
     return NextResponse.json({ isComplete });
   } catch (error) {

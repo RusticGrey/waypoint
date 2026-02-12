@@ -1,14 +1,14 @@
 import { Prisma } from '@prisma/client';
 
-type StudentWithRelations = Prisma.StudentGetPayload<{
+type StudentWithRelations = Prisma.studentGetPayload<{
   include: {
-    PersonalProfile: true;
-    AcademicProfile: true;
-    Transcript: true;
-    Activity: true;
-    Achievement: true;
-    ProjectExperience: true;
-    TestScore: true;
+    personalProfile: true;
+    academicProfile: true;
+    transcripts: true;
+    activities: true;
+    achievements: true;
+    projectExperiences: true;
+    testScores: true;
   };
 }>;
 
@@ -97,13 +97,13 @@ export function analyzeProfileDetailed(student: StudentWithRelations) {
   if (category_scores.testing < 60) {
     recommendations.push("Take standardized tests (SAT/ACT) and aim for scores in the top 25th percentile");
   }
-  if (category_scores.Activity < 70) {
+  if (category_scores.activities < 70) {
     recommendations.push("Join more extracurricular activities and commit to them long-term (2+ years)");
   }
   if (category_scores.leadership < 60) {
     recommendations.push("Pursue leadership positions in your activities - captain, president, or founder roles");
   }
-  if (category_scores.Achievement < 60) {
+  if (category_scores.achievements < 60) {
     recommendations.push("Participate in competitions and apply for awards at local, state, or national levels");
   }
   if (category_scores.projects < 60) {
@@ -141,7 +141,7 @@ function analyzeAcademicDetailed(student: StudentWithRelations): AcademicDetails
   let course_breadth_score = 0;
 
   // GPA Score (max 40 points)
-  const gpa = student.AcademicProfile?.current_gpa;
+  const gpa = student.academicProfile?.currentGpa;
   if (gpa) {
     const gpaNum = parseFloat(gpa);
     if (gpaNum >= 3.9) {
@@ -165,7 +165,7 @@ function analyzeAcademicDetailed(student: StudentWithRelations): AcademicDetails
   }
 
   // Course Rigor (max 30 points)
-  const transcripts = student.Transcript || [];
+  const transcripts = student.transcripts || [];
   const apCourses = transcripts.filter(t => t.honors_level === 'AP').length;
   const ibCourses = transcripts.filter(t => t.honors_level === 'IB' || t.honors_level === 'IB_HL' || t.honors_level === 'IB_SL').length;
   const honorsCourses = transcripts.filter(t => t.honors_level === 'Honors').length;
@@ -211,13 +211,13 @@ function analyzeTestingDetailed(student: StudentWithRelations): TestingDetails {
   let sat_score = 0;
   let act_score = 0;
 
-  const tests = student.TestScore || [];
-  const satTests = tests.filter(t => t.test_type === 'SAT');
-  const actTests = tests.filter(t => t.test_type === 'ACT');
+  const tests = student.testScores || [];
+  const satTests = tests.filter(t => t.testType === 'SAT');
+  const actTests = tests.filter(t => t.testType === 'ACT');
 
   // SAT scoring (max 50 points)
   if (satTests.length > 0) {
-    const bestSAT = Math.max(...satTests.map(t => t.composite_score || 0));
+    const bestSAT = Math.max(...satTests.map(t => t.compositeScore || 0));
     if (bestSAT >= 1500) {
       sat_score = 50;
       details.push(`Excellent SAT score (${bestSAT}) = 50/50 points`);
@@ -238,7 +238,7 @@ function analyzeTestingDetailed(student: StudentWithRelations): TestingDetails {
 
   // ACT scoring (max 50 points)
   if (actTests.length > 0) {
-    const bestACT = Math.max(...actTests.map(t => t.composite_score || 0));
+    const bestACT = Math.max(...actTests.map(t => t.compositeScore || 0));
     if (bestACT >= 34) {
       act_score = 50;
       details.push(`Excellent ACT score (${bestACT}) = 50/50 points`);
@@ -274,7 +274,7 @@ function analyzeTestingDetailed(student: StudentWithRelations): TestingDetails {
 
 function analyzeActivitiesDetailed(student: StudentWithRelations): ActivitiesDetails {
   const details: string[] = [];
-  const activities = student.Activity || [];
+  const activities = student.activities || [];
   
   // Quantity score (max 30 points)
   let quantity_score = 0;
@@ -293,7 +293,7 @@ function analyzeActivitiesDetailed(student: StudentWithRelations): ActivitiesDet
   }
 
   // Commitment score (max 40 points) - based on total hours
-  const totalHours = activities.reduce((sum, a) => sum + (a.hours_per_week * a.weeks_per_year), 0);
+  const totalHours = activities.reduce((sum, a) => sum + (a.hoursPerWeek * a.weeksPerYear), 0);
   let commitment_score = 0;
   if (totalHours >= 1000) {
     commitment_score = 40;
@@ -328,8 +328,8 @@ function analyzeActivitiesDetailed(student: StudentWithRelations): ActivitiesDet
 
 function analyzeLeadershipDetailed(student: StudentWithRelations): LeadershipDetails {
   const details: string[] = [];
-  const activities = student.Activity || [];
-  const achievements = student.Achievement || [];
+  const activities = student.activities || [];
+  const achievements = student.achievements || [];
 
   // Leadership roles score (max 60 points)
   const leadershipRoles = activities.filter(a => 
@@ -346,7 +346,7 @@ function analyzeLeadershipDetailed(student: StudentWithRelations): LeadershipDet
   if (leadershipRoles.length > 0) {
     details.push(`Leadership roles (${leadershipRoles.length}) = ${roles_score}/60 points`);
     leadershipRoles.forEach(role => {
-      details.push(`  → ${role.role} in ${role.activity_name}`);
+      details.push(`  → ${role.role} in ${role.activityName}`);
     });
   } else {
     details.push('No leadership positions yet = 0/60 points');
@@ -354,7 +354,7 @@ function analyzeLeadershipDetailed(student: StudentWithRelations): LeadershipDet
 
   // Leadership achievements (max 40 points)
   const leadershipAchievements = achievements.filter(a => 
-    a.achievement_type === 'Leadership'
+    a.achievementType === 'Leadership'
   );
   const achievements_score = Math.min(40, leadershipAchievements.length * 10);
   
@@ -377,7 +377,7 @@ function analyzeLeadershipDetailed(student: StudentWithRelations): LeadershipDet
 
 function analyzeAchievementsDetailed(student: StudentWithRelations): AchievementsDetails {
   const details: string[] = [];
-  const achievements = student.Achievement || [];
+  const achievements = student.achievements || [];
 
   // Quantity score (max 30 points)
   let quantity_score = 0;
@@ -410,10 +410,10 @@ function analyzeAchievementsDetailed(student: StudentWithRelations): Achievement
   const recognitionBreakdown: Record<string, number> = {};
   
   achievements.forEach(a => {
-    if (a.recognition_level) {
-      const points = recognitionPoints[a.recognition_level] || 3;
+    if (a.recognitionLevel) {
+      const points = recognitionPoints[a.recognitionLevel] || 3;
       recognition_score += points;
-      recognitionBreakdown[a.recognition_level] = (recognitionBreakdown[a.recognition_level] || 0) + 1;
+      recognitionBreakdown[a.recognitionLevel] = (recognitionBreakdown[a.recognitionLevel] || 0) + 1;
     }
   });
 
@@ -442,7 +442,7 @@ function analyzeAchievementsDetailed(student: StudentWithRelations): Achievement
 
 function analyzeProjectsDetailed(student: StudentWithRelations): ProjectsDetails {
   const details: string[] = [];
-  const projects = student.ProjectExperience || [];
+  const projects = student.projectExperiences || [];
 
   // Quantity score (max 40 points)
   let quantity_score = 0;
@@ -475,9 +475,9 @@ function analyzeProjectsDetailed(student: StudentWithRelations): ProjectsDetails
   const projectBreakdown: Record<string, number> = {};
 
   projects.forEach(p => {
-    const points = qualityPoints[p.experience_type] || 10;
+    const points = qualityPoints[p.experienceType] || 10;
     quality_score += points;
-    projectBreakdown[p.experience_type] = (projectBreakdown[p.experience_type] || 0) + 1;
+    projectBreakdown[p.experienceType] = (projectBreakdown[p.experienceType] || 0) + 1;
   });
 
   quality_score = Math.min(60, quality_score);

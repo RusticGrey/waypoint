@@ -22,13 +22,13 @@ export async function POST(req: Request) {
 
     // Delete existing activities and create new ones
     await prisma.activity.deleteMany({
-      where: { student_id: session.user.id },
+      where: { studentId: session.user.id },
     });
 
-    const createdActivities = await prisma.activity.createMany({
+    const createdActivities = await prisma.Activity.createMany({
       data: activities.map((activity) => ({
         ...activity,
-        student_id: session.user.id,
+        studentId: session.user.id,
       })),
     });
 

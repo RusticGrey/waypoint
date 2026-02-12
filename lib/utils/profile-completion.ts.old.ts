@@ -42,11 +42,11 @@ export function calculateProfileCompletion(student: Student): {
   };
 
   // Personal profile (15%)
-  if (student.PersonalProfile) {
+  if (student.personalProfile) {
     const hasRequired = 
-      student.PersonalProfile.current_school &&
-      student.PersonalProfile.parent_name &&
-      student.PersonalProfile.parent_email;
+      student.personalProfile.currentSchool &&
+      student.personalProfile.parentName &&
+      student.personalProfile.parentEmail;
     
     if (hasRequired) {
       score += weights.personal;
@@ -55,38 +55,38 @@ export function calculateProfileCompletion(student: Student): {
   }
 
   // Academic profile (15%)
-  if (student.AcademicProfile) {
+  if (student.academicProfile) {
     score += weights.academic;
     breakdown.academic = 100;
   }
 
   // Transcripts (25%) - Target: 15+ courses
-  const transcriptCount = student.Transcript?.length || 0;
-  const transcriptScore = Math.min(transcriptCount / 15, 1) * weights.Transcript;
+  const transcriptCount = student.transcripts?.length || 0;
+  const transcriptScore = Math.min(transcriptCount / 15, 1) * weights.transcripts;
   score += transcriptScore;
-  breakdown.Transcript = Math.round((transcriptCount / 15) * 100);
+  breakdown.transcripts = Math.round((transcriptCount / 15) * 100);
 
   // Activities (20%) - Target: 5+ activities
-  const activityCount = student.Activity?.length || 0;
-  const activityScore = Math.min(activityCount / 5, 1) * weights.Activity;
+  const activityCount = student.activities?.length || 0;
+  const activityScore = Math.min(activityCount / 5, 1) * weights.activities;
   score += activityScore;
-  breakdown.Activity = Math.round((activityCount / 5) * 100);
+  breakdown.activities = Math.round((activityCount / 5) * 100);
 
   // Test scores (10%) - Target: 1+ test
-  const testScoreCount = student.TestScore?.length || 0;
+  const testScoreCount = student.testScores?.length || 0;
   if (testScoreCount > 0) {
     score += weights.testScores;
     breakdown.testScores = 100;
   }
 
   // Achievements (10%) - Target: 3+ achievements
-  const achievementCount = student.Achievement?.length || 0;
-  const achievementScore = Math.min(achievementCount / 3, 1) * weights.Achievement;
+  const achievementCount = student.achievements?.length || 0;
+  const achievementScore = Math.min(achievementCount / 3, 1) * weights.achievements;
   score += achievementScore;
-  breakdown.Achievement = Math.round((achievementCount / 3) * 100);
+  breakdown.achievements = Math.round((achievementCount / 3) * 100);
 
   // Projects (5%) - Target: 1+ project
-  const projectCount = student.ProjectExperience?.length || 0;
+  const projectCount = student.projectExperiences?.length || 0;
   if (projectCount > 0) {
     score += weights.projects;
     breakdown.projects = 100;

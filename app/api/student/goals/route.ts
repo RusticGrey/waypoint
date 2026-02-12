@@ -6,10 +6,10 @@ import { z } from 'zod';
 import { logChange } from '@/lib/utils/change-log';
 
 const goalSchema = z.object({
-  goal_type: z.enum(['Academic', 'Testing', 'Activity', 'Achievement', 'Project', 'Other']),
+  goalType: z.enum(['Academic', 'Testing', 'Activity', 'Achievement', 'Project', 'Other']),
   category: z.string().min(1, 'Category is required'),
-  target_value: z.string().min(1, 'Target is required'),
-  current_value: z.string().optional(),
+  targetValue: z.string().min(1, 'Target is required'),
+  currentValue: z.string().optional(),
   deadline: z.string().optional(),
   priority: z.number().min(1).max(10).default(5),
   notes: z.string().optional(),
@@ -27,14 +27,14 @@ export async function GET(req: Request) {
     const status = searchParams.get('status');
     
     const where: any = {
-      student_id: session.user.id,
+      studentId: session.user.id,
     };
     
     if (status) {
       where.status = status;
     }
     
-    const goals = await prisma.profileGoal.findMany({
+    const goals = await prisma.ProfileGoal.findMany({
       where,
       orderBy: [
         { status: 'asc' },
@@ -64,9 +64,9 @@ export async function POST(req: Request) {
     const body = await req.json();
     const validatedData = goalSchema.parse(body);
     
-    const goal = await prisma.profileGoal.create({
+    const goal = await prisma.ProfileGoal.create({
       data: {
-        student_id: session.user.id,
+        studentId: session.user.id,
         ...validatedData,
         deadline: validatedData.deadline ? new Date(validatedData.deadline) : null,
       },
@@ -74,12 +74,12 @@ export async function POST(req: Request) {
     
     // Log the change
     await logChange({
-      student_id: session.user.id,
-      change_type: 'New_Addition',
-      entity_type: 'Goal',
-      entity_id: goal.id,
+      studentId: session.user.id,
+      changeType: 'New_Addition',
+      entityType: 'Goal',
+      entityId: goal.id,
       action: 'Created',
-      description: `Set new goal: ${validatedData.category} - ${validatedData.target_value}`,
+      description: `Set new goal: ${validatedData.category} - ${validatedData.targetValue}`,
     });
     
     return NextResponse.json(goal);
@@ -108,8 +108,8 @@ export async function PATCH(req: Request) {
     }
     
     // Get existing goal for logging
-    const existingGoal = await prisma.profileGoal.findUnique({
-      where: { id, student_id: session.user.id },
+    const existingGoal = await prisma.ProfileGoal.findUnique({
+      where: { id, studentId: session.user.id },
     });
     
     if (!existingGoal) {
@@ -121,52 +121,52 @@ export async function PATCH(req: Request) {
     if (status) {
       updateData.status = status;
       if (status === 'Completed') {
-        updateData.completed_at = new Date();
+        updateData.completedAt = new Date();
         
         // Log milestone
         await logChange({
-          student_id: session.user.id,
-          change_type: 'Milestone',
-          entity_type: 'Goal',
-          entity_id: id,
+          studentId: session.user.id,
+          changeType: 'Milestone',
+          entityType: 'Goal',
+          entityId: id,
           action: 'Completed',
           description: `Completed goal: ${existingGoal.category}`,
         });
       } else if (status === 'In_Progress' && existingGoal.status === 'Not_Started') {
         // Log progress
         await logChange({
-          student_id: session.user.id,
-          change_type: 'Goal_Progress',
-          entity_type: 'Goal',
-          entity_id: id,
+          studentId: session.user.id,
+          changeType: 'Goal_Progress',
+          entityType: 'Goal',
+          entityId: id,
           action: 'Updated',
-          field_name: 'status',
-          old_value: existingGoal.status,
-          new_value: status,
+          fieldName: 'status',
+          oldValue: existingGoal.status,
+          newValue: status,
           description: `Started working on: ${existingGoal.category}`,
         });
       }
     }
     
     if (current_value !== undefined) {
-      updateData.current_value = current_value;
+      updateData.currentValue = current_value;
       
       // Log progress update
       await logChange({
-        student_id: session.user.id,
-        change_type: 'Goal_Progress',
-        entity_type: 'Goal',
-        entity_id: id,
+        studentId: session.user.id,
+        changeType: 'Goal_Progress',
+        entityType: 'Goal',
+        entityId: id,
         action: 'Updated',
-        field_name: 'current_value',
-        old_value: existingGoal.current_value || '',
-        new_value: current_value,
+        fieldName: 'current_value',
+        oldValue: existingGoal.current_value || '',
+        newValue: current_value,
         description: `Updated progress on ${existingGoal.category}: ${current_value}`,
       });
     }
     
-    const goal = await prisma.profileGoal.update({
-      where: { id, student_id: session.user.id },
+    const goal = await prisma.ProfileGoal.update({
+      where: { id, studentId: session.user.id },
       data: updateData,
     });
     
@@ -195,23 +195,23 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: 'ID required' }, { status: 400 });
     }
     
-    const goal = await prisma.profileGoal.findUnique({
-      where: { id, student_id: session.user.id },
+    const goal = await prisma.ProfileGoal.findUnique({
+      where: { id, studentId: session.user.id },
     });
     
     if (goal) {
       await logChange({
-        student_id: session.user.id,
-        change_type: 'Profile_Update',
-        entity_type: 'Goal',
-        entity_id: id,
+        studentId: session.user.id,
+        changeType: 'Profile_Update',
+        entityType: 'Goal',
+        entityId: id,
         action: 'Deleted',
         description: `Removed goal: ${goal.category}`,
       });
     }
     
-    await prisma.profileGoal.delete({
-      where: { id, student_id: session.user.id },
+    await prisma.ProfileGoal.delete({
+      where: { id, studentId: session.user.id },
     });
     
     return NextResponse.json({ success: true });

@@ -11,22 +11,22 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const students = await prisma.student.findMany({
+    const students = await prisma.Student.findMany({
       where: {
-        coordinator_id: session.user.id,
+        coordinatorId: session.user.id,
       },
       include: {
         User: {
           select: {
-            first_name: true,
-            last_name: true,
+            firstName: true,
+            lastName: true,
             email: true,
           },
         },
       },
       orderBy: {
         User: {
-          last_name: 'asc',
+          lastName: 'asc',
         },
       },
     });

@@ -5,14 +5,14 @@ import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 
 const personalProfileSchema = z.object({
-  preferred_name: z.string().optional(),
+  preferredName: z.string().optional(),
   phone: z.string().optional(),
-  current_school: z.string().min(1),
-  school_location: z.string().min(1),
-  parent_name: z.string().min(1),
-  parent_email: z.string().email(),
-  parent_phone: z.string().min(1),
-  current_grade: z.enum(['ninth', 'tenth', 'eleventh', 'twelfth']),
+  currentSchool: z.string().min(1),
+  schoolLocation: z.string().min(1),
+  parentName: z.string().min(1),
+  parentEmail: z.string().email(),
+  parentPhone: z.string().min(1),
+  currentGrade: z.enum(['ninth', 'tenth', 'eleventh', 'twelfth']),
 });
 
 export async function POST(req: Request) {
@@ -27,20 +27,20 @@ export async function POST(req: Request) {
     const validatedData = personalProfileSchema.parse(body);
 
     // Extract current_grade to update Student table
-    const { current_grade, ...personalData } = validatedData;
+    const { currentGrade, ...personalData } = validatedData;
 
     // Update student's current_grade
-    await prisma.student.update({
-      where: { user_id: session.user.id },
-      data: { current_grade },
+    await prisma.Student.update({
+      where: { userId: session.user.id },
+      data: { currentGrade },
     });
 
     // Create or update personal profile
-    const profile = await prisma.personalProfile.upsert({
-      where: { student_id: session.user.id },
+    const profile = await prisma.PersonalProfile.upsert({
+      where: { studentId: session.user.id },
       update: personalData,
       create: {
-        student_id: session.user.id,
+        studentId: session.user.id,
         ...personalData,
       },
     });

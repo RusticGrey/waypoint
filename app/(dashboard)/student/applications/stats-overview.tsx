@@ -15,16 +15,16 @@ interface StatsProps {
 export default function StatsOverview({ applications }: StatsProps) {
   const stats = {
     total: applications.length,
-    safety: applications.filter(a => a.target_category === 'Safety').length,
-    match: applications.filter(a => a.target_category === 'Match').length,
-    reach: applications.filter(a => a.target_category === 'Reach').length,
-    submitted: applications.filter(a => a.application_status === 'Submitted' || a.application_status === 'Under_Review').length,
-    inProgress: applications.filter(a => a.application_status === 'In_Progress').length,
-    notStarted: applications.filter(a => a.application_status === 'Not_Started').length,
-    accepted: applications.filter(a => a.application_status === 'Accepted').length,
-    rejected: applications.filter(a => a.application_status === 'Rejected').length,
-    waitlisted: applications.filter(a => a.application_status === 'Waitlisted').length,
-    pending: applications.filter(a => ['Submitted', 'Under_Review', 'Deferred'].includes(a.application_status)).length,
+    safety: applications.filter(a => a.targetCategory === 'Safety').length,
+    match: applications.filter(a => a.targetCategory === 'Match').length,
+    reach: applications.filter(a => a.targetCategory === 'Reach').length,
+    submitted: applications.filter(a => a.applicationStatus === 'Submitted' || a.applicationStatus === 'Under_Review').length,
+    inProgress: applications.filter(a => a.applicationStatus === 'In_Progress').length,
+    notStarted: applications.filter(a => a.applicationStatus === 'Not_Started').length,
+    accepted: applications.filter(a => a.applicationStatus === 'Accepted').length,
+    rejected: applications.filter(a => a.applicationStatus === 'Rejected').length,
+    waitlisted: applications.filter(a => a.applicationStatus === 'Waitlisted').length,
+    pending: applications.filter(a => ['Submitted', 'Under_Review', 'Deferred'].includes(a.applicationStatus)).length,
   };
 
   return (

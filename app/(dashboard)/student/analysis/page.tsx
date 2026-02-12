@@ -111,7 +111,7 @@ export default function AnalysisPage() {
   }
 
   const displayScore = analysis.override?.is_overridden 
-    ? analysis.override.override_score 
+    ? analysis.override.overrideScore 
     : analysis.overall_score;
 
   const getCategoryColor = (score: number) => {
@@ -176,10 +176,10 @@ export default function AnalysisPage() {
               {analysis.override?.is_overridden && (
                 <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                   <p className="text-sm font-medium text-blue-900">
-                    Counselor Note: {analysis.override.override_reason}
+                    Counselor Note: {analysis.override.overrideReason}
                   </p>
                   <p className="text-xs text-blue-700 mt-1">
-                    Adjusted by {analysis.override.overridden_by} on {new Date(analysis.override.overridden_at).toLocaleDateString()}
+                    Adjusted by {analysis.override.overriddenBy} on {new Date(analysis.override.overriddenAt).toLocaleDateString()}
                   </p>
                 </div>
               )}

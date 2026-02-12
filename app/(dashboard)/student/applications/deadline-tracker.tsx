@@ -24,8 +24,8 @@ export default function DeadlineTracker({ applications }: DeadlineTrackerProps) 
   }> = [];
 
   applications.forEach(app => {
-    if (app.application_deadline) {
-      const date = new Date(app.application_deadline);
+    if (app.applicationDeadline) {
+      const date = new Date(app.applicationDeadline);
       const daysRemaining = Math.ceil((date.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
       deadlines.push({
         College: app.college.name,
@@ -34,8 +34,8 @@ export default function DeadlineTracker({ applications }: DeadlineTrackerProps) 
         daysRemaining,
       });
     }
-    if (app.decision_deadline) {
-      const date = new Date(app.decision_deadline);
+    if (app.decisionDeadline) {
+      const date = new Date(app.decisionDeadline);
       const daysRemaining = Math.ceil((date.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
       deadlines.push({
         College: app.college.name,

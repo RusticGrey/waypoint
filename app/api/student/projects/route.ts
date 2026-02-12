@@ -12,9 +12,9 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const projects = await prisma.projectExperience.findMany({
-      where: { student_id: session.user.id },
-      orderBy: { start_date: 'desc' },
+    const projects = await prisma.ProjectExperience.findMany({
+      where: { studentId: session.user.id },
+      orderBy: { startDate: 'desc' },
     });
     
     return NextResponse.json({ projects });
@@ -35,29 +35,29 @@ export async function POST(req: Request) {
     const body = await req.json();
     
     // Map form fields to database schema
-    const project = await prisma.projectExperience.create({
+    const project = await prisma.ProjectExperience.create({
       data: {
-        student_id: session.user.id,
+        studentId: session.user.id,
         title: body.title,
-        experience_type: body.experience_type,
+        experienceType: body.experienceType,
         organization: body.organization || null,
-        role_title: body.role || null, // Map 'role' to 'role_title'
-        location: body.location || null,
-        start_date: new Date(body.start_date),
-        end_date: body.end_date ? new Date(body.end_date) : null,
-        is_ongoing: body.is_ongoing,
+        roleTitle: body.role || null, // Map 'role' to 'role_title'
+        // location: body.location || null,
+        startDate: new Date(body.startDate),
+        endDate: body.endDate ? new Date(body.endDate) : null,
+        isOngoing: body.isOngoing,
         description: body.description,
-        outcomes: body.outcomes || null,
-        skills_learned: body.skills_learned || null,
-        project_link: body.project_link || null,
+        // outcomes: body.outcomes || null,
+        // skillsLearned: body.skillsLearned || null,
+        // projectLink: body.projectLink || null,
       },
     });
     
     await logChange({
-      student_id: session.user.id,
-      change_type: 'New_Addition',
-      entity_type: 'Project',
-      entity_id: project.id,
+      studentId: session.user.id,
+      changeType: 'New_Addition',
+      entityType: 'Project',
+      entityId: project.id,
       action: 'Created',
       description: `Added new project: ${body.title}`,
     });

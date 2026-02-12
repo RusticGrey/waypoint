@@ -9,12 +9,12 @@ import Link from 'next/link';
 interface Project {
   id: string;
   title: string;
-  experience_type: string;
+  experienceType: string;
   organization: string | null;
-  role_title: string | null;
-  start_date: string;
-  end_date: string | null;
-  is_ongoing: boolean;
+  roleTitle: string | null;
+  startDate: string;
+  endDate: string | null;
+  isOngoing: boolean;
   description: string;
 }
 
@@ -34,12 +34,12 @@ export default function EditProjectsPage() {
   const [error, setError] = useState('');
   const [formData, setFormData] = useState({
     title: '',
-    experience_type: 'Research',
+    experienceType: 'Research',
     organization: '',
     role: '',
-    start_date: '',
-    end_date: '',
-    is_ongoing: false,
+    startDate: '',
+    endDate: '',
+    isOngoing: false,
     description: '',
   });
 
@@ -79,7 +79,7 @@ export default function EditProjectsPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...formData,
-          end_date: formData.is_ongoing ? null : formData.end_date,
+          end_date: formData.isOngoing ? null : formData.endDate,
         }),
       });
 
@@ -106,12 +106,12 @@ export default function EditProjectsPage() {
     setEditingId(project.id);
     setFormData({
       title: project.title,
-      experience_type: project.experience_type,
+      experienceType: project.experienceType,
       organization: project.organization || '',
-      role: project.role_title || '', // Map role_title to role
-      start_date: project.start_date.split('T')[0],
-      end_date: project.end_date ? project.end_date.split('T')[0] : '',
-      is_ongoing: project.is_ongoing,
+      role: project.roleTitle || '', // Map role_title to role
+      startDate: project.startDate.split('T')[0],
+      endDate: project.endDate ? project.endDate.split('T')[0] : '',
+      isOngoing: project.isOngoing,
       description: project.description,
     });
     setShowAdd(true);
@@ -142,12 +142,12 @@ export default function EditProjectsPage() {
     setShowAdd(false);
     setFormData({
       title: '',
-      experience_type: 'Research',
+      experienceType: 'Research',
       organization: '',
       role: '',
-      start_date: '',
-      end_date: '',
-      is_ongoing: false,
+      startDate: '',
+      endDate: '',
+      isOngoing: false,
       description: '',
     });
   };
@@ -202,7 +202,7 @@ export default function EditProjectsPage() {
                       Type *
                     </label>
                     <select
-                      value={formData.experience_type}
+                      value={formData.experienceType}
                       onChange={(e) => setFormData({ ...formData, experience_type: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
                     >
@@ -229,25 +229,25 @@ export default function EditProjectsPage() {
                   <Input
                     label="Start Date *"
                     type="date"
-                    value={formData.start_date}
-                    onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
+                    value={formData.startDate}
+                    onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
                     required
                   />
 
                   <Input
                     label="End Date"
                     type="date"
-                    value={formData.end_date}
-                    onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
-                    disabled={formData.is_ongoing}
+                    value={formData.endDate}
+                    onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+                    disabled={formData.isOngoing}
                   />
                 </div>
 
                 <label className="flex items-center">
                   <input
                     type="checkbox"
-                    checked={formData.is_ongoing}
-                    onChange={(e) => setFormData({ ...formData, is_ongoing: e.target.checked, end_date: '' })}
+                    checked={formData.isOngoing}
+                    onChange={(e) => setFormData({ ...formData, isOngoing: e.target.checked, endDate: '' })}
                     className="mr-2"
                   />
                   <span className="text-sm text-gray-900">This project is ongoing</span>
@@ -297,15 +297,15 @@ export default function EditProjectsPage() {
                     <div className="flex-1">
                       <h3 className="font-semibold text-gray-900">{project.title}</h3>
                       <p className="text-sm text-gray-600 mt-1">
-                        {project.experience_type.replace('_', ' ')}
+                        {project.experienceType.replace('_', ' ')}
                         {project.organization && ` • ${project.organization}`}
-                        {project.role_title && ` • ${project.role_title}`}
+                        {project.roleTitle && ` • ${project.roleTitle}`}
                       </p>
                       <p className="text-xs text-gray-500 mt-1">
-                        {new Date(project.start_date).toLocaleDateString()} - {
-                          project.is_ongoing 
+                        {new Date(project.startDate).toLocaleDateString()} - {
+                          project.isOngoing 
                             ? 'Present' 
-                            : project.end_date ? new Date(project.end_date).toLocaleDateString() : 'N/A'
+                            : project.endDate ? new Date(project.endDate).toLocaleDateString() : 'N/A'
                         }
                       </p>
                       <p className="text-sm text-gray-700 mt-2">{project.description}</p>

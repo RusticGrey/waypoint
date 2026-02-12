@@ -11,14 +11,14 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const student = await prisma.student.findUnique({
-      where: { user_id: session.user.id },
+    const student = await prisma.Student.findUnique({
+      where: { userId: session.user.id },
       include: {
-        AcademicProfile: true,
+        academicProfile: true,
       },
     });
     
-    return NextResponse.json({ AcademicProfile: student?.AcademicProfile });
+    return NextResponse.json({ academicProfile: student?.academicProfile });
   } catch (error) {
     console.error('Academic info fetch error:', error);
     return NextResponse.json({ error: 'Failed to fetch academic info' }, { status: 500 });
@@ -38,12 +38,12 @@ export async function PATCH(req: Request) {
     console.log('Updating academic profile:', body);
     
     // Convert current_gpa to string since it's stored as String in DB
-    const academic = await prisma.academicProfile.update({
-      where: { student_id: session.user.id },
+    const academic = await prisma.AcademicProfile.update({
+      where: { studentId: session.user.id },
       data: {
-        curriculum_type: body.curriculum_type,
-        grading_system_type: body.grading_system_type,
-        current_gpa: body.current_gpa ? body.current_gpa.toString() : null, // Convert to string
+        curriculumType: body.curriculumType,
+        gradingSystemType: body.gradingSystemType,
+        currentGpa: body.currentGpa ? body.currentGpa.toString() : null, // Convert to string
       },
     });
     
@@ -55,3 +55,4 @@ export async function PATCH(req: Request) {
     return NextResponse.json({ error: 'Failed to update academic info' }, { status: 500 });
   }
 }
+

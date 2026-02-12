@@ -74,9 +74,9 @@ export default function OnboardingWizard() {
           <TranscriptForm
             onNext={(data) => handleNext('transcripts', data)}
             onBack={handleBack}
-            initialData={formData.Transcript}
-            curriculum={formData.academic.curriculum_type}
-            currentGrade={formData.personal.current_grade}
+            initialData={formData.transcripts}
+            curriculum={formData.academic.curriculumType}
+            currentGrade={formData.personal.currentGrade}
           />
         );
       case 4:
@@ -84,8 +84,8 @@ export default function OnboardingWizard() {
           <ActivityForm
             onNext={(data) => handleNext('activities', data)}
             onBack={handleBack}
-            initialData={formData.Activity}
-            currentGrade={formData.personal.current_grade}
+            initialData={formData.activities}
+            currentGrade={formData.personal.currentGrade}
           />
         );
       case 5:
@@ -93,8 +93,8 @@ export default function OnboardingWizard() {
           <AchievementForm
             onNext={(data) => handleNext('achievements', data)}
             onBack={handleBack}
-            initialData={formData.Achievement}
-            currentGrade={formData.personal.current_grade}
+            initialData={formData.achievements}
+            currentGrade={formData.personal.currentGrade}
           />
         );
       case 6:

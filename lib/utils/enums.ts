@@ -8,7 +8,7 @@ import {
   AchievementType,
   RecognitionLevel,
   ExperienceType,
-  ProjectStatus,
+  // ProjectStatus,
   GoalType,
   GoalStatus,
   ChangeType,
@@ -30,7 +30,7 @@ export const getEnumValues = () => {
     
     // Project enums
     projectTypes: Object.values(ExperienceType),
-    projectStatuses: Object.values(ProjectStatus),
+    // projectStatuses: Object.values(ProjectStatus),
     
     // Academic enums
     gradeLevels: Object.values(GradeLevel),

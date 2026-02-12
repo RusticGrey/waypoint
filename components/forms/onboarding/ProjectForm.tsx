@@ -86,7 +86,7 @@ export default function ProjectForm({ onNext, onBack, initialData = [] }: Props)
     const start_date = `${startYear}-${startMonth}`;
     let end_date = null;
     
-    if (!data.is_ongoing && endMonth && endYear) {
+    if (!data.isOngoing && endMonth && endYear) {
       end_date = `${endYear}-${endMonth}`;
     }
 
@@ -169,14 +169,14 @@ export default function ProjectForm({ onNext, onBack, initialData = [] }: Props)
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded">
-                      {project.experience_type.replace('_', ' ')}
+                      {project.experienceType.replace('_', ' ')}
                     </span>
                     <p className="font-medium text-gray-900">{project.title}</p>
                   </div>
                   <p className="text-sm text-gray-600 mt-1">
                     {project.organization && `${project.organization} • `}
-                    {project.start_date}
-                    {project.is_ongoing ? ' - Present' : project.end_date ? ` - ${project.end_date}` : ''}
+                    {project.startDate}
+                    {project.isOngoing ? ' - Present' : project.endDate ? ` - ${project.endDate}` : ''}
                   </p>
                 </div>
                 <button
@@ -220,8 +220,8 @@ export default function ProjectForm({ onNext, onBack, initialData = [] }: Props)
                 <option value="Summer_Program">Summer Program</option>
                 <option value="Work_Experience">Work Experience</option>
               </select>
-              {errors.experience_type && (
-                <p className="mt-1 text-sm text-red-600">{errors.experience_type.message}</p>
+              {errors.experienceType && (
+                <p className="mt-1 text-sm text-red-600">{errors.experienceType.message}</p>
               )}
               {experienceType && (
                 <p className="mt-1 text-xs text-gray-500">{getTypeDescription(experienceType)}</p>
@@ -333,7 +333,7 @@ export default function ProjectForm({ onNext, onBack, initialData = [] }: Props)
                 label="Your Role / Title (optional)"
                 placeholder="e.g., Software Development Intern"
                 {...register('role_title')}
-                error={errors.role_title?.message}
+                error={errors.roleTitle?.message}
               />
             )}
 
@@ -368,14 +368,14 @@ export default function ProjectForm({ onNext, onBack, initialData = [] }: Props)
               label="Skills Learned (optional)"
               placeholder="e.g., Python, Leadership, Research Methods"
               {...register('skills_learned')}
-              error={errors.skills_learned?.message}
+              error={errors.skillsLearned?.message}
             />
 
             <Input
               label="Project Link (optional)"
               placeholder="https://..."
               {...register('project_link')}
-              error={errors.project_link?.message}
+              error={errors.projectLink?.message}
             />
 
             {(experienceType === 'Research' || experienceType === 'Internship') && (
@@ -386,14 +386,14 @@ export default function ProjectForm({ onNext, onBack, initialData = [] }: Props)
                     label="Mentor Name"
                     placeholder="e.g., Dr. Anjali Sharma"
                     {...register('mentor_name')}
-                    error={errors.mentor_name?.message}
+                    error={errors.mentorName?.message}
                   />
 
                   <Input
                     label="Mentor Email"
                     placeholder="for potential recommendation letters"
                     {...register('mentor_email')}
-                    error={errors.mentor_email?.message}
+                    error={errors.mentorEmail?.message}
                   />
                 </div>
               </div>

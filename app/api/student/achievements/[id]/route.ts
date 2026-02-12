@@ -18,27 +18,27 @@ export async function PATCH(
     const body = await req.json();
     
     // Map form fields to database schema
-    const achievement = await prisma.achievement.update({
+    const achievement = await prisma.Achievement.update({
       where: {
         id: params.id,
-        student_id: session.user.id,
+        studentId: session.user.id,
       },
       data: {
         title: body.title,
-        achievement_type: body.achievement_type,
+        achievementType: body.achievementType,
         organization: body.organization || null,
-        recognition_level: body.recognition_level || null,
-        grade_level: body.grade_level || null,
-        date_achieved: body.date_received ? new Date(body.date_received) : null, // Map date_received to date_achieved
+        recognitionLevel: body.recognitionLevel || null,
+        gradeLevel: body.gradeLevel || null,
+        dateAchieved: body.dateReceived ? new Date(body.dateReceived) : null, // Map date_received to date_achieved
         description: body.description || null,
       },
     });
     
     await logChange({
-      student_id: session.user.id,
-      change_type: 'Profile_Update',
-      entity_type: 'Achievement',
-      entity_id: achievement.id,
+      studentId: session.user.id,
+      changeType: 'Profile_Update',
+      entityType: 'Achievement',
+      entityId: achievement.id,
       action: 'Updated',
       description: `Updated achievement: ${body.title}`,
     });
@@ -67,10 +67,10 @@ export async function DELETE(
     
     if (achievement) {
       await logChange({
-        student_id: session.user.id,
-        change_type: 'Profile_Update',
-        entity_type: 'Achievement',
-        entity_id: achievement.id,
+        studentId: session.user.id,
+        changeType: 'Profile_Update',
+        entityType: 'Achievement',
+        entityId: achievement.id,
         action: 'Deleted',
         description: `Removed achievement: ${achievement.title}`,
       });
@@ -79,7 +79,7 @@ export async function DELETE(
     await prisma.achievement.delete({
       where: {
         id: params.id,
-        student_id: session.user.id,
+        studentId: session.user.id,
       },
     });
     

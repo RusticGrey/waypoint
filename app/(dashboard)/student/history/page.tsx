@@ -56,7 +56,7 @@ export default function ChangeHistoryPage() {
     const groups: { [key: string]: Change[] } = {};
     
     changes.forEach(change => {
-      const date = new Date(change.created_at).toLocaleDateString('en-US', {
+      const date = new Date(change.createdAt).toLocaleDateString('en-US', {
         weekday: 'long',
         year: 'numeric',
         month: 'long',
@@ -149,21 +149,21 @@ export default function ChangeHistoryPage() {
                 {dateChanges.map((change) => (
                   <div
                     key={change.id}
-                    className={`border-l-4 pl-4 py-3 rounded-r-lg ${getChangeColor(change.change_type)}`}
+                    className={`border-l-4 pl-4 py-3 rounded-r-lg ${getChangeColor(change.changeType)}`}
                   >
                     <div className="flex items-start">
-                      <span className="text-2xl mr-3">{getChangeIcon(change.change_type)}</span>
+                      <span className="text-2xl mr-3">{getChangeIcon(change.changeType)}</span>
                       <div className="flex-1">
                         <p className="text-gray-900 font-medium">{change.description}</p>
                         <div className="flex items-center gap-3 mt-1">
                           <span className="text-xs text-gray-600">
-                            {new Date(change.created_at).toLocaleTimeString('en-US', {
+                            {new Date(change.createdAt).toLocaleTimeString('en-US', {
                               hour: 'numeric',
                               minute: '2-digit'
                             })}
                           </span>
                           <span className="text-xs px-2 py-1 bg-white rounded">
-                            {change.change_type.replace('_', ' ')}
+                            {change.changeType.replace('_', ' ')}
                           </span>
                         </div>
                       </div>

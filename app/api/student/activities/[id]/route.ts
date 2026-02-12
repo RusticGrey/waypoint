@@ -32,18 +32,18 @@ export async function PATCH(
     const activity = await prisma.activity.update({
       where: {
         id: params.id,
-        student_id: session.user.id,
+        studentId: session.user.id,
       },
       data: validated,
     });
     
     await logChange({
-      student_id: session.user.id,
+      studentId: session.user.id,
       change_type: 'Profile_Update',
       entity_type: 'Activity',
       entity_id: activity.id,
       action: 'Updated',
-      description: `Updated activity: ${validated.activity_name}`,
+      description: `Updated activity: ${validated.activityName}`,
     });
     
     return NextResponse.json(activity);
@@ -70,19 +70,19 @@ export async function DELETE(
     
     if (activity) {
       await logChange({
-        student_id: session.user.id,
+        studentId: session.user.id,
         change_type: 'Profile_Update',
         entity_type: 'Activity',
         entity_id: activity.id,
         action: 'Deleted',
-        description: `Removed activity: ${activity.activity_name}`,
+        description: `Removed activity: ${activity.activityName}`,
       });
     }
     
     await prisma.activity.delete({
       where: {
         id: params.id,
-        student_id: session.user.id,
+        studentId: session.user.id,
       },
     });
     

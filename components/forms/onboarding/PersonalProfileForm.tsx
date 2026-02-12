@@ -9,12 +9,12 @@ import { Input } from '@/components/ui/input';
 const personalProfileWithGradeSchema = z.object({
   preferred_name: z.string().optional(),
   phone: z.string().optional(),
-  current_school: z.string().min(1, 'School name is required'),
-  school_location: z.string().min(1, 'School location is required'),
-  parent_name: z.string().min(1, 'Parent name is required'),
-  parent_email: z.string().email('Invalid email'),
-  parent_phone: z.string().min(1, 'Parent phone is required'),
-  current_grade: z.enum(['ninth', 'tenth', 'eleventh', 'twelfth']),
+  currentSchool: z.string().min(1, 'School name is required'),
+  schoolLocation: z.string().min(1, 'School location is required'),
+  parentName: z.string().min(1, 'Parent name is required'),
+  parentEmail: z.string().email('Invalid email'),
+  parentPhone: z.string().min(1, 'Parent phone is required'),
+  currentGrade: z.enum(['ninth', 'tenth', 'eleventh', 'twelfth']),
 });
 
 type PersonalProfileWithGradeInput = z.infer<typeof personalProfileWithGradeSchema>;
@@ -52,8 +52,8 @@ export default function PersonalProfileForm({ onNext, initialData }: Props) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Input
           label="Preferred Name (optional)"
-          {...register('preferred_name')}
-          error={errors.preferred_name?.message}
+          {...register('preferredName')}
+          error={errors.preferredName?.message}
         />
 
         <Input
@@ -66,15 +66,15 @@ export default function PersonalProfileForm({ onNext, initialData }: Props) {
 
       <Input
         label="Current School *"
-        {...register('current_school')}
-        error={errors.current_school?.message}
+        {...register('currentSchool')}
+        error={errors.currentSchool?.message}
       />
 
       <Input
         label="School Location (City, State, Country) *"
         placeholder="e.g., Bangalore, Karnataka, India"
-        {...register('school_location')}
-        error={errors.school_location?.message}
+        {...register('schoolLocation')}
+        error={errors.schoolLocation?.message}
       />
 
       <div>
@@ -82,7 +82,7 @@ export default function PersonalProfileForm({ onNext, initialData }: Props) {
           Current Grade *
         </label>
         <select
-          {...register('current_grade')}
+          {...register('currentGrade')}
           className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
         >
           <option value="">Select your current grade</option>
@@ -91,8 +91,8 @@ export default function PersonalProfileForm({ onNext, initialData }: Props) {
           <option value="eleventh">11th Grade</option>
           <option value="twelfth">12th Grade</option>
         </select>
-        {errors.current_grade && (
-          <p className="mt-1 text-sm text-red-600">{errors.current_grade.message}</p>
+        {errors.currentGrade && (
+          <p className="mt-1 text-sm text-red-600">{errors.currentGrade.message}</p>
         )}
       </div>
 
@@ -102,23 +102,23 @@ export default function PersonalProfileForm({ onNext, initialData }: Props) {
         <div className="space-y-4">
           <Input
             label="Parent/Guardian Name *"
-            {...register('parent_name')}
-            error={errors.parent_name?.message}
+            {...register('parentName')}
+            error={errors.parentName?.message}
           />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input
               label="Parent Email *"
               type="email"
-              {...register('parent_email')}
-              error={errors.parent_email?.message}
+              {...register('parentEmail')}
+              error={errors.parentEmail?.message}
             />
 
             <Input
               label="Parent Phone *"
               type="tel"
-              {...register('parent_phone')}
-              error={errors.parent_phone?.message}
+              {...register('parentPhone')}
+              error={errors.parentPhone?.message}
             />
           </div>
         </div>

@@ -16,26 +16,26 @@ export async function PATCH(
     
     const body = await req.json();
     
-    const application = await prisma.collegeApplication.update({
+    const application = await prisma.CollegeApplication.update({
       where: {
         id: params.id,
-        student_id: session.user.id,
+        studentId: session.user.id,
       },
       data: {
-        target_category: body.target_category,
-        application_status: body.application_status,
-        application_deadline: body.application_deadline ? new Date(body.application_deadline) : null,
-        decision_deadline: body.decision_deadline ? new Date(body.decision_deadline) : null,
-        essay_status: body.essay_status,
-        supplements_status: body.supplements_status,
-        recommendation_status: body.recommendation_status,
-        test_scores_sent: body.TestScore_sent,
-        application_portal_link: body.application_portal_link || null,
+        targetCategory: body.targetCategory,
+        applicationStatus: body.applicationStatus,
+        applicationDeadline: body.applicationDeadline ? new Date(body.applicationDeadline) : null,
+        decisionDeadline: body.decisionDeadline ? new Date(body.decisionDeadline) : null,
+        essayStatus: body.essayStatus,
+        supplementsStatus: body.supplementsStatus,
+        recommendationStatus: body.recommendationStatus,
+        testScoresSent: body.testScores_sent,
+        applicationPortalLink: body.applicationPortalLink || null,
         notes: body.notes || null,
-        decision_received_date: body.decision_received_date ? new Date(body.decision_received_date) : null,
+        decisionReceivedDate: body.decisionReceivedDate ? new Date(body.decisionReceivedDate) : null,
       },
       include: {
-        College: true,
+        college: true,
       },
     });
     
@@ -60,10 +60,10 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    await prisma.collegeApplication.delete({
+    await prisma.CollegeApplication.delete({
       where: {
         id: params.id,
-        student_id: session.user.id,
+        studentId: session.user.id,
       },
     });
     

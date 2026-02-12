@@ -13,18 +13,18 @@ export async function POST(req: Request) {
     
     const body = await req.json();
     
-    const meeting = await prisma.meeting.create({
+    const meeting = await prisma.Meeting.create({
       data: {
-        student_id: body.student_id,
-        coordinator_id: session.user.id,
-        meeting_date: new Date(body.meeting_date),
-        duration_minutes: body.duration_minutes,
-        meeting_type: body.meeting_type,
-        topics_discussed: body.topics_discussed,
+        studentId: body.studentId,
+        coordinatorId: session.user.id,
+        meetingDate: new Date(body.meetingDate),
+        durationMinutes: body.durationMinutes,
+        meetingType: body.meetingType,
+        topicsDiscussed: body.topicsDiscussed,
         notes: body.notes,
-        action_items: body.action_items,
-        next_meeting_date: body.next_meeting_date ? new Date(body.next_meeting_date) : null,
-        student_mood: body.student_mood,
+        actionItems: body.actionItems,
+        nextMeetingDate: body.nextMeetingDate ? new Date(body.nextMeetingDate) : null,
+        studentMood: body.studentMood,
       },
     });
     

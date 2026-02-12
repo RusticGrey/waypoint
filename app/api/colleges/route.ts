@@ -3,14 +3,14 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET(req: Request) {
   try {
-    const colleges = await prisma.college.findMany({
+    const colleges = await prisma.College.findMany({
       orderBy: { name: 'asc' },
       select: {
         id: true,
         name: true,
         country: true,
-        acceptance_rate: true,
-        ranking_us_news: true,
+        acceptanceRate: true,
+        rankingUsNews: true,
       },
     });
     
