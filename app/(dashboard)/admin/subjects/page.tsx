@@ -32,8 +32,8 @@ export default function SubjectsManagementPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          subject_name: newSubjectName,
-          curriculum_type: selectedCurriculum,
+          subjectName: newSubjectName,
+          curriculumType: selectedCurriculum,
         }),
       });
       setNewSubjectName('');
@@ -92,7 +92,7 @@ export default function SubjectsManagementPage() {
               <div className="border rounded-md divide-y max-h-96 overflow-y-auto">
                 {subjects.map((subject) => (
                   <div key={subject.id} className="px-4 py-3 flex justify-between items-center hover:bg-gray-50">
-                    <span className="text-gray-900">{subject.subject_name}</span>
+                    <span className="text-grey-900">{subject.subjectName}</span>
                   </div>
                 ))}
                 {subjects.length === 0 && (

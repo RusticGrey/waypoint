@@ -16,10 +16,10 @@ export async function POST(req: Request) {
     
     await prisma.Student.update({
       where: {
-        userId: student_id,
+        userId: studentId,
       },
       data: {
-        coordinatorId: coordinator_id || null,
+        coordinatorId: coordinatorId || null,
       },
     });
     

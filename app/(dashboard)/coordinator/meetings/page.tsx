@@ -18,17 +18,17 @@ export default async function MeetingsPage() {
 
   const meetings = await prisma.Meeting.findMany({
     where: {
-      coordinator_id: session.user.id,
+      coordinatorId: session.user.id,
     },
     include: {
-      Student: {  // lowercase 'student'
+      student: {  // lowercase 'student'
         include: {
           user: true,  // lowercase 'user'
         },
       },
     },
     orderBy: {
-      meeting_date: 'desc',
+      meetingDate: 'desc',
     },
   });
 

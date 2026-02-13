@@ -8,7 +8,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 interface Student {
   userId: string;
-  User: {
+  user: {
     firstName: string;
     lastName: string;
   };
@@ -22,15 +22,15 @@ export default function NewMeetingPage() {
   const [students, setStudents] = useState<Student[]>([]);
   const [formData, setFormData] = useState({
     studentId: preselectedStudent || '',
-    meeting_date: '',
-    meeting_time: '',
-    duration_minutes: 60,
-    meeting_type: 'Regular',
-    topics_discussed: '',
+    meetingDate: '',
+    // meetingTime: '',
+    durationMinutes: 60,
+    meetingType: 'Regular',
+    topicsDiscussed: '',
     notes: '',
-    action_items: '',
-    next_meeting_date: '',
-    student_mood: '',
+    actionItems: '',
+    nextMeetingDate: '',
+    studentMood: '',
   });
 
   useEffect(() => {
@@ -46,18 +46,18 @@ export default function NewMeetingPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const meetingDateTime = `${formData.meetingDate}T${formData.meeting_time}`;
+    const meetingDateTime = `${formData.meetingDate}`;//'T${formData.meetingTime}`;
     
     const payload = {
       studentId: formData.studentId,
-      meeting_date: new Date(meetingDateTime).toISOString(),
-      duration_minutes: formData.durationMinutes,
-      meeting_type: formData.meetingType,
-      topics_discussed: formData.topicsDiscussed.split(',').map(t => t.trim()).filter(Boolean),
+      meetingDate: new Date(meetingDateTime).toISOString(),
+      durationMinutes: formData.durationMinutes,
+      meetingType: formData.meetingType,
+      topicsDiscussed: formData.topicsDiscussed.split(',').map(t => t.trim()).filter(Boolean),
       notes: formData.notes,
-      action_items: formData.actionItems.split('\n').filter(Boolean),
-      next_meeting_date: formData.nextMeetingDate ? new Date(formData.nextMeetingDate).toISOString() : null,
-      student_mood: formData.studentMood || null,
+      actionItems: formData.actionItems.split('\n').filter(Boolean),
+      nextMeetingDate: formData.nextMeetingDate ? new Date(formData.nextMeetingDate).toISOString() : null,
+      studentMood: formData.studentMood || null,
     };
 
     const res = await fetch('/api/coordinator/meetings', {
@@ -108,15 +108,7 @@ export default function NewMeetingPage() {
                 label="Meeting Date *"
                 type="date"
                 value={formData.meetingDate}
-                onChange={(e) => setFormData({ ...formData, meeting_date: e.target.value })}
-                required
-              />
-
-              <Input
-                label="Meeting Time *"
-                type="time"
-                value={formData.meeting_time}
-                onChange={(e) => setFormData({ ...formData, meeting_time: e.target.value })}
+                onChange={(e) => setFormData({ ...formData, meetingDate: e.target.value })}
                 required
               />
             </div>
@@ -140,7 +132,7 @@ export default function NewMeetingPage() {
                 </label>
                 <select
                   value={formData.meetingType}
-                  onChange={(e) => setFormData({ ...formData, meeting_type: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, meetingType: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
                 >
                   <option value="Initial">Initial</option>
@@ -158,7 +150,7 @@ export default function NewMeetingPage() {
               label="Topics Discussed (comma-separated)"
               placeholder="e.g., College list, Test prep, Activities"
               value={formData.topicsDiscussed}
-              onChange={(e) => setFormData({ ...formData, topics_discussed: e.target.value })}
+              onChange={(e) => setFormData({ ...formData, topicsDiscussed: e.target.value })}
             />
 
             <div>
@@ -180,7 +172,7 @@ export default function NewMeetingPage() {
               </label>
               <textarea
                 value={formData.actionItems}
-                onChange={(e) => setFormData({ ...formData, action_items: e.target.value })}
+                onChange={(e) => setFormData({ ...formData, actionItems: e.target.value })}
                 rows={4}
                 placeholder="Research 3 colleges&#10;Complete SAT practice test&#10;Draft personal statement"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
@@ -192,14 +184,14 @@ export default function NewMeetingPage() {
                 label="Student Mood (optional)"
                 placeholder="e.g., Confident, Stressed, Motivated"
                 value={formData.studentMood}
-                onChange={(e) => setFormData({ ...formData, student_mood: e.target.value })}
+                onChange={(e) => setFormData({ ...formData, studentMood: e.target.value })}
               />
 
               <Input
                 label="Next Meeting Date (optional)"
                 type="date"
                 value={formData.nextMeetingDate}
-                onChange={(e) => setFormData({ ...formData, next_meeting_date: e.target.value })}
+                onChange={(e) => setFormData({ ...formData, nextMeetingDate: e.target.value })}
               />
             </div>
 

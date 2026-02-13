@@ -30,7 +30,7 @@ export default async function StudentProfileViewer({
     redirect('/student');
   }
 
-  const student = await prisma.student.findUnique({
+  const student = await prisma.Student.findUnique({
     where: { userId: params.studentId },
     include: {
       user: true,
@@ -41,15 +41,15 @@ export default async function StudentProfileViewer({
       achievements: true,
       projectExperiences: true,
       testScores: true,
-      TargetCollege: {
+      targetColleges: {
         include: {
           college: true,
         },
         orderBy: {
-          category: 'asc',
+          targetCategory: 'asc',
         },
       },
-      ProfileGoal: {
+      goals: {
         where: {
           status: {
             in: ['Not_Started', 'In_Progress'],
@@ -59,15 +59,15 @@ export default async function StudentProfileViewer({
           priority: 'desc',
         },
       },
-      Meeting: {
+      meetings: {
         orderBy: {
-          meeting_date: 'desc',
+          meetingDate: 'desc',
         },
         take: 5,
       },
-      ProfileOverride: {
+      profileOverride: {
         include: {
-          User: {
+          coordinator: {
             select: {
               firstName: true,
               lastName: true,
@@ -109,7 +109,7 @@ export default async function StudentProfileViewer({
   
   const displayScore = student.profileOverride 
     ? student.profileOverride.overrideScore 
-    : analysis.overall_score;
+    : analysis.overallScore;
   
   const isOverridden = !!student.profileOverride;
 
@@ -140,7 +140,7 @@ export default async function StudentProfileViewer({
             <CardTitle>Profile Strength Score</CardTitle>
             <OverrideButton 
               studentId={params.studentId}
-              currentScore={analysis.overall_score}
+              currentScore={analysis.overallScore}
               existingOverride={student.profileOverride}
             />
           </div>
@@ -165,10 +165,10 @@ export default async function StudentProfileViewer({
               <ProgressBar percentage={displayScore} showLabel={false} />
               <p className="mt-2 text-sm font-medium text-gray-900">
                 College Readiness: <span className={
-                  analysis.college_readiness === 'Highly Competitive' ? 'text-green-600' :
-                  analysis.college_readiness === 'Competitive' ? 'text-blue-600' :
-                  analysis.college_readiness === 'Developing' ? 'text-yellow-600' : 'text-red-600'
-                }>{analysis.college_readiness}</span>
+                  analysis.collegeReadiness === 'Highly Competitive' ? 'text-green-600' :
+                  analysis.collegeReadiness === 'Competitive' ? 'text-blue-600' :
+                  analysis.collegeReadiness === 'Developing' ? 'text-yellow-600' : 'text-red-600'
+                }>{analysis.collegeReadiness}</span>
               </p>
               
               {isOverridden && student.profileOverride && (
@@ -180,7 +180,7 @@ export default async function StudentProfileViewer({
                     <strong>Override Reason:</strong> {student.profileOverride.overrideReason}
                   </p>
                   <p className="text-xs text-blue-700 mt-1">
-                    By {student.profileOverride.overriddenBy_user.firstName} {student.profileOverride.overriddenBy_user.lastName} on {new Date(student.profileOverride.createdAt).toLocaleDateString()}
+                    By {student.profileOverride.overriddenBy.firstName} {student.profileOverride.overriddenBy.lastName} on {new Date(student.profileOverride.createdAt).toLocaleDateString()}
                   </p>
                 </div>
               )}
@@ -189,7 +189,7 @@ export default async function StudentProfileViewer({
 
           {/* Category Breakdown */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-6 pt-6 border-t">
-            {Object.entries(analysis.category_scores).map(([category, score]) => (
+            {Object.entries(analysis.categoryScores).map(([category, score]) => (
               <div key={category}>
                 <div className="flex justify-between mb-1">
                   <span className="text-xs font-medium text-gray-700 capitalize">

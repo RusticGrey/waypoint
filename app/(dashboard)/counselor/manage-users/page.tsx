@@ -11,7 +11,7 @@ interface User {
   firstName: string;
   lastName: string;
   role: string;
-  created_at: string;
+  createdAt: string;
   student?: {
     coordinatorId: string | null;
   };

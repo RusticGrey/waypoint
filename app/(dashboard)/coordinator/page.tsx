@@ -17,12 +17,12 @@ export default async function CoordinatorDashboard() {
   }
 
   // Get students assigned to this coordinator
-  const students = await prisma.student.findMany({
+  const students = await prisma.Student.findMany({
     where: {
-      coordinator_id: session.user.id,
+      coordinatorId: session.user.id,
     },
     include: {
-      User: {
+      user: {
         select: {
           firstName: true,
           lastName: true,
@@ -35,20 +35,20 @@ export default async function CoordinatorDashboard() {
       activities: true,
       achievements: true,
       projectExperiences: true,
-      TargetCollege: {
+      targetColleges: {
         include: {
           college: true,
         },
       },
-      Meeting: {
+      meetings: {
         orderBy: {
-          meeting_date: 'desc',
+          meetingDate: 'desc',
         },
         take: 1, // Get last meeting
       },
     },
     orderBy: {
-      User: {
+      user: {
         lastName: 'asc',
       },
     },

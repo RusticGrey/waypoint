@@ -29,11 +29,11 @@ export default async function CounselorStudentViewer({
     redirect('/coordinator');
   }
 
-  const student = await prisma.student.findUnique({
+  const student = await prisma.Student.findUnique({
     where: { userId: params.studentId },
     include: {
       user: true,
-      Coordinator: {
+      coordinator: {
         select: {
           firstName: true,
           lastName: true,
@@ -42,37 +42,37 @@ export default async function CounselorStudentViewer({
       },
       personalProfile: true,
       academicProfile: true,
-      Transcript: {
+      transcripts: {
         orderBy: [
-          { grade_level: 'asc' },
-          { course_name: 'asc' }
+          { gradeLevel: 'asc' },
+          { courseName: 'asc' }
         ]
       },
-      Activity: {
+      activities: {
         orderBy: {
-          activity_name: 'asc'
+          activityName: 'asc'
         }
       },
-      Achievement: {
+      achievements: {
         orderBy: {
-          grade_level: 'asc'
+          gradeLevel: 'asc'
         }
       },
-      ProjectExperience: {
+      projectExperiences: {
         orderBy: {
-          start_date: 'desc'
+          startDate: 'desc'
         }
       },
       testScores: true,
-      TargetCollege: {
+      targetColleges: {
         include: {
           college: true,
         },
         orderBy: {
-          category: 'asc',
+          targetCategory: 'asc',
         },
       },
-      ProfileGoal: {
+      goals: {
         where: {
           status: {
             in: ['Not_Started', 'In_Progress'],
@@ -82,9 +82,9 @@ export default async function CounselorStudentViewer({
           priority: 'desc',
         },
       },
-      Meeting: {
+      meetings: {
         include: {
-          Coordinator: {
+          user: {
             select: {
               firstName: true,
               lastName: true,
@@ -92,7 +92,7 @@ export default async function CounselorStudentViewer({
           },
         },
         orderBy: {
-          meeting_date: 'desc',
+          meetingDate: 'desc',
         },
         take: 5,
       },
@@ -142,28 +142,28 @@ export default async function CounselorStudentViewer({
           <div className="flex items-center gap-6">
             <div className="flex-shrink-0">
               <div className={`text-6xl font-bold ${
-                analysis.overall_score >= 80 ? 'text-green-600' :
-                analysis.overall_score >= 60 ? 'text-yellow-600' : 'text-red-600'
+                analysis.overallScore >= 80 ? 'text-green-600' :
+                analysis.overallScore >= 60 ? 'text-yellow-600' : 'text-red-600'
               }`}>
-                {analysis.overall_score}
+                {analysis.overallScore}
               </div>
               <p className="text-sm text-gray-500 text-center">/ 100</p>
             </div>
             <div className="flex-1">
-              <ProgressBar percentage={analysis.overall_score} showLabel={false} />
+              <ProgressBar percentage={analysis.overallScore} showLabel={false} />
               <p className="mt-2 text-sm font-medium text-gray-900">
                 College Readiness: <span className={
-                  analysis.college_readiness === 'Highly Competitive' ? 'text-green-600' :
-                  analysis.college_readiness === 'Competitive' ? 'text-blue-600' :
-                  analysis.college_readiness === 'Developing' ? 'text-yellow-600' : 'text-red-600'
-                }>{analysis.college_readiness}</span>
+                  analysis.collegeReadiness === 'Highly Competitive' ? 'text-green-600' :
+                  analysis.collegeReadiness === 'Competitive' ? 'text-blue-600' :
+                  analysis.collegeReadiness === 'Developing' ? 'text-yellow-600' : 'text-red-600'
+                }>{analysis.collegeReadiness}</span>
               </p>
             </div>
           </div>
 
           {/* Category Breakdown */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-6 pt-6 border-t">
-            {Object.entries(analysis.category_scores).map(([category, score]) => (
+            {Object.entries(analysis.categoryScores).map(([category, score]) => (
               <div key={category}>
                 <div className="flex justify-between mb-1">
                   <span className="text-xs font-medium text-gray-700 capitalize">

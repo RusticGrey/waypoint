@@ -40,6 +40,7 @@ model User {
   meetingLogs  MeetingLog[]
   comments     ProfileComment[]
   overrides    ProfileOverride[]
+  students     Student[]
 
   @@map("User")
 }
@@ -54,6 +55,7 @@ model Student {
 
   // Relations
   user               User                 @relation("UserToStudent", fields: [userId], references: [id], onDelete: Cascade)
+  coordinator        User?                @relation(fields: [coordinatorId], references: [id])
   academicProfile    AcademicProfile?
   personalProfile    PersonalProfile?
   achievements       Achievement[]
@@ -127,19 +129,19 @@ model Transcript {
 }
 
 model Activity {
-  id           String   @id @default(cuid())
-  studentId    String   @map("student_id")
-  activityName String   @map("activity_name")
+  id           String           @id @default(cuid())
+  studentId    String           @map("student_id")
+  activityName String           @map("activity_name")
   category     ActivityCategory // Changed from String to the Enum
   role         String?
-  gradeLevel   GradeLevel @map("grade_level")
-  hoursPerWeek Int      @map("hours_per_week")
-  weeksPerYear Int      @map("weeks_per_year")
+  gradeLevel   GradeLevel       @map("grade_level")
+  hoursPerWeek Int              @map("hours_per_week")
+  weeksPerYear Int              @map("weeks_per_year")
   description  String?
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
-  
-  student      Student  @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+  createdAt    DateTime         @default(now()) @map("created_at")
+  updatedAt    DateTime         @updatedAt @map("updated_at")
+
+  student Student @relation(fields: [studentId], references: [userId], onDelete: Cascade)
 
   @@map("Activity")
 }
@@ -199,33 +201,31 @@ model College {
   targetColleges TargetCollege[]
 
   @@unique([name])
-
   @@map("College")
 }
 
 model CollegeApplication {
-  id                    String    @id @default(cuid())
-  studentId             String    @map("student_id")
-  collegeId             String    @map("college_id")
-  targetCategory        TargetCategory @map("target_category")
+  id                    String            @id @default(cuid())
+  studentId             String            @map("student_id")
+  collegeId             String            @map("college_id")
+  targetCategory        TargetCategory    @map("target_category")
   applicationStatus     ApplicationStatus @map("application_status")
-  applicationDeadline   DateTime? @map("application_deadline")
-  decisionDeadline      DateTime? @map("decision_deadline")
-  essayStatus           String    @default("Not Started") @map("essay_status")
-  supplementsStatus     String    @default("Not Started") @map("supplements_status")
-  recommendationStatus  String    @default("Not Requested") @map("recommendation_status")
-  testScoresSent        Boolean   @default(false) @map("test_scores_sent")
-  applicationPortalLink String?   @map("application_portal_link")
+  applicationDeadline   DateTime?         @map("application_deadline")
+  decisionDeadline      DateTime?         @map("decision_deadline")
+  essayStatus           String            @default("Not Started") @map("essay_status")
+  supplementsStatus     String            @default("Not Started") @map("supplements_status")
+  recommendationStatus  String            @default("Not Requested") @map("recommendation_status")
+  testScoresSent        Boolean           @default(false) @map("test_scores_sent")
+  applicationPortalLink String?           @map("application_portal_link")
   notes                 String?
-  decisionReceivedDate  DateTime? @map("decision_received_date")
-  createdAt             DateTime  @default(now()) @map("created_at")
-  updatedAt             DateTime  @updatedAt @map("updated_at")
+  decisionReceivedDate  DateTime?         @map("decision_received_date")
+  createdAt             DateTime          @default(now()) @map("created_at")
+  updatedAt             DateTime          @updatedAt @map("updated_at")
 
   college College @relation(fields: [collegeId], references: [id], onDelete: Cascade)
   student Student @relation(fields: [studentId], references: [userId], onDelete: Cascade)
 
   @@unique([studentId, collegeId])
-
   @@map("CollegeApplication")
 }
 
@@ -257,7 +257,6 @@ model TargetCollege {
   college College @relation(fields: [collegeId], references: [id], onDelete: Cascade)
 
   @@unique([studentId, collegeId])
-
   @@map("TargetCollege")
 }
 
@@ -280,8 +279,8 @@ model Meeting {
   createdAt       DateTime    @default(now()) @map("created_at")
   updatedAt       DateTime    @updatedAt @map("updated_at")
 
-  user    User    @relation("CoordinatorMeetings", fields: [coordinatorId], references: [id], onDelete: Cascade)
-  student Student @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+  user            User    @relation("CoordinatorMeetings", fields: [coordinatorId], references: [id], onDelete: Cascade)
+  student         Student @relation(fields: [studentId], references: [userId], onDelete: Cascade)
 
   @@map("Meeting")
 }
@@ -319,19 +318,19 @@ model ChangeLog {
 }
 
 model ProfileGoal {
-  id            String     @id @default(cuid())
-  studentId     String     @map("student_id")
-  goalType      GoalType   @map("goal_type")
-  category      String
-  targetValue   String     @map("target_value")
-  currentValue  String     @map("current_value")
-  deadline      DateTime?  
-  completedAt   DateTime? @map("completed_at")
-  priority      Int?
-  notes         String?
-  status      GoalStatus @default(Not_Started)
+  id           String     @id @default(cuid())
+  studentId    String     @map("student_id")
+  goalType     GoalType   @map("goal_type")
+  category     String
+  targetValue  String     @map("target_value")
+  currentValue String     @map("current_value")
+  deadline     DateTime?
+  completedAt  DateTime?  @map("completed_at")
+  priority     Int?
+  notes        String?
+  status       GoalStatus @default(Not_Started)
 
-  createdAt   DateTime   @default(now()) @map("created_at")
+  createdAt DateTime @default(now()) @map("created_at")
 
   student Student @relation(fields: [studentId], references: [userId], onDelete: Cascade)
 
@@ -347,8 +346,8 @@ model ProfileOverride {
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
 
-  user    User    @relation(fields: [overriddenBy], references: [id])
-  student Student @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+  coordinator    User    @relation(fields: [overriddenBy], references: [id])
+  student        Student @relation(fields: [studentId], references: [userId], onDelete: Cascade)
 
   @@map("ProfileOverride")
 }

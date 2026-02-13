@@ -12,10 +12,10 @@ export async function POST(req: Request) {
     }
     
     const body = await req.json();
-    const { student_id, override_score, override_reason } = body;
+    const { studentId, overrideScore, overrideReason } = body;
     
     // Validate score
-    if (override_score < 0 || override_score > 100) {
+    if (overrideScore < 0 || overrideScore > 100) {
       return NextResponse.json({ error: 'Score must be between 0 and 100' }, { status: 400 });
     }
     
@@ -54,9 +54,9 @@ export async function DELETE(req: Request) {
     }
     
     const { searchParams } = new URL(req.url);
-    const student_id = searchParams.get('studentId');
+    const studentId = searchParams.get('student_id');
     
-    if (!student_id) {
+    if (!studentId) {
       return NextResponse.json({ error: 'student_id required' }, { status: 400 });
     }
     

@@ -42,8 +42,8 @@ export default function OverrideModal({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           studentId: studentId,
-          override_score: parseInt(overrideScore),
-          override_reason: overrideReason,
+          overrideScore: parseInt(overrideScore),
+          overrideReason: overrideReason,
         }),
       });
 

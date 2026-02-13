@@ -11,7 +11,7 @@ export async function GET(req: Request) {
     if (!session?.user?.id || session.user.role !== 'counselor') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    
+            
     const users = await prisma.User.findMany({
       where: {
         organizationId: session.user.organizationId,
@@ -49,6 +49,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
+    console.log("SESSION USER = "+JSON.stringify(session.user));
+        
+    const sessionUser = await prisma.User.findUnique({
+      where: { id: session.user.id },
+      include: {
+        student: true,
+      },
+    });    
+    console.log("MY USER = "+JSON.stringify(sessionUser));
+        
     const body = await req.json();
     const { email, password, firstName, lastName, role, currentGrade, graduationYear, coordinatorId } = body;
     
@@ -71,7 +81,7 @@ export async function POST(req: Request) {
         firstName,
         lastName,
         role,
-        organizationId: session.user.organizationId,
+        organizationId: sessionUser.organizationId,
       },
     });
     
@@ -82,7 +92,7 @@ export async function POST(req: Request) {
           userId: user.id,
           currentGrade: currentGrade || 'eleventh',
           graduationYear: graduationYear || new Date().getFullYear() + 2,
-          coordinatorId: coordinatorIdd || null,
+          coordinatorId: coordinatorId || null,
         },
       });
     }
@@ -128,3 +138,6 @@ export async function DELETE(req: Request) {
     );
   }
 }
+
+
+

@@ -1,43 +1,43 @@
 interface Student {
-  current_grade: string;
-  academic_profile?: {
-    current_gpa?: number;
-    curriculum_type: string;
+  currentGrade: string;
+  academicProfile?: {
+    currentGpa?: number;
+    curriculumType: string;
   };
-  Transcript: any[];
+  transcripts: any[];
   activities?: any[];
   achievements?: any[];
-  project_experiences?: any[];
-  test_scores?: any[];
+  projectExperiences?: any[];
+  testScores?: any[];
 }
 
 interface StrengthAnalysis {
-  overall_score: number;
-  category_scores: {
+  overallScore: number;
+  categoryScores: {
     academic: number;
     testing: number;
-    Activity: number;
+    activity: number;
     leadership: number;
-    Achievement: number;
+    achievement: number;
     projects: number;
   };
   strengths: string[];
   weaknesses: string[];
   recommendations: string[];
-  college_readiness: 'Needs Work' | 'Developing' | 'Competitive' | 'Highly Competitive';
+  collegeReadiness: 'Needs Work' | 'Developing' | 'Competitive' | 'Highly Competitive';
 }
 
 export function analyzeProfileStrength(student: Student): StrengthAnalysis {
   const scores = {
     academic: calculateAcademicScore(student),
     testing: calculateTestingScore(student),
-    Activity: calculateActivitiesScore(student),
+    activities: calculateActivitiesScore(student),
     leadership: calculateLeadershipScore(student),
-    Achievement: calculateAchievementsScore(student),
+    achievements: calculateAchievementsScore(student),
     projects: calculateProjectsScore(student),
   };
 
-  const overall_score = Math.round(
+  const overallScore = Math.round(
     (scores.academic * 0.30) +
     (scores.testing * 0.20) +
     (scores.activities * 0.20) +
@@ -49,15 +49,15 @@ export function analyzeProfileStrength(student: Student): StrengthAnalysis {
   const strengths = identifyStrengths(scores);
   const weaknesses = identifyWeaknesses(scores);
   const recommendations = generateRecommendations(student, scores);
-  const college_readiness = determineReadiness(overall_score);
+  const collegeReadiness = determineReadiness(overallScore);
 
   return {
-    overall_score,
-    category_scores: scores,
+    overallScore,
+    categoryScores: scores,
     strengths,
     weaknesses,
     recommendations,
-    college_readiness,
+    collegeReadiness,
   };
 }
 
@@ -74,9 +74,9 @@ function calculateAcademicScore(student: Student): number {
   }
   
   const transcripts = student.transcripts || [];
-  const apCount = transcripts.filter(t => t.honors_level === 'AP').length;
-  const ibCount = transcripts.filter(t => t.honors_level?.includes('IB')).length;
-  const honorsCount = transcripts.filter(t => t.honors_level === 'Honors').length;
+  const apCount = transcripts.filter(t => t.honorsLevel === 'AP').length;
+  const ibCount = transcripts.filter(t => t.honorsLevel?.includes('IB')).length;
+  const honorsCount = transcripts.filter(t => t.honorsLevel === 'Honors').length;
   
   const rigorScore = Math.min(30, (apCount * 3) + (ibCount * 3) + (honorsCount * 2));
   score += rigorScore;
@@ -272,7 +272,7 @@ function generateRecommendations(student: Student, scores: any): string[] {
   }
   
   if (scores.academic < 80) {
-    const apCount = student.transcripts?.filter(t => t.honors_level === 'AP').length || 0;
+    const apCount = student.transcripts?.filter(t => t.honorsLevel === 'AP').length || 0;
     if (apCount < 5) {
       recs.push("Take more AP or IB courses to demonstrate academic rigor");
     }
