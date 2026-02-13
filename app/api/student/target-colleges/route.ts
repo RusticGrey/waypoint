@@ -72,34 +72,38 @@ export async function POST(req: Request) {
   }
 }
 
-export async function DELETE(req: Request) {
-  try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-    
-    const { searchParams } = new URL(req.url);
-    const id = searchParams.get('id');
-    
-    if (!id) {
-      return NextResponse.json({ error: 'ID required' }, { status: 400 });
-    }
-    
-    await prisma.TargetCollege.delete({
-      where: {
-        id,
-        studentId: session.user.id, // Ensure student owns this target
-      },
-    });
-    
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error('Target college delete error:', error);
-    return NextResponse.json(
-      { error: 'Failed to delete target college' },
-      { status: 500 }
-    );
-  }
-}
+// export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+//   try {
+//     const session = await getServerSession(authOptions);
+//     
+//     if (!session?.user?.id) {
+//       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+//     }
+//     
+//     // const { searchParams } = new URL(req.url);
+//     // const id = searchParams.get('id');
+//     // 
+//     // if (!id) {
+//     //   return NextResponse.json({ error: 'ID required' }, { status: 400 });
+//     // }
+//     
+//     await prisma.TargetCollege.delete({
+//       where: {
+//         id: params.id,
+//         studentId: session.user.id, // Ensure student owns this target
+//       },
+//     });
+//     
+//     return NextResponse.json({ success: true });
+//   } catch (error) {
+//     console.error('Target college delete error:', error);
+//     return NextResponse.json(
+//       { error: 'Failed to delete target college' },
+//       { status: 500 }
+//     );
+//   }
+// }
+
+
+
+

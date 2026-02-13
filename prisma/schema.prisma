@@ -326,6 +326,7 @@ model ProfileGoal {
   targetValue   String     @map("target_value")
   currentValue  String     @map("current_value")
   deadline      DateTime?  
+  completedAt   DateTime? @map("completed_at")
   priority      Int?
   notes         String?
   status      GoalStatus @default(Not_Started)
