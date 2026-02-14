@@ -19,35 +19,35 @@ interface DetailedCategoryScore {
 }
 
 interface AcademicDetails extends DetailedCategoryScore {
-  gpa_score: number;
-  course_rigor_score: number;
-  course_breadth_score: number;
+  gpaScore: number;
+  courseRigorScore: number;
+  courseBreadthScore: number;
 }
 
 interface TestingDetails extends DetailedCategoryScore {
-  sat_score: number;
-  act_score: number;
+  satScore: number;
+  actScore: number;
 }
 
 interface ActivitiesDetails extends DetailedCategoryScore {
-  quantity_score: number;
-  commitment_score: number;
-  diversity_score: number;
+  quantityScore: number;
+  commitmentScore: number;
+  diversityScore: number;
 }
 
 interface LeadershipDetails extends DetailedCategoryScore {
-  roles_score: number;
-  achievements_score: number;
+  rolesScore: number;
+  achievementsScore: number;
 }
 
 interface AchievementsDetails extends DetailedCategoryScore {
-  quantity_score: number;
-  recognition_score: number;
+  quantityScore: number;
+  recognitionScore: number;
 }
 
 interface ProjectsDetails extends DetailedCategoryScore {
-  quantity_score: number;
-  quality_score: number;
+  quantityScore: number;
+  qualityScore: number;
 }
 
 export function analyzeProfileDetailed(student: StudentWithRelations) {
@@ -59,7 +59,7 @@ export function analyzeProfileDetailed(student: StudentWithRelations) {
   const projects = analyzeProjectsDetailed(student);
 
   // Calculate weighted overall score
-  const overall_score = Math.round(
+  const overallScore = Math.round(
     (academic.total / academic.max) * 30 +
     (testing.total / testing.max) * 20 +
     (activities.total / activities.max) * 20 +
@@ -68,7 +68,7 @@ export function analyzeProfileDetailed(student: StudentWithRelations) {
     (projects.total / projects.max) * 10
   );
 
-  const category_scores = {
+  const categoryScores = {
     academic: Math.round((academic.total / academic.max) * 100),
     testing: Math.round((testing.total / testing.max) * 100),
     Activity: Math.round((activities.total / activities.max) * 100),
@@ -82,7 +82,7 @@ export function analyzeProfileDetailed(student: StudentWithRelations) {
   const recommendations = [];
 
   // Identify strengths (>= 80)
-  Object.entries(category_scores).forEach(([key, score]) => {
+  Object.entries(categoryScores).forEach(([key, score]) => {
     if (score >= 80) {
       strengths.push(`Strong ${key} profile with ${score}/100 score`);
     } else if (score < 60) {
@@ -91,35 +91,35 @@ export function analyzeProfileDetailed(student: StudentWithRelations) {
   });
 
   // Generate recommendations
-  if (category_scores.academic < 80) {
+  if (categoryScores.academic < 80) {
     recommendations.push("Focus on maintaining high grades and taking more rigorous courses (AP, IB, Honors)");
   }
-  if (category_scores.testing < 60) {
+  if (categoryScores.testing < 60) {
     recommendations.push("Take standardized tests (SAT/ACT) and aim for scores in the top 25th percentile");
   }
-  if (category_scores.activities < 70) {
+  if (categoryScores.activities < 70) {
     recommendations.push("Join more extracurricular activities and commit to them long-term (2+ years)");
   }
-  if (category_scores.leadership < 60) {
+  if (categoryScores.leadership < 60) {
     recommendations.push("Pursue leadership positions in your activities - captain, president, or founder roles");
   }
-  if (category_scores.achievements < 60) {
+  if (categoryScores.achievements < 60) {
     recommendations.push("Participate in competitions and apply for awards at local, state, or national levels");
   }
-  if (category_scores.projects < 60) {
+  if (categoryScores.projects < 60) {
     recommendations.push("Start independent projects, research, or internships in your area of interest");
   }
 
   // Determine college readiness
-  let college_readiness = 'Early Development';
-  if (overall_score >= 85) college_readiness = 'Highly Competitive';
-  else if (overall_score >= 70) college_readiness = 'Competitive';
-  else if (overall_score >= 50) college_readiness = 'Developing';
+  let collegeReadiness = 'Early Development';
+  if (overallScore >= 85) collegeReadiness = 'Highly Competitive';
+  else if (overallScore >= 70) collegeReadiness = 'Competitive';
+  else if (overallScore >= 50) collegeReadiness = 'Developing';
 
   return {
-    overall_score,
-    category_scores,
-    category_details: {
+    overallScore,
+    categoryScores,
+    categoryDetails: {
       academic,
       testing,
       activities,
@@ -130,34 +130,34 @@ export function analyzeProfileDetailed(student: StudentWithRelations) {
     strengths,
     weaknesses,
     recommendations,
-    college_readiness,
+    collegeReadiness,
   };
 }
 
 function analyzeAcademicDetailed(student: StudentWithRelations): AcademicDetails {
   const details: string[] = [];
-  let gpa_score = 0;
-  let course_rigor_score = 0;
-  let course_breadth_score = 0;
+  let gpaScore = 0;
+  let courseRigorScore = 0;
+  let courseBreadthScore = 0;
 
   // GPA Score (max 40 points)
   const gpa = student.academicProfile?.currentGpa;
   if (gpa) {
     const gpaNum = parseFloat(gpa);
     if (gpaNum >= 3.9) {
-      gpa_score = 40;
+      gpaScore = 40;
       details.push(`Excellent GPA (${gpa}) = 40/40 points`);
     } else if (gpaNum >= 3.7) {
-      gpa_score = 35;
+      gpaScore = 35;
       details.push(`Strong GPA (${gpa}) = 35/40 points`);
     } else if (gpaNum >= 3.5) {
-      gpa_score = 30;
+      gpaScore = 30;
       details.push(`Good GPA (${gpa}) = 30/40 points`);
     } else if (gpaNum >= 3.0) {
-      gpa_score = 25;
+      gpaScore = 25;
       details.push(`Average GPA (${gpa}) = 25/40 points`);
     } else {
-      gpa_score = 15;
+      gpaScore = 15;
       details.push(`GPA (${gpa}) = 15/40 points`);
     }
   } else {
@@ -166,14 +166,14 @@ function analyzeAcademicDetailed(student: StudentWithRelations): AcademicDetails
 
   // Course Rigor (max 30 points)
   const transcripts = student.transcripts || [];
-  const apCourses = transcripts.filter(t => t.honors_level === 'AP').length;
-  const ibCourses = transcripts.filter(t => t.honors_level === 'IB' || t.honors_level === 'IB_HL' || t.honors_level === 'IB_SL').length;
-  const honorsCourses = transcripts.filter(t => t.honors_level === 'Honors').length;
+  const apCourses = transcripts.filter(t => t.honorsLevel === 'AP').length;
+  const ibCourses = transcripts.filter(t => t.honorsLevel === 'IB' || t.honorsLevel === 'IB_HL' || t.honorsLevel === 'IB_SL').length;
+  const honorsCourses = transcripts.filter(t => t.honorsLevel === 'Honors').length;
 
-  course_rigor_score = Math.min(30, apCourses * 3 + ibCourses * 3 + honorsCourses * 2);
+  courseRigorScore = Math.min(30, apCourses * 3 + ibCourses * 3 + honorsCourses * 2);
   
   if (apCourses > 0 || ibCourses > 0 || honorsCourses > 0) {
-    details.push(`Course rigor: ${apCourses} AP, ${ibCourses} IB, ${honorsCourses} Honors = ${course_rigor_score}/30 points`);
+    details.push(`Course rigor: ${apCourses} AP, ${ibCourses} IB, ${honorsCourses} Honors = ${courseRigorScore}/30 points`);
   } else {
     details.push('No advanced courses yet = 0/30 points');
   }
@@ -181,25 +181,25 @@ function analyzeAcademicDetailed(student: StudentWithRelations): AcademicDetails
   // Course Breadth (max 30 points)
   const totalCourses = transcripts.length;
   if (totalCourses >= 20) {
-    course_breadth_score = 30;
+    courseBreadthScore = 30;
     details.push(`Excellent course breadth (${totalCourses} courses) = 30/30 points`);
   } else if (totalCourses >= 15) {
-    course_breadth_score = 25;
+    courseBreadthScore = 25;
     details.push(`Good course breadth (${totalCourses} courses) = 25/30 points`);
   } else if (totalCourses >= 10) {
-    course_breadth_score = 20;
+    courseBreadthScore = 20;
     details.push(`Moderate course breadth (${totalCourses} courses) = 20/30 points`);
   } else {
-    course_breadth_score = Math.min(20, totalCourses * 2);
-    details.push(`Course breadth (${totalCourses} courses) = ${course_breadth_score}/30 points`);
+    courseBreadthScore = Math.min(20, totalCourses * 2);
+    details.push(`Course breadth (${totalCourses} courses) = ${courseBreadthScore}/30 points`);
   }
 
-  const total = gpa_score + course_rigor_score + course_breadth_score;
+  const total = gpaScore + courseRigorScore + courseBreadthScore;
   
   return {
-    gpa_score,
-    course_rigor_score,
-    course_breadth_score,
+    gpaScore,
+    courseRigorScore,
+    courseBreadthScore,
     total,
     max: 100,
     details,
@@ -208,8 +208,8 @@ function analyzeAcademicDetailed(student: StudentWithRelations): AcademicDetails
 
 function analyzeTestingDetailed(student: StudentWithRelations): TestingDetails {
   const details: string[] = [];
-  let sat_score = 0;
-  let act_score = 0;
+  let satScore = 0;
+  let actScore = 0;
 
   const tests = student.testScores || [];
   const satTests = tests.filter(t => t.testType === 'SAT');
@@ -219,19 +219,19 @@ function analyzeTestingDetailed(student: StudentWithRelations): TestingDetails {
   if (satTests.length > 0) {
     const bestSAT = Math.max(...satTests.map(t => t.compositeScore || 0));
     if (bestSAT >= 1500) {
-      sat_score = 50;
+      satScore = 50;
       details.push(`Excellent SAT score (${bestSAT}) = 50/50 points`);
     } else if (bestSAT >= 1450) {
-      sat_score = 45;
+      satScore = 45;
       details.push(`Strong SAT score (${bestSAT}) = 45/50 points`);
     } else if (bestSAT >= 1400) {
-      sat_score = 40;
+      satScore = 40;
       details.push(`Good SAT score (${bestSAT}) = 40/50 points`);
     } else if (bestSAT >= 1300) {
-      sat_score = 30;
+      satScore = 30;
       details.push(`Average SAT score (${bestSAT}) = 30/50 points`);
     } else {
-      sat_score = 20;
+      satScore = 20;
       details.push(`SAT score (${bestSAT}) = 20/50 points`);
     }
   }
@@ -240,19 +240,19 @@ function analyzeTestingDetailed(student: StudentWithRelations): TestingDetails {
   if (actTests.length > 0) {
     const bestACT = Math.max(...actTests.map(t => t.compositeScore || 0));
     if (bestACT >= 34) {
-      act_score = 50;
+      actScore = 50;
       details.push(`Excellent ACT score (${bestACT}) = 50/50 points`);
     } else if (bestACT >= 32) {
-      act_score = 45;
+      actScore = 45;
       details.push(`Strong ACT score (${bestACT}) = 45/50 points`);
     } else if (bestACT >= 30) {
-      act_score = 40;
+      actScore = 40;
       details.push(`Good ACT score (${bestACT}) = 40/50 points`);
     } else if (bestACT >= 27) {
-      act_score = 30;
+      actScore = 30;
       details.push(`Average ACT score (${bestACT}) = 30/50 points`);
     } else {
-      act_score = 20;
+      actScore = 20;
       details.push(`ACT score (${bestACT}) = 20/50 points`);
     }
   }
@@ -261,11 +261,11 @@ function analyzeTestingDetailed(student: StudentWithRelations): TestingDetails {
     details.push('No standardized test scores yet = 0/100 points');
   }
 
-  const total = Math.max(sat_score, act_score); // Take the better of SAT or ACT
+  const total = Math.max(satScore, actScore); // Take the better of SAT or ACT
 
   return {
-    sat_score,
-    act_score,
+    satScore,
+    actScore,
     total,
     max: 50,
     details,
@@ -277,49 +277,49 @@ function analyzeActivitiesDetailed(student: StudentWithRelations): ActivitiesDet
   const activities = student.activities || [];
   
   // Quantity score (max 30 points)
-  let quantity_score = 0;
+  let quantityScore = 0;
   if (activities.length >= 8) {
-    quantity_score = 30;
+    quantityScore = 30;
     details.push(`Excellent activity count (${activities.length} activities) = 30/30 points`);
   } else if (activities.length >= 5) {
-    quantity_score = 25;
+    quantityScore = 25;
     details.push(`Good activity count (${activities.length} activities) = 25/30 points`);
   } else if (activities.length >= 3) {
-    quantity_score = 20;
+    quantityScore = 20;
     details.push(`Moderate activity count (${activities.length} activities) = 20/30 points`);
   } else {
-    quantity_score = activities.length * 7;
-    details.push(`Activity count (${activities.length} activities) = ${quantity_score}/30 points`);
+    quantityScore = activities.length * 7;
+    details.push(`Activity count (${activities.length} activities) = ${quantityScore}/30 points`);
   }
 
   // Commitment score (max 40 points) - based on total hours
   const totalHours = activities.reduce((sum, a) => sum + (a.hoursPerWeek * a.weeksPerYear), 0);
-  let commitment_score = 0;
+  let commitmentScore = 0;
   if (totalHours >= 1000) {
-    commitment_score = 40;
+    commitmentScore = 40;
     details.push(`Exceptional time commitment (${totalHours} total hours) = 40/40 points`);
   } else if (totalHours >= 600) {
-    commitment_score = 35;
+    commitmentScore = 35;
     details.push(`Strong time commitment (${totalHours} total hours) = 35/40 points`);
   } else if (totalHours >= 400) {
-    commitment_score = 30;
+    commitmentScore = 30;
     details.push(`Good time commitment (${totalHours} total hours) = 30/40 points`);
   } else {
-    commitment_score = Math.min(30, Math.round(totalHours / 15));
-    details.push(`Time commitment (${totalHours} total hours) = ${commitment_score}/40 points`);
+    commitmentScore = Math.min(30, Math.round(totalHours / 15));
+    details.push(`Time commitment (${totalHours} total hours) = ${commitmentScore}/40 points`);
   }
 
   // Diversity score (max 30 points)
   const categories = new Set(activities.map(a => a.category));
-  const diversity_score = Math.min(30, categories.size * 6);
-  details.push(`Activity diversity (${categories.size} different categories) = ${diversity_score}/30 points`);
+  const diversityScore = Math.min(30, categories.size * 6);
+  details.push(`Activity diversity (${categories.size} different categories) = ${diversityScore}/30 points`);
 
-  const total = quantity_score + commitment_score + diversity_score;
+  const total = quantityScore + commitmentScore + diversityScore;
 
   return {
-    quantity_score,
-    commitment_score,
-    diversity_score,
+    quantityScore,
+    commitmentScore,
+    diversityScore,
     total,
     max: 100,
     details,
@@ -341,10 +341,10 @@ function analyzeLeadershipDetailed(student: StudentWithRelations): LeadershipDet
       a.role.toLowerCase().includes('head')
     )
   );
-  const roles_score = Math.min(60, leadershipRoles.length * 15);
+  const rolesScore = Math.min(60, leadershipRoles.length * 15);
   
   if (leadershipRoles.length > 0) {
-    details.push(`Leadership roles (${leadershipRoles.length}) = ${roles_score}/60 points`);
+    details.push(`Leadership roles (${leadershipRoles.length}) = ${rolesScore}/60 points`);
     leadershipRoles.forEach(role => {
       details.push(`  → ${role.role} in ${role.activityName}`);
     });
@@ -356,19 +356,19 @@ function analyzeLeadershipDetailed(student: StudentWithRelations): LeadershipDet
   const leadershipAchievements = achievements.filter(a => 
     a.achievementType === 'Leadership'
   );
-  const achievements_score = Math.min(40, leadershipAchievements.length * 10);
+  const achievementsScore = Math.min(40, leadershipAchievements.length * 10);
   
   if (leadershipAchievements.length > 0) {
-    details.push(`Leadership achievements (${leadershipAchievements.length}) = ${achievements_score}/40 points`);
+    details.push(`Leadership achievements (${leadershipAchievements.length}) = ${achievementsScore}/40 points`);
   } else {
     details.push('No leadership achievements yet = 0/40 points');
   }
 
-  const total = roles_score + achievements_score;
+  const total = rolesScore + achievementsScore;
 
   return {
-    roles_score,
-    achievements_score,
+    rolesScore,
+    achievementsScore,
     total,
     max: 100,
     details,
@@ -380,19 +380,19 @@ function analyzeAchievementsDetailed(student: StudentWithRelations): Achievement
   const achievements = student.achievements || [];
 
   // Quantity score (max 30 points)
-  let quantity_score = 0;
+  let quantityScore = 0;
   if (achievements.length >= 10) {
-    quantity_score = 30;
+    quantityScore = 30;
     details.push(`Excellent achievement count (${achievements.length} awards) = 30/30 points`);
   } else if (achievements.length >= 5) {
-    quantity_score = 25;
+    quantityScore = 25;
     details.push(`Good achievement count (${achievements.length} awards) = 25/30 points`);
   } else if (achievements.length >= 3) {
-    quantity_score = 20;
+    quantityScore = 20;
     details.push(`Moderate achievement count (${achievements.length} awards) = 20/30 points`);
   } else {
-    quantity_score = achievements.length * 7;
-    details.push(`Achievement count (${achievements.length} awards) = ${quantity_score}/30 points`);
+    quantityScore = achievements.length * 7;
+    details.push(`Achievement count (${achievements.length} awards) = ${quantityScore}/30 points`);
   }
 
   // Recognition level score (max 70 points)
@@ -406,34 +406,34 @@ function analyzeAchievementsDetailed(student: StudentWithRelations): Achievement
     'School': 3,
   };
 
-  let recognition_score = 0;
+  let recognitionScore = 0;
   const recognitionBreakdown: Record<string, number> = {};
   
   achievements.forEach(a => {
     if (a.recognitionLevel) {
       const points = recognitionPoints[a.recognitionLevel] || 3;
-      recognition_score += points;
+      recognitionScore += points;
       recognitionBreakdown[a.recognitionLevel] = (recognitionBreakdown[a.recognitionLevel] || 0) + 1;
     }
   });
 
-  recognition_score = Math.min(70, recognition_score);
+  recognitionScore = Math.min(70, recognitionScore);
   
   Object.entries(recognitionBreakdown).forEach(([level, count]) => {
     details.push(`  → ${count} ${level.replace('_', ' ')} level award(s)`);
   });
   
   if (achievements.length > 0) {
-    details.push(`Recognition score = ${recognition_score}/70 points`);
+    details.push(`Recognition score = ${recognitionScore}/70 points`);
   } else {
     details.push('Recognition score = 0/70 points');
   }
 
-  const total = quantity_score + recognition_score;
+  const total = quantityScore + recognitionScore;
 
   return {
-    quantity_score,
-    recognition_score,
+    quantityScore,
+    recognitionScore,
     total,
     max: 100,
     details,
@@ -445,18 +445,18 @@ function analyzeProjectsDetailed(student: StudentWithRelations): ProjectsDetails
   const projects = student.projectExperiences || [];
 
   // Quantity score (max 40 points)
-  let quantity_score = 0;
+  let quantityScore = 0;
   if (projects.length >= 5) {
-    quantity_score = 40;
+    quantityScore = 40;
     details.push(`Excellent project count (${projects.length} projects) = 40/40 points`);
   } else if (projects.length >= 3) {
-    quantity_score = 30;
+    quantityScore = 30;
     details.push(`Good project count (${projects.length} projects) = 30/40 points`);
   } else if (projects.length >= 2) {
-    quantity_score = 20;
+    quantityScore = 20;
     details.push(`Moderate project count (${projects.length} projects) = 20/40 points`);
   } else if (projects.length === 1) {
-    quantity_score = 15;
+    quantityScore = 15;
     details.push(`Project count (${projects.length} project) = 15/40 points`);
   } else {
     details.push('No projects yet = 0/40 points');
@@ -471,34 +471,36 @@ function analyzeProjectsDetailed(student: StudentWithRelations): ProjectsDetails
     'Other': 10,
   };
 
-  let quality_score = 0;
+  let qualityScore = 0;
   const projectBreakdown: Record<string, number> = {};
 
   projects.forEach(p => {
     const points = qualityPoints[p.experienceType] || 10;
-    quality_score += points;
+    qualityScore += points;
     projectBreakdown[p.experienceType] = (projectBreakdown[p.experienceType] || 0) + 1;
   });
 
-  quality_score = Math.min(60, quality_score);
+  qualityScore = Math.min(60, qualityScore);
 
   Object.entries(projectBreakdown).forEach(([type, count]) => {
     details.push(`  → ${count} ${type.replace('_', ' ')} project(s)`);
   });
   
   if (projects.length > 0) {
-    details.push(`Project quality score = ${quality_score}/60 points`);
+    details.push(`Project quality score = ${qualityScore}/60 points`);
   } else {
     details.push('Project quality score = 0/60 points');
   }
 
-  const total = quantity_score + quality_score;
+  const total = quantityScore + qualityScore;
 
   return {
-    quantity_score,
-    quality_score,
+    quantityScore,
+    qualityScore,
     total,
     max: 100,
     details,
   };
 }
+
+

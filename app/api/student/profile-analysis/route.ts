@@ -31,11 +31,11 @@ export async function GET(req: Request) {
     
     const analysis = analyzeProfileDetailed(student);
     
-    // Check for counselor override
+    // Check for coordinator override
     const override = await prisma.ProfileOverride.findUnique({
       where: { studentId: session.user.id },
       include: {
-        user: {
+        coordinator: {
           select: {
             firstName: true,
             lastName: true,

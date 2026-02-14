@@ -36,7 +36,7 @@ async function main() {
     loc: string, 
     coordId?: string
   ) => {
-    return await prisma.user.upsert({
+    return await prisma.User.upsert({
       where: { email },
       update: {
         firstName,

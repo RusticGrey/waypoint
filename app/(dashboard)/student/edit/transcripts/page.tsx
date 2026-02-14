@@ -342,7 +342,7 @@ export default function EditTranscriptsPage() {
                   >
                     <option value="">Select a course</option>
                     {courses.map(course => (
-                      <option key={course} value={course}>{course}</option>
+                      <option key={course} value={course.subjectName}>{course.subjectName}</option>
                     ))}
                   </select>
                   {courses.length === 0 && (

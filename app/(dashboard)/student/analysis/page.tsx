@@ -5,8 +5,8 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { ProgressBar } from '@/components/ui/progress-bar';
 
 interface ProfileAnalysis {
-  overall_score: number;
-  category_scores: {
+  overallScore: number;
+  categoryScores: {
     academic: number;
     testing: number;
     Activity: number;
@@ -14,47 +14,47 @@ interface ProfileAnalysis {
     Achievement: number;
     projects: number;
   };
-  category_details: {
+  categoryDetails: {
     academic: {
-      gpa_score: number;
-      course_rigor_score: number;
-      course_breadth_score: number;
+      gpaScore: number;
+      courseRigorScore: number;
+      courseBreadthScore: number;
       total: number;
       max: number;
       details: string[];
     };
     testing: {
-      sat_score: number;
-      act_score: number;
+      satScore: number;
+      actScore: number;
       total: number;
       max: number;
       details: string[];
     };
     Activity: {
-      quantity_score: number;
-      commitment_score: number;
-      diversity_score: number;
+      quantityScore: number;
+      commitmentScore: number;
+      diversityScore: number;
       total: number;
       max: number;
       details: string[];
     };
     leadership: {
-      roles_score: number;
-      achievements_score: number;
+      rolesScore: number;
+      achievementsScore: number;
       total: number;
       max: number;
       details: string[];
     };
     Achievement: {
-      quantity_score: number;
-      recognition_score: number;
+      quantityScore: number;
+      recognitionScore: number;
       total: number;
       max: number;
       details: string[];
     };
     projects: {
-      quantity_score: number;
-      quality_score: number;
+      quantityScore: number;
+      qualityScore: number;
       total: number;
       max: number;
       details: string[];
@@ -63,13 +63,13 @@ interface ProfileAnalysis {
   strengths: string[];
   weaknesses: string[];
   recommendations: string[];
-  college_readiness: string;
+  collegeReadiness: string;
   override?: {
-    is_overridden: boolean;
-    override_score: number;
-    override_reason: string;
-    overridden_by: string;
-    overridden_at: string;
+    isOverridden: boolean;
+    overrideScore: number;
+    overrideReason: string;
+    overriddenBy: string;
+    overriddenAt: string;
   };
 }
 
@@ -110,9 +110,9 @@ export default function AnalysisPage() {
     );
   }
 
-  const displayScore = analysis.override?.is_overridden 
+  const displayScore = analysis.override?.isOverridden 
     ? analysis.override.overrideScore 
-    : analysis.overall_score;
+    : analysis.overallScore;
 
   const getCategoryColor = (score: number) => {
     if (score >= 80) return 'text-green-600 bg-green-50';
@@ -156,7 +156,7 @@ export default function AnalysisPage() {
                 {displayScore}
               </div>
               <p className="text-sm text-gray-500 mt-1">out of 100</p>
-              {analysis.override?.is_overridden && (
+              {analysis.override?.isOverridden && (
                 <div className="mt-2 px-3 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
                   Counselor Adjusted
                 </div>
@@ -167,13 +167,13 @@ export default function AnalysisPage() {
               <ProgressBar percentage={displayScore} showLabel={false} />
               <p className="mt-3 text-base font-medium text-gray-900">
                 College Readiness: <span className={
-                  analysis.college_readiness === 'Highly Competitive' ? 'text-green-600' :
-                  analysis.college_readiness === 'Competitive' ? 'text-blue-600' :
-                  analysis.college_readiness === 'Developing' ? 'text-yellow-600' : 'text-red-600'
-                }>{analysis.college_readiness}</span>
+                  analysis.collegeReadiness === 'Highly Competitive' ? 'text-green-600' :
+                  analysis.collegeReadiness === 'Competitive' ? 'text-blue-600' :
+                  analysis.collegeReadiness === 'Developing' ? 'text-yellow-600' : 'text-red-600'
+                }>{analysis.collegeReadiness}</span>
               </p>
               
-              {analysis.override?.is_overridden && (
+              {analysis.override?.isOverridden && (
                 <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                   <p className="text-sm font-medium text-blue-900">
                     Counselor Note: {analysis.override.overrideReason}
@@ -200,8 +200,8 @@ export default function AnalysisPage() {
           
           <div className="space-y-3">
             {categories.map((category) => {
-              const score = analysis.category_scores[category.key as keyof typeof analysis.category_scores];
-              const details = analysis.category_details[category.key as keyof typeof analysis.category_details];
+              const score = analysis.categoryScores[category.key as keyof typeof analysis.categoryScores];
+              const details = analysis.categoryDetails[category.key as keyof typeof analysis.categoryDetails];
               const isExpanded = expandedSection === category.key;
               
               return (

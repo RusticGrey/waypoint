@@ -16,7 +16,7 @@ export async function PATCH(
     
     const body = await req.json();
     
-    const transcript = await prisma.transcript.update({
+    const transcript = await prisma.Transcript.update({
       where: {
         id: params.id,
         studentId: session.user.id,
@@ -42,7 +42,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    await prisma.transcript.delete({
+    await prisma.Transcript.delete({
       where: {
         id: params.id,
         studentId: session.user.id,
@@ -55,3 +55,4 @@ export async function DELETE(
     return NextResponse.json({ error: 'Failed to delete transcript' }, { status: 500 });
   }
 }
+
