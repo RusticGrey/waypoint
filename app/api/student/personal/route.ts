@@ -18,7 +18,6 @@ export async function GET(req: Request) {
       },
     });
 
-    console.log("API - KARTHIK DATA ="+JSON.stringify(student));    
     return NextResponse.json({ personalProfile: student?.personalProfile });
   } catch (error) {
     console.error('Personal info fetch error:', error);

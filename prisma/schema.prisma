@@ -84,6 +84,9 @@ model PersonalProfile {
   dateOfBirth    DateTime? @map("date_of_birth")
   currentSchool  String?   @map("current_school")
   schoolLocation String?   @map("school_location")
+  parentName     String    @map("parent_name") @default("")
+  parentEmail    String    @map("parent_email") @default("")
+  parentPhone    String    @map("parent_phone") @default("")
   createdAt      DateTime  @default(now()) @map("created_at")
 
   student Student @relation(fields: [studentId], references: [userId], onDelete: Cascade)

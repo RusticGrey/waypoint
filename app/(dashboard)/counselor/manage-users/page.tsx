@@ -322,7 +322,7 @@ export default function ManageUsersPage() {
                       </label>
                       <select
                         value={formData.currentGrade}
-                        onChange={(e) => setFormData({ ...formData, current_grade: e.target.value })}
+                        onChange={(e) => setFormData({ ...formData, currentGrade: e.target.value })}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
                       >
                         <option value="ninth">9th Grade</option>
@@ -347,7 +347,7 @@ export default function ManageUsersPage() {
                     </label>
                     <select
                       value={formData.coordinatorId}
-                      onChange={(e) => setFormData({ ...formData, coordinator_id: e.target.value })}
+                      onChange={(e) => setFormData({ ...formData, coordinatorId: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
                     >
                       <option value="">Assign later</option>
