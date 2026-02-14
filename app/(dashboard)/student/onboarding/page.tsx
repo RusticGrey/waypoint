@@ -38,7 +38,7 @@ export default async function OnboardingPage() {
           This will take approximately 15-20 minutes.
         </p>
       </div>
-      <OnboardingWizard />
+      <OnboardingWizard student={student} userId={session.user.id}/>
     </div>
   );
 }

@@ -7,6 +7,7 @@ import TranscriptForm from './TranscriptForm';
 import ActivityForm from './ActivityForm';
 import AchievementForm from './AchievementForm';
 import ProjectForm from './ProjectForm';
+// import { Student } from '@prisma/client';        
 
 type Step = 1 | 2 | 3 | 4 | 5 | 6;
 
@@ -19,11 +20,15 @@ interface FormData {
   projects: any[];
 }
 
-export default function OnboardingWizard() {
+export default async function OnboardingWizard(initData, userId) {
+  
+  console.log('Existing student data:', JSON.stringify(initData));
+  
   const [currentStep, setCurrentStep] = useState<Step>(1);
   const [formData, setFormData] = useState<FormData>({
-    personal: {},
-    academic: {},
+    // currentGrade: initData.student.currentGrade,
+    personal: initData.student.personalProfile,
+    academic: initData.student.academicProfile,
     Transcript: [],
     Activity: [],
     Achievement: [],

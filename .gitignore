@@ -35,3 +35,35 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Claude Code
+.clinerules.local
+
+# Environment
+.env
+.env.local
+.env.production
+.env.*.local
+
+# Development
+.DS_Store
+*.log
+.vscode/
+
+# Build
+.next/
+out/
+build/
+dist/
+
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Testing
+coverage/
+
+# Misc
+*.tsbuildinfo
+next-env.d.ts

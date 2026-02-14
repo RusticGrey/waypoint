@@ -9,10 +9,10 @@ const personalProfileSchema = z.object({
   phone: z.string().optional(),
   currentSchool: z.string().min(1),
   schoolLocation: z.string().min(1),
+  currentGrade: z.enum(['ninth', 'tenth', 'eleventh', 'twelfth']),
   parentName: z.string().min(1),
   parentEmail: z.string().email(),
   parentPhone: z.string().min(1),
-  currentGrade: z.enum(['ninth', 'tenth', 'eleventh', 'twelfth']),
 });
 
 export async function POST(req: Request) {
@@ -45,6 +45,7 @@ export async function POST(req: Request) {
       },
     });
 
+    // console.log("PERSONAL PROFILE - "+JSON.stringify(profile));
     return NextResponse.json(profile);
   } catch (error) {
     console.error('Personal profile error:', error);

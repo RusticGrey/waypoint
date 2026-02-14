@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 const personalProfileWithGradeSchema = z.object({
-  preferred_name: z.string().optional(),
+  // preferredName: z.string().optional(),
   phone: z.string().optional(),
   currentSchool: z.string().min(1, 'School name is required'),
   schoolLocation: z.string().min(1, 'School location is required'),
