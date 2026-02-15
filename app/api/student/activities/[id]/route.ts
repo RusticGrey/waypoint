@@ -6,13 +6,13 @@ import { z } from 'zod';
 import { logChange } from '@/lib/api-helpers/change-log';
 
 const activitySchema = z.object({
-  activity_name: z.string().min(1),
-  category: z.string().min(1),
+  activityName: z.string().min(1).optional(),
+  category: z.enum(['Academic', 'Arts_Music', 'Athletics', 'Community_Service', 'Cultural', 'Leadership', 'Other']).optional(),
   role: z.string().optional(),
-  grade_levels: z.array(z.enum(['ninth', 'tenth', 'eleventh', 'twelfth'])),
-  hours_per_week: z.number().min(0).max(168),
-  weeks_per_year: z.number().min(0).max(52),
-  description: z.string().min(10),
+  gradeLevel: z.enum(['ninth', 'tenth', 'eleventh', 'twelfth']).optional(),
+  hoursPerWeek: z.number().min(0).max(168).optional(),
+  weeksPerYear: z.number().min(0).max(52).optional(),
+  description: z.string().min(10).optional(),
 });
 
 export async function PATCH(
@@ -39,11 +39,11 @@ export async function PATCH(
     
     await logChange({
       studentId: session.user.id,
-      change_type: 'Profile_Update',
-      entity_type: 'Activity',
-      entity_id: activity.id,
+      changeType: 'Profile_Update',
+      entityType: 'Activity',
+      entityId: activity.id,
       action: 'Updated',
-      description: `Updated activity: ${validated.activityName}`,
+      description: `Updated activity: ${validated.activityName || activity.activityName}`,
     });
     
     return NextResponse.json(activity);
@@ -71,9 +71,9 @@ export async function DELETE(
     if (activity) {
       await logChange({
         studentId: session.user.id,
-        change_type: 'Profile_Update',
-        entity_type: 'Activity',
-        entity_id: activity.id,
+        changeType: 'Profile_Update',
+        entityType: 'Activity',
+        entityId: activity.id,
         action: 'Deleted',
         description: `Removed activity: ${activity.activityName}`,
       });
