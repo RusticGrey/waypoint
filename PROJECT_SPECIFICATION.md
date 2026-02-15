@@ -1,642 +1,649 @@
-Waypoint College Counseling Platform - Complete Specification
+# Waypoint College Counseling Platform - Complete Specification
 
-Executive Summary
-A comprehensive college counseling platform for high school students applying to colleges, with support for coordinators (student advisors) and counselors (administrators). Tracks student profiles, college applications, test scores, and provides profile strength analysis.
+## Executive Summary
 
-Functional Specifications
+Waypoint is a production-ready web application for comprehensive college counseling. It serves three user roles: students managing their college applications and academic profiles, coordinators overseeing student progress, and counselors administering the system.
 
-1. User Roles & Authentication
-Three User Types:
-
-- Students: Complete profiles, track applications, manage test scores
-- Coordinators: Manage assigned students, log meetings, view progress
-- Counselors: System admins, create users, assign coordinators, override profile scores
-
-Authentication:
-
-Email/password login via NextAuth
-Role-based access control
-Middleware-protected routes
-Session management with JWT
-
-
-2. Student Features
-2.1 Onboarding (7-Step Wizard)
-
-Personal Information
-
-Name, DOB, phone
-Current school, location
-Parent contact (name, email, phone)
-
-
-Academic Profile
-
-Curriculum type (CBSE, IB, US High School, CAIE, State Board, ICSE, Other)
-Grading system (Marks/100, Percentage, IB Scale, Letter Grade, Other)
-Current GPA/marks
-
-
-Transcript Entry
-
-Course name, grade level, semester
-Grade value (adapts to grading system)
-Credits, honors level (Standard, Honors, AP, IB HL, IB SL)
-Board exam indicator
-Dynamic subject selection based on curriculum
-
-
-Activities
-
-Activity name, category (Academic, Arts/Music, Athletics, Community Service, Cultural, Leadership, Other)
-Role, grade levels involved
-Hours per week, weeks per year
-Description
-
-
-Achievements
-
-Type (Award/Honor, Competition, Leadership, Social Impact, Extracurricular)
-Title, organization
-Grade level, date achieved
-Description, metrics
-Recognition level (School, Inter-School, District, City, State, National, International)
-Verifiable link
-
-
-Projects & Research
-
-Type (Academic Project, Independent Project, Research, Internship, Summer Program, Work Experience)
-Title, organization, location
-Start/end dates, ongoing status
-Role, description, outcomes
-Skills learned, project link
-Mentor contact info
-Status (Completed, In Progress, Planned)
-
-
-Review & Complete
-
-Summary of all entered data
-Profile completion percentage
-Submit to finalize onboarding
-
-
-
-### 2.2 Profile Management
-
-View Complete Profile: All sections on one page
-Edit Individual Sections:
-
-Personal Info
-Academic Profile
-Transcripts (add/edit/delete)
-Activities (add/edit/delete)
-Achievements (add/edit/delete)
-Projects (add/edit/delete)
-
-
-Change History: Automatic logging of all profile changes
-Profile Strength Analysis:
-
-Scores across 6 categories
-Academic Excellence (GPA, rigor, board exams)
-Leadership & Impact (roles, recognition)
-Research & Innovation (projects, outcomes)
-Extracurricular Depth (activities, hours)
-Achievement Record (awards, competition results)
-Overall Profile Strength
-Point-by-point transparency showing what contributes to each score
-
-
-
-### 2.3 College Applications
-
-Add Applications:
-
-Select college from 64 pre-seeded colleges
-Categorize as Safety/Match/Reach
-Application status (11 states: Not Started, Planning, Researching, Preparing, In Progress, Submitted, Under Review, Deferred, Accepted, Rejected, Waitlisted, Withdrawn)
-Application deadline, decision deadline
-Document status tracking:
-
-Essay status (Not Started, In Progress, Complete)
-Supplements status
-Recommendation status (Not Requested, Requested, Submitted)
-Test scores sent (checkbox)
-
-
-Application portal link
-Notes
-
-
-View & Manage:
-
-Statistics overview:
-
-Total applications
-By category (Safety/Match/Reach counts)
-By status (Submitted/In Progress/Not Started)
-Decisions (Accepted/Rejected/Waitlisted/Pending)
-
-
-Deadline tracker:
-
-Next 5 upcoming deadlines
-Color-coded urgency (Red: <7 days, Yellow: <14 days, Green: >14 days)
-Sorted by date
-
-
-Filter by category and status
-Edit/delete applications
-Application table view with all details
-
-
-
-### 2.4 Test Scores
-
-Add Test Scores:
-
-Test type (SAT, ACT, AP, IB, Other)
-Test date
-Composite score
-Section scores:
-
-SAT: Math (200-800), Reading & Writing (200-800)
-ACT: Math, English, Reading, Science (1-36 each)
-
-
-Essay score (optional)
-
-
-View & Manage:
-
-Best SAT score display
-Best ACT score display
-Grouped by test type
-Show all attempts with dates
-Edit/delete scores
-
-
-
-2.5 Target Colleges
-
-Build College List:
-
-Search from 64 pre-seeded US colleges
-Categorize as Safety/Match/Reach
-Set priority
-Add notes
-
-
-View List: Organized by category
-
-2.6 Goals & Progress
-
-Set profile improvement goals
-Track progress toward goals
-Categorize by type (Academic, Testing, Activity, Achievement, Project, Other)
-
-2.7 Dashboard
-
-Quick stats (applications, acceptances, active goals, activities count)
-Upcoming deadlines (next 5)
-Application progress bars
-Quick action cards (Edit Profile, Applications, Analysis)
-
-
-3. Coordinator Features
-3.1 Student Management
-
-View all assigned students
-Student list with:
-
-Name, email, grade level
-Graduation year
-Profile completion percentage
-Number of target colleges
-Last meeting date
-
-
-
-3.2 Meeting Logs
-
-Log Meetings:
-
-Select student
-Meeting date, duration (minutes)
-Meeting type (Initial, Regular, Check-In, Goal Review, Application Review, Crisis, Final)
-Topics discussed (multiple selection)
-Notes
-Action items
-Next meeting date
-Student mood
-
-
-View History:
-
-All meetings sorted by date
-Filter by student
-View meeting details
-
-
-
-3.3 Profile Override
-
-Override student profile strength score
-Provide reason for override
-Display override prominently on student profile
-Track who made override and when
-
-3.4 Student Detail View
-
-Complete student profile visibility
-Profile strength score with override capability
-Meeting history
-Application status
-
-3.5 Dashboard
-
-Total students count
-Upcoming meetings
-Upcoming student deadlines (across all students, next 10)
-Application statistics across students
-
-
-4. Counselor Features
-4.1 User Management
-
-Create Users:
-
-Coordinators (with email/password)
-Students (with email/password)
-
-
-Assign Students to Coordinators
-View All Users: Sortable table
-
-4.2 System Administration
-
-View all students (global view)
-Search/filter students
-Student statistics overview
-Access to all coordinator features
-
-4.3 Profile Override
-
-Same capability as coordinators
-Admin-level override authority
-
-
-Technical Specifications
-Tech Stack
-Frontend:
-
-Next.js 14.2.35 (App Router)
-React 18.3.1
-TypeScript 5.5.3
-Tailwind CSS 3.4.1
-
-Backend:
-
-Next.js API Routes
-NextAuth 4.24.10 for authentication
-
-Database:
-
-** PostgreSQL (via Supabase)
-** Prisma 5.22.0 as ORM
-
-Authentication:
-
-NextAuth with Credentials provider
-bcrypt 5.1.1 for password hashing
-JWT-based sessions
-
-
-Database Schema
-20 Models:
-
-User - Core user table
-
-id, email, password_hash, role
-first_name, last_name
-organization_id
-created_at
-
-
-Student - Extends User for students
-
-user_id (FK to User)
-graduation_year, current_grade
-coordinator_id, primary_coordinator_id
-profile_completion_pct
-
-
-PersonalProfile - Student personal info
-
-student_id (1-to-1 with Student)
-preferred_name, date_of_birth, phone
-current_school, school_location
-parent_name, parent_email, parent_phone
-
-
-AcademicProfile - Academic details
-
-student_id (1-to-1)
-curriculum_type, grading_system_type
-current_gpa
-
-
-Transcript - Course grades
-
-student_id, course_name
-grade_level, semester, grade_value
-credits, honors_level
-is_board_exam
-
-
-Activity - Extracurriculars
-
-student_id, activity_name, category
-role, grade_levels (JSON)
-hours_per_week, weeks_per_year
-description
-
-
-Achievement - Awards/honors
-
-student_id, achievement_type
-title, organization
-grade_level, date_achieved
-description, metrics
-recognition_level, verifiable_link
-
-
-ProjectExperience - Research/projects
-
-student_id, experience_type
-title, organization, location
-start_date, end_date, is_ongoing
-role_title, description, outcomes
-skills_learned (JSON), project_link
-mentor_name, mentor_email
-status
-
-
-TestScore - Standardized tests
-
-student_id, test_type, test_name
-test_date, composite_score
-section_scores (JSON)
-
-
-College - University database
-
-id, name, country
-acceptance_rate, avg_gpa, avg_sat, avg_act
-ranking_us_news, is_active
-
-
-TargetCollege - Student's college list
-
-student_id, college_id
-category (Safety/Match/Reach)
-priority, status, notes
-
-
-CollegeApplication - Application tracking
-
-student_id, college_id
-target_category, application_status
-application_deadline, decision_deadline
-essay_status, supplements_status
-recommendation_status, test_scores_sent
-application_portal_link, notes
-decision_received_date
-
-
-Meeting - Coordinator meetings
-
-student_id, coordinator_id
-meeting_date, duration_minutes
-meeting_type, topics_discussed (Array)
-notes, action_items (Array)
-next_meeting_date, student_mood
-
-
-MeetingLog - Meeting history (deprecated, use Meeting)
-
-Similar to Meeting
-
-
-ProfileGoal - Student goals
-
-student_id, goal_type, category
-target_value, current_value
-deadline, status, priority
-notes, completed_at
-
-
-ProfileOverride - Counselor overrides
-
-student_id (unique)
-override_score, override_reason
-overridden_by (FK to User)
-
-
-ProfileComment - Profile comments
-
-student_id, author_id
-comment_text, section
-is_private
-
-
-ChangeLog - Audit trail
-
-student_id, change_type, entity_type
-entity_id, action
-field_name, old_value, new_value
-description
-
-
-Subject - Available courses
-
-curriculum_type, subject_name
-is_default
-
-
-Organization - Multi-tenancy support
-
-name, logo_url, primary_color
-
-
-
-18 Enums:
-
-UserRole, GradeLevel, CurriculumType, GradingSystemType
-Semester, HonorsLevel, ActivityCategory, AchievementType
-RecognitionLevel, ExperienceType, ProjectStatus
-GoalType, GoalStatus, TargetCategory, ApplicationStatus
-MeetingType, ChangeType, ChangeAction
-
-
-Key Relations (CRITICAL - Use PascalCase)
-typescript// Student has:
-Student.PersonalProfile (1-to-1)
-Student.AcademicProfile (1-to-1)
-Student.Transcript[] (1-to-many)
-Student.Activity[] (1-to-many)
-Student.Achievement[] (1-to-many)
-Student.ProjectExperience[] (1-to-many)
-Student.TestScore[] (1-to-many)
-Student.TargetCollege[] (1-to-many)
-Student.CollegeApplication[] (1-to-many)
-Student.Meeting[] (1-to-many)
-Student.ProfileGoal[] (1-to-many)
-Student.ProfileOverride (1-to-1, nullable)
-Student.ChangeLog[] (1-to-many)
-Student.User (1-to-1) - the user account
-Student.coordinator (nullable) - assigned coordinator
-```
+**Status**: ✅ Live on Vercel | **Database**: PostgreSQL (Supabase) | **Hosting**: Vercel (auto-deploy)
 
 ---
 
-### File Structure
+## Table of Contents
+
+1. [Functional Specifications](#functional-specifications)
+2. [Technical Architecture](#technical-architecture)
+3. [Database Schema](#database-schema)
+4. [API Endpoints](#api-endpoints)
+5. [Code Conventions](#code-conventions)
+6. [Deployment & Operations](#deployment--operations)
+
+---
+
+## Functional Specifications
+
+### User Roles & Authentication
+
+#### Three User Types
+
+| Role | Purpose | Key Features |
+|------|---------|--------------|
+| **Student** | Manage college prep profile and applications | Onboarding wizard, profile management, application tracking, goal setting |
+| **Coordinator** | Oversee assigned students | Student dashboard, meeting logs, profile overrides, deadline tracking |
+| **Counselor** | System administration | User management, global view, admin overrides |
+
+#### Authentication System
+- Email/password login via NextAuth
+- bcrypt password hashing (10 rounds)
+- JWT-based session management
+- Role-based access control (RBAC) via middleware
+- Protected routes with automatic redirection
+
+---
+
+### Student Features
+
+#### 1. 7-Step Onboarding Wizard
+
+**Step 1: Personal Information**
+- Full name, preferred name
+- Date of birth
+- Phone number
+- Current school name and location
+- Parent/guardian contact (name, email, phone)
+
+**Step 2: Academic Profile**
+- Curriculum type (CBSE, ICSE, IB, CAIE, State Board, US High School, Other)
+- Grading system (Marks/100, Percentage, IB Scale, Letter Grade, Other)
+- Current GPA/marks
+- Dynamically loads appropriate subjects based on curriculum
+
+**Step 3: Transcripts**
+- Course name (from subject picklist)
+- Grade level (9th, 10th, 11th, 12th)
+- Semester (Fall, Spring, Full Year)
+- Grade value (adapts to selected grading system)
+- Honors level (Standard, Honors, AP, IB HL, IB SL)
+- Board exam indicator (checkbox)
+- Add unlimited courses
+
+**Step 4: Activities**
+- Activity name and category (Academic, Arts/Music, Athletics, Community Service, Cultural, Leadership, Other)
+- Role in activity
+- Grade levels involved
+- Hours per week and weeks per year
+- Description and notes
+
+**Step 5: Achievements**
+- Achievement type (Award/Honor, Competition, Leadership, Social Impact, Extracurricular)
+- Title and organization
+- Grade level and date achieved
+- Description and metrics
+- Recognition level (School → International scale)
+- Verifiable link (optional)
+
+**Step 6: Projects & Research**
+- Experience type (Academic Project, Independent Project, Research, Internship, Summer Program, Work Experience, Volunteer Project)
+- Title, organization, location
+- Start/end dates, ongoing status
+- Role title and description
+- Outcomes, skills learned
+- Project link and mentor contact
+- Status tracking
+
+**Step 7: Review & Completion**
+- Summary of all entered data
+- Profile completion percentage (0-100%)
+- Submit to finalize onboarding
+
+#### 2. Profile Management
+- **View Complete Profile**: All sections on one page with clean organization
+- **Edit Individual Sections**: Students can update any section independently without re-entering all data
+- **Real-Time Completion Tracking**: Automatic percentage calculation based on sections filled
+- **Full Change History**: Every modification logged with timestamp and change details
+- **Profile Strength Analysis**: Instant feedback on college readiness
+
+#### 3. College Application Tracking
+
+**Application Management**
+- Select from 64 pre-seeded US colleges
+- Categorize as Safety, Match, or Reach
+- Track application status through 11 states:
+  - Not Started, Planning, Researching, Preparing
+  - In Progress, Submitted, Under Review
+  - Accepted, Rejected, Waitlisted, Deferred, Withdrawn
+- Set application and decision deadlines
+- Track documents:
+  - Essay status (Not Started, In Progress, Complete)
+  - Supplements status
+  - Recommendation status (Not Requested, Requested, Submitted)
+  - Test scores sent (checkbox)
+- Add application portal link and notes
+
+**Application Dashboard**
+- Statistics overview (total, by category, by status)
+- Deadline tracker with color-coded urgency:
+  - Red: Less than 7 days
+  - Yellow: 7-14 days
+  - Green: More than 14 days
+- Application table with all details
+- Filter and sort capabilities
+
+#### 4. Test Score Management
+- Support for multiple test types (SAT, ACT, AP, IB, Duolingo)
+- Composite score and section scores:
+  - SAT: Math (200-800), Reading & Writing (200-800)
+  - ACT: Math, English, Reading, Science (1-36 each)
+- Test date tracking
+- Best score highlighting
+- Multiple attempts tracking
+- Essay scores (optional)
+
+#### 5. Target College List
+- Search from 64 college database
+- Categorize as Reach, Match, or Safety
+- Priority ranking
+- Summary statistics by category
+- Quick notes for each college
+
+#### 6. Goals & Progress Tracking
+- Create improvement goals with:
+  - Goal type (Academic, Testing, Activity, Achievement, Project, Other)
+  - Target and current values
+  - Deadline dates
+  - Priority levels
+- Status management (Not Started, In Progress, Completed, Deferred, Cancelled)
+- Automatic change log entries
+- Visual progress tracking
+
+#### 7. Profile Strength Analysis
+
+**Six-Category Scoring System**
+
+| Category | Factors | Max Score |
+|----------|---------|-----------|
+| **Academic Excellence** | GPA/marks, course rigor, board exams, honors level | 20 |
+| **Leadership & Impact** | Leadership roles, recognition levels, social impact | 20 |
+| **Research & Innovation** | Research projects, internships, innovation indicators | 15 |
+| **Extracurricular Depth** | Activity count, hours per week, sustained involvement | 15 |
+| **Achievement Record** | Awards, competitions, national/international recognition | 20 |
+| **Overall Strength** | Holistic profile assessment | 10 |
+
+**Analysis Components**
+- Point-by-point transparency (what contributes to each score)
+- Identified strengths (scores ≥ 80)
+- Identified weaknesses (scores < 60)
+- Personalized recommendations for improvement
+- College readiness level determination (Competitive, Strong, Developing, Emerging)
+
+#### 8. Student Dashboard
+- Profile completion percentage
+- Current profile strength score
+- Quick statistics:
+  - Total applications (with breakdown by status)
+  - Upcoming deadlines (next 5)
+  - Active goals count
+  - Total activities/achievements
+- Application progress visualization
+- Upcoming deadlines with color-coded urgency
+- Quick action cards for common tasks
+
+---
+
+### Coordinator Features
+
+#### 1. Student Management Dashboard
+- List of assigned students with:
+  - Student name and email
+  - Grade level and graduation year
+  - Profile completion percentage
+  - Target college count
+  - Last meeting date
+  - Quick view profile link
+
+#### 2. Meeting Logs
+- **Log Meeting**:
+  - Select student
+  - Meeting date and duration
+  - Meeting type (Initial, Regular, Check-In, Goal Review, Application Review, Crisis, Final)
+  - Topics discussed (multiple selection from enum)
+  - Notes (free text)
+  - Action items (list)
+  - Next meeting date
+  - Student mood/engagement level
+  
+- **View History**:
+  - All meetings sorted by date
+  - Filter by student
+  - View detailed meeting information
+
+#### 3. Profile Override Capability
+- Override student's profile strength score
+- Provide reason for override
+- Prominent override display on student profile
+- Audit trail (who, when, why)
+- Can be reviewed by counselors
+
+#### 4. Student Detail View
+- Complete student profile visibility
+- Profile strength with override option
+- Meeting history with details
+- Application status overview
+- Goal tracking
+- Change history
+- Recommendations based on profile analysis
+
+#### 5. Coordinator Dashboard
+- Total assigned students count
+- Upcoming meetings (next 5)
+- Upcoming student deadlines (across all assigned students, sorted by date)
+- Application statistics:
+  - Total applications across students
+  - By status (submitted, in progress, not started)
+  - By decision (accepted, rejected, waitlisted, pending)
+
+---
+
+### Counselor/Admin Features
+
+#### 1. User Management
+- **Create Users**:
+  - Create new coordinator accounts with email and password
+  - Create new student accounts with email and password
+  - Automatic account activation and login capability
+  
+- **Assign Students**:
+  - Assign students to specific coordinators
+  - View coordinator-student relationships
+  - Reassign students as needed
+  
+- **User Directory**:
+  - Sortable table of all users
+  - Filter by role
+  - View user details
+  - Delete users if needed
+
+#### 2. System Administration
+- **Global Student View**: Access all students in the organization
+- **Search & Filter**: Find students by name, email, graduation year
+- **Organization Statistics**:
+  - Total students count
+  - Total coordinators count
+  - Profile completion average
+  - Application submission rate
+  - Acceptance rate statistics
+- **Profile Override Authority**: Same capabilities as coordinators plus system-wide override visibility
+
+#### 3. Subject/Curriculum Management
+- **Manage Subjects**: Add/remove subjects per curriculum type
+- **Curriculum Support**: Automatically populates transcript forms based on student's curriculum selection
+- **Subject Organization**: Subjects unique per curriculum (CBSE, IB, ICSE, etc.)
+
+#### 4. Counselor Dashboard
+- Organization-wide statistics
+- Key metrics:
+  - Total students
+  - Students in onboarding
+  - Average profile strength score
+  - Application submission rate
+  - Students with active coordinators
+- Quick access to user management
+- System health indicators
+
+---
+
+## Technical Architecture
+
+### Technology Stack
+
+| Layer | Technology | Version |
+|-------|-----------|---------|
+| **Frontend** | Next.js 14 (App Router) | 14.2.35 |
+| **UI Framework** | React | 18.3.1 |
+| **Language** | TypeScript | 5.5.3 |
+| **Styling** | Tailwind CSS | 3.4.1 |
+| **Database ORM** | Prisma | 5.22.0 |
+| **Database** | PostgreSQL (Supabase) | Latest |
+| **Authentication** | NextAuth.js | 4.24.10 |
+| **Password Hashing** | bcrypt | 5.1.1 |
+| **Form Validation** | Zod | Latest |
+| **Form Management** | React Hook Form | Latest |
+
+### Architecture Overview
+
+```
+┌─────────────────────────────────────────┐
+│        Browser (Client)                 │
+│     React + TypeScript + Tailwind       │
+└────────────┬────────────────────────────┘
+             │ HTTP/HTTPS
+┌────────────▼────────────────────────────┐
+│     Next.js 14 Server (App Router)      │
+├─────────────────────────────────────────┤
+│  Authentication (NextAuth)              │
+│  Middleware (RBAC)                      │
+│  API Routes (RESTful)                   │
+│  Server Components & Data Fetching      │
+└────────────┬────────────────────────────┘
+             │ SQL
+┌────────────▼────────────────────────────┐
+│   Prisma ORM Client                     │
+└────────────┬────────────────────────────┘
+             │ PostgreSQL Protocol
+┌────────────▼────────────────────────────┐
+│  PostgreSQL (Supabase)                  │
+│  - 20 Models                            │
+│  - 17 Enums                             │
+│  - Audit Trail & Change Logs            │
+└─────────────────────────────────────────┘
+```
+
+### Project Structure
+
 ```
 waypoint/
 ├── app/
 │   ├── (auth)/
-│   │   └── login/page.tsx
+│   │   ├── login/page.tsx              # Login page
+│   │   └── layout.tsx
 │   ├── (dashboard)/
-│   │   ├── layout.tsx
-│   │   ├── student/
-│   │   │   ├── page.tsx (dashboard)
-│   │   │   ├── onboarding/page.tsx
-│   │   │   ├── profile/page.tsx
-│   │   │   ├── applications/page.tsx
-│   │   │   ├── test-scores/page.tsx
-│   │   │   ├── colleges/page.tsx
-│   │   │   ├── goals/page.tsx
-│   │   │   ├── history/page.tsx
-│   │   │   ├── analysis/page.tsx
-│   │   │   └── edit/
-│   │   │       ├── personal/page.tsx
-│   │   │       ├── academic/page.tsx
-│   │   │       ├── transcripts/page.tsx
-│   │   │       ├── activities/page.tsx
-│   │   │       ├── achievements/page.tsx
-│   │   │       └── projects/page.tsx
-│   │   ├── coordinator/
-│   │   │   ├── page.tsx (dashboard)
-│   │   │   ├── meetings/
-│   │   │   │   ├── page.tsx
-│   │   │   │   └── new/page.tsx
-│   │   │   └── students/[studentId]/page.tsx
-│   │   └── counselor/
-│   │       ├── page.tsx (dashboard)
-│   │       ├── manage-users/page.tsx
-│   │       └── students/[studentId]/page.tsx
+│   │   ├── layout.tsx                  # Dashboard layout with nav
+│   │   ├── student/                    # Student portal
+│   │   │   ├── page.tsx                # Dashboard
+│   │   │   ├── onboarding/             # 7-step wizard
+│   │   │   ├── profile/                # View full profile
+│   │   │   ├── applications/           # College applications
+│   │   │   ├── test-scores/            # Test score management
+│   │   │   ├── colleges/               # Target colleges
+│   │   │   ├── goals/                  # Goals tracking
+│   │   │   ├── analysis/               # Profile strength analysis
+│   │   │   ├── history/                # Change history
+│   │   │   └── edit/                   # Edit individual sections
+│   │   ├── coordinator/                # Coordinator portal
+│   │   │   ├── page.tsx                # Dashboard
+│   │   │   ├── meetings/               # Meeting management
+│   │   │   └── students/               # Student management
+│   │   └── counselor/                  # Admin portal
+│   │       ├── page.tsx                # Dashboard
+│   │       ├── manage-users/           # User management
+│   │       └── students/               # Global student view
 │   └── api/
-│       ├── auth/[...nextauth]/route.ts
-│       ├── enums/route.ts
-│       ├── colleges/route.ts
-│       ├── subjects/route.ts
-│       ├── onboarding/ (7 endpoints)
-│       ├── student/ (15+ endpoints)
-│       ├── coordinator/ (4 endpoints)
-│       └── counselor/ (3 endpoints)
+│       ├── auth/[...nextauth]/         # NextAuth routes
+│       ├── enums/                      # Enum values endpoint
+│       ├── colleges/                   # College database
+│       ├── subjects/                   # Subject management
+│       ├── onboarding/                 # Onboarding endpoints
+│       ├── student/                    # Student data endpoints
+│       ├── coordinator/                # Coordinator endpoints
+│       └── counselor/                  # Admin endpoints
 ├── components/
-│   ├── ui/
+│   ├── ui/                             # Reusable UI components
 │   │   ├── button.tsx
 │   │   ├── card.tsx
 │   │   ├── input.tsx
 │   │   ├── select.tsx
 │   │   └── progress-bar.tsx
-│   └── forms/onboarding/
-│       ├── OnboardingWizard.tsx
-│       ├── PersonalProfileForm.tsx
-│       ├── AcademicProfileForm.tsx
-│       ├── TranscriptForm.tsx
-│       ├── ActivityForm.tsx
-│       ├── AchievementForm.tsx
-│       └── ProjectForm.tsx
+│   ├── forms/onboarding/               # Onboarding wizard forms
+│   │   ├── OnboardingWizard.tsx
+│   │   ├── PersonalProfileForm.tsx
+│   │   ├── AcademicProfileForm.tsx
+│   │   ├── TranscriptForm.tsx
+│   │   ├── ActivityForm.tsx
+│   │   ├── AchievementForm.tsx
+│   │   └── ProjectForm.tsx
+│   └── dashboard/                      # Dashboard components
+│       └── StudentFullProfile.tsx
 ├── lib/
-│   ├── auth.ts
-│   ├── prisma.ts
-│   ├── hooks/useEnums.ts
-│   └── utils/
-│       ├── profile-strength.ts
-│       ├── profile-analysis-detailed.ts
-│       ├── profile-completion.ts
-│       └── change-log.ts
+│   ├── auth.ts                         # NextAuth configuration
+│   ├── prisma.ts                       # Prisma client singleton
+│   ├── api-helpers/                    # API helper functions
+│   │   ├── change-log.ts               # Change log utilities
+│   │   └── profile.ts                  # Profile utilities
+│   ├── hooks/
+│   │   └── useEnums.ts                 # Enum values hook
+│   ├── utils/
+│   │   ├── profile-strength.ts         # Profile scoring algorithm
+│   │   ├── profile-analysis-detailed.ts # Detailed analysis
+│   │   ├── profile-completion.ts       # Completion percentage
+│   │   └── change-log.ts               # Change log formatting
+│   └── validations/                    # Zod schemas
+│       ├── student.ts
+│       └── activity.ts
 ├── prisma/
-│   ├── schema.prisma
-│   └── migrations/ (6 migrations)
-├── middleware.ts
-├── next.config.js
-├── package.json
-└── tsconfig.json
+│   ├── schema.prisma                   # Database schema (SOURCE OF TRUTH)
+│   ├── migrations/                     # Migration history
+│   ├── seed.ts                         # Initial seed data
+│   ├── seed-colleges.ts                # 64 US colleges
+│   ├── seed-students.ts                # Sample students
+│   └── seed-subjects.ts                # Curriculum subjects
+├── types/
+│   └── next-auth.d.ts                  # NextAuth type extensions
+├── middleware.ts                       # RBAC middleware
+├── next.config.js                      # Next.js configuration
+├── tailwind.config.ts                  # Tailwind configuration
+├── tsconfig.json                       # TypeScript configuration
+└── package.json                        # Dependencies
+```
 
-Environment Variables
-env# Database
-DATABASE_URL="postgresql://..."
+---
 
-# NextAuth
-NEXTAUTH_SECRET="..." (generate with: openssl rand -base64 32)
-NEXTAUTH_URL="http://localhost:3000" (dev) or production URL
+## Database Schema
 
-Current Status & Known Issues
-✅ What Works:
+See [SCHEMA_REFERENCE.md](SCHEMA_REFERENCE.md) for complete schema details.
 
-All features listed above were 100% functional
-Database seeded with:
+### Models Overview (20 Total)
 
-1 counselor (admin@waypoint.edu / Admin@2024!)
-5 sample students (diverse curricula)
-64 US colleges
-Sample data across all models
+**Core**: User, Student, Organization
+**Profile**: PersonalProfile, AcademicProfile, Transcript
+**Activities**: Activity, Achievement, ProjectExperience
+**College Prep**: College, TargetCollege, CollegeApplication, TestScore
+**Coordination**: Meeting, MeetingLog, ProfileGoal, ProfileOverride, ProfileComment
+**Admin**: ChangeLog, Subject
 
+### Enums (17 Total)
 
+UserRole, GradeLevel, CurriculumType, GradingSystemType, Semester, HonorsLevel, AchievementType, RecognitionLevel, ExperienceType, ActivityCategory, GoalType, GoalStatus, TargetCategory, ApplicationStatus, ChangeType, ChangeAction, MeetingType
 
-❌ Current Issue:
+### Database Constraints
 
-Prisma relation name mismatch
-Schema uses PascalCase (correct): PersonalProfile, Student, User
-Code uses camelCase (wrong): personal_profile, student, user
-Causes "Unknown field" errors throughout app
-Occurred during production deployment attempt
+- Unique: User.email, College.name, Subject (subjectName + curriculumType)
+- One-to-One: Student-PersonalProfile, Student-AcademicProfile, Student-ProfileOverride
+- One-to-Many: All other relations
+- Cascading Deletes: Student deletion cascades all related data
 
-🔧 Fix Needed:
+---
 
-Update ALL code files to use PascalCase relation names
-Keep scalar fields as snake_case (student_id, user_id, etc.)
-Files affected: app/, lib/, components/ (all .ts and .tsx)
+## API Endpoints
 
+### Authentication
+- `POST /api/auth/[...nextauth]/` - NextAuth routes (login, logout, callback)
 
-Production Deployment Plan
-Database:
+### Enums & Reference
+- `GET /api/enums/` - All enum values for dropdowns
+- `GET /api/colleges/` - College database search
+- `GET /api/subjects/` - Available subjects by curriculum
 
-Supabase PostgreSQL (already set up)
-Production URL: postgresql://postgres.vevjvvodrfpumjgvqynw:Singaravelan321@aws-1-ap-northeast-1.pooler.supabase.com:5432/postgres
-Migrations: 6 migrations applied
-Seed: Admin account created
+### Student Endpoints
+- `GET/POST /api/student/profile/` - Profile operations
+- `GET/POST /api/student/personal/` - Personal info
+- `GET/POST /api/student/academic/` - Academic profile
+- `GET/POST/DELETE /api/student/transcripts/` - Transcript management
+- `GET/POST/DELETE /api/student/activities/[id]/` - Activity CRUD
+- `GET/POST/DELETE /api/student/achievements/` - Achievement CRUD
+- `GET/POST/DELETE /api/student/projects/` - Project CRUD
+- `GET/POST /api/student/test-scores/` - Test score management
+- `GET/POST /api/student/applications/` - Application tracking
+- `GET/POST /api/student/target-colleges/` - Target college list
+- `GET/POST /api/student/goals/` - Goal management
+- `GET /api/student/profile-analysis/` - Profile strength analysis
+- `GET /api/student/changelog/` - Change history
+- `GET /api/student/dashboard-stats/` - Dashboard statistics
 
-Hosting:
+### Onboarding Endpoints
+- `GET /api/onboarding/status/` - Onboarding progress
+- `POST /api/onboarding/personal/` - Save personal info
+- `POST /api/onboarding/academic/` - Save academic profile
+- `POST /api/onboarding/transcripts/` - Save transcripts
+- `POST /api/onboarding/activities/` - Save activities
+- `POST /api/onboarding/achievements/` - Save achievements
+- `POST /api/onboarding/projects/` - Save projects
+- `POST /api/onboarding/test-scores/` - Save test scores
+- `POST /api/onboarding/complete/` - Complete onboarding
 
-Vercel
-Environment variables configured
-Build command: prisma generate && next build
+### Coordinator Endpoints
+- `GET /api/coordinator/students/` - List assigned students
+- `GET /api/coordinator/students/[studentId]` - Student details
+- `POST /api/coordinator/meetings/` - Log meeting
+- `GET /api/coordinator/dashboard-stats/` - Coordinator dashboard stats
+- `POST /api/coordinator/profile-override/[studentId]` - Override profile score
 
-Remaining Steps:
+### Counselor Endpoints
+- `GET/POST /api/counselor/users/` - User management
+- `POST /api/counselor/assign-coordinator/[studentId]` - Assign student
+- `GET /api/counselor/coordinators/` - List coordinators
 
-Fix relation names in code
-Test locally (npm run dev)
-Build locally (npm run build)
-Deploy to Vercel (vercel --prod)
-Test production deployment
+---
 
+## Code Conventions
 
-Summary
-This is a complete, production-ready college counseling platform with comprehensive features for students, coordinators, and counselors. The only blocker is fixing the Prisma relation name casing throughout the codebase to match the schema's PascalCase convention.
-Start new chat with: "I need to fix Prisma relation names from camelCase to PascalCase throughout the Waypoint college counseling codebase. The schema is correct (PascalCase), but the code uses camelCase. Need systematic fixes across app/, lib/, and components/ folders."
+### Critical: camelCase for Prisma Relations
+
+See [SCHEMA_REFERENCE.md](SCHEMA_REFERENCE.md) for complete convention guide.
+
+**Relations (MUST use camelCase)**:
+```typescript
+student.personalProfile    // ✅ CORRECT
+student.academicProfile    // ✅ CORRECT
+student.activities         // ✅ CORRECT
+student.PersonalProfile    // ❌ WRONG - Never PascalCase
+```
+
+**Field Names (MUST use camelCase)**:
+```typescript
+user.firstName             // ✅ CORRECT (not first_name)
+user.passwordHash          // ✅ CORRECT (not password_hash)
+student.graduationYear     // ✅ CORRECT (not graduation_year)
+```
+
+### File Naming
+- **Components**: PascalCase (`StudentProfile.tsx`, `OnboardingWizard.tsx`)
+- **Utilities**: camelCase (`useStudent.ts`, `profileStrength.ts`)
+- **API Routes**: kebab-case folders with `route.ts` (`app/api/student/profile/route.ts`)
+
+### Code Style
+- Use TypeScript strict mode
+- Async/await over `.then()` chains
+- Server components by default, `'use client'` only when needed
+- Error boundaries for data fetching
+- Zod for runtime validation on API routes
+- Always include error handling
+
+---
+
+## Deployment & Operations
+
+### Environment
+
+**Production**: https://waypoint-pilot.vercel.app
+**Database**: Supabase PostgreSQL
+**Hosting**: Vercel (auto-deploy from `main` branch)
+**Admin**: counselor@waypoint.edu / password123
+
+### Pre-Deployment Checklist
+
+```bash
+# 1. Build
+npm run build
+
+# 2. Type checking
+npx tsc --noEmit
+
+# 3. Linting
+npm run lint
+
+# 4. Test locally
+npm run dev
+# Test all features at http://localhost:3000
+
+# 5. Run TESTING_CHECKLIST.md
+
+# 6. Commit and push
+git add .
+git commit -m "feature: description"
+git push origin main
+
+# Vercel automatically deploys
+```
+
+### Database Migrations
+
+```bash
+# Create new migration
+npx prisma migrate dev --name feature_name
+
+# Check status
+npx prisma migrate status
+
+# Push schema only (dev)
+npx prisma db push
+
+# Production: Always use migrate
+```
+
+### Seed Data
+
+```bash
+# Initial users and data
+npx tsx prisma/seed.ts
+
+# 64 US colleges
+npx tsx prisma/seed-colleges.ts
+
+# Curriculum subjects
+npx tsx prisma/seed-subjects.ts
+```
+
+### Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| "Prisma Client not found" | `npx prisma generate` |
+| "Unknown field" error | Check using camelCase for relations |
+| "Column does not exist" | Run `npx prisma migrate dev` |
+| Build fails | Run locally: `npm run build` |
+
+---
+
+## Known Limitations & Future Enhancements
+
+### Not Yet Implemented
+- Email notifications
+- PDF report generation
+- File upload for documents
+- Advanced analytics
+- Mobile app
+- Real-time features
+- Messaging system
+- Parent portal
+
+### Potential Improvements
+- Export student data (CSV, PDF)
+- Batch user import
+- Custom profile questions
+- Video integration
+- Document management
+- Integration with college portals
+
+---
+
+## Support & Resources
+
+- [Development Guide](DEVELOPMENT.md)
+- [Database Schema Reference](SCHEMA_REFERENCE.md)
+- [Testing Checklist](TESTING_CHECKLIST.md)
+- [Project Context](PROJECT_CONTEXT.md)
+
+---
+
+**Last Updated**: February 15, 2026
+**Version**: 2.0 (Production)
+**Deployment Status**: ✅ Live on Vercel
