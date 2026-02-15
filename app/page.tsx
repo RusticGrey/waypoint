@@ -292,7 +292,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-
+        
         {/* Analytics Dashboard Preview */}
         <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg shadow-lg p-8 mb-20 text-white">
           <h2 className="text-3xl font-bold mb-8">Analytics at a Glance</h2>
