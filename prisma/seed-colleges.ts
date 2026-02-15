@@ -47,9 +47,50 @@ const TOP_COLLEGES = [
   { name: "Swarthmore College", acceptanceRate: 0.067, avgGpa: 4.05, avgSat: 1485, avgAct: 33, rankingUsNews: 4, country: "United States" },
   { name: "Pomona College", acceptanceRate: 0.067, avgGpa: 3.95, avgSat: 1490, avgAct: 33, rankingUsNews: 3, country: "United States" },
   
-  // International
+  // International - United Kingdom
   { name: "University of Oxford", acceptanceRate: 0.138, avgGpa: null, avgSat: null, avgAct: null, rankingUsNews: null, country: "United Kingdom" },
   { name: "University of Cambridge", acceptanceRate: 0.166, avgGpa: null, avgSat: null, avgAct: null, rankingUsNews: null, country: "United Kingdom" },
+  { name: "University of London", acceptanceRate: 0.225, avgGpa: null, avgSat: null, avgAct: null, rankingUsNews: null, country: "United Kingdom" },
+  { name: "Imperial College London", acceptanceRate: 0.142, avgGpa: null, avgSat: null, avgAct: null, rankingUsNews: null, country: "United Kingdom" },
+  { name: "University College London (UCL)", acceptanceRate: 0.175, avgGpa: null, avgSat: null, avgAct: null, rankingUsNews: null, country: "United Kingdom" },
+  { name: "London School of Economics and Political Science (LSE)", acceptanceRate: 0.106, avgGpa: null, avgSat: null, avgAct: null, rankingUsNews: null, country: "United Kingdom" },
+  { name: "University of Manchester", acceptanceRate: 0.242, avgGpa: null, avgSat: null, avgAct: null, rankingUsNews: null, country: "United Kingdom" },
+  { name: "University of Edinburgh", acceptanceRate: 0.266, avgGpa: null, avgSat: null, avgAct: null, rankingUsNews: null, country: "United Kingdom" },
+  
+  // International - Germany
+  { name: "Heidelberg University", acceptanceRate: 0.236, avgGpa: null, avgSat: null, avgAct: null, rankingUsNews: null, country: "Germany" },
+  { name: "Ludwig Maximilians University Munich", acceptanceRate: 0.237, avgGpa: null, avgSat: null, avgAct: null, rankingUsNews: null, country: "Germany" },
+  { name: "Technical University of Munich (TUM)", acceptanceRate: 0.166, avgGpa: null, avgSat: null, avgAct: null, rankingUsNews: null, country: "Germany" },
+  { name: "University of Berlin", acceptanceRate: 0.271, avgGpa: null, avgSat: null, avgAct: null, rankingUsNews: null, country: "Germany" },
+  { name: "University of Bonn", acceptanceRate: 0.255, avgGpa: null, avgSat: null, avgAct: null, rankingUsNews: null, country: "Germany" },
+  
+  // International - Netherlands
+  { name: "University of Amsterdam", acceptanceRate: 0.211, avgGpa: null, avgSat: null, avgAct: null, rankingUsNews: null, country: "Netherlands" },
+  { name: "University of Utrecht", acceptanceRate: 0.195, avgGpa: null, avgSat: null, avgAct: null, rankingUsNews: null, country: "Netherlands" },
+  { name: "Leiden University", acceptanceRate: 0.182, avgGpa: null, avgSat: null, avgAct: null, rankingUsNews: null, country: "Netherlands" },
+  { name: "Erasmus University Rotterdam", acceptanceRate: 0.214, avgGpa: null, avgSat: null, avgAct: null, rankingUsNews: null, country: "Netherlands" },
+  { name: "University of Groningen", acceptanceRate: 0.226, avgGpa: null, avgSat: null, avgAct: null, rankingUsNews: null, country: "Netherlands" },
+  
+  // International - Australia
+  { name: "University of Melbourne", acceptanceRate: 0.322, avgGpa: null, avgSat: null, avgAct: null, rankingUsNews: null, country: "Australia" },
+  { name: "Australian National University (ANU)", acceptanceRate: 0.341, avgGpa: null, avgSat: null, avgAct: null, rankingUsNews: null, country: "Australia" },
+  { name: "University of Sydney", acceptanceRate: 0.386, avgGpa: null, avgSat: null, avgAct: null, rankingUsNews: null, country: "Australia" },
+  { name: "University of New South Wales (UNSW)", acceptanceRate: 0.453, avgGpa: null, avgSat: null, avgAct: null, rankingUsNews: null, country: "Australia" },
+  { name: "University of Queensland", acceptanceRate: 0.516, avgGpa: null, avgSat: null, avgAct: null, rankingUsNews: null, country: "Australia" },
+  { name: "Monash University", acceptanceRate: 0.676, avgGpa: null, avgSat: null, avgAct: null, rankingUsNews: null, country: "Australia" },
+  
+  // International - Canada
+  { name: "University of Toronto", acceptanceRate: 0.156, avgGpa: null, avgSat: null, avgAct: null, rankingUsNews: null, country: "Canada" },
+  { name: "McGill University", acceptanceRate: 0.211, avgGpa: null, avgSat: null, avgAct: null, rankingUsNews: null, country: "Canada" },
+  { name: "University of British Columbia (UBC)", acceptanceRate: 0.336, avgGpa: null, avgSat: null, avgAct: null, rankingUsNews: null, country: "Canada" },
+  { name: "McMaster University", acceptanceRate: 0.355, avgGpa: null, avgSat: null, avgAct: null, rankingUsNews: null, country: "Canada" },
+  { name: "University of Alberta", acceptanceRate: 0.476, avgGpa: null, avgSat: null, avgAct: null, rankingUsNews: null, country: "Canada" },
+  { name: "Simon Fraser University", acceptanceRate: 0.531, avgGpa: null, avgSat: null, avgAct: null, rankingUsNews: null, country: "Canada" },
+  
+  // International - Singapore
+  { name: "National University of Singapore (NUS)", acceptanceRate: 0.054, avgGpa: null, avgSat: null, avgAct: null, rankingUsNews: null, country: "Singapore" },
+  { name: "Nanyang Technological University (NTU)", acceptanceRate: 0.083, avgGpa: null, avgSat: null, avgAct: null, rankingUsNews: null, country: "Singapore" },
+  { name: "Singapore Management University (SMU)", acceptanceRate: 0.156, avgGpa: null, avgSat: null, avgAct: null, rankingUsNews: null, country: "Singapore" },
 ];
 
 async function main() {

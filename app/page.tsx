@@ -85,94 +85,6 @@ export default function Home() {
           </Link>
         </div>
 
-        {/* Analytics Dashboard Preview */}
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg shadow-lg p-8 mb-20 text-white">
-          <h2 className="text-3xl font-bold mb-8">Analytics at a Glance</h2>
-          <div className="grid md:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white bg-opacity-10 rounded-lg p-4 backdrop-blur-sm">
-              <p className="text-blue-100 text-sm mb-2">Total Students</p>
-              <p className="text-4xl font-bold">247</p>
-              <p className="text-blue-200 text-xs mt-2">↑ 12% from last month</p>
-            </div>
-            <div className="bg-white bg-opacity-10 rounded-lg p-4 backdrop-blur-sm">
-              <p className="text-blue-100 text-sm mb-2">Profiles Completed</p>
-              <p className="text-4xl font-bold">189</p>
-              <p className="text-blue-200 text-xs mt-2">76% completion rate</p>
-            </div>
-            <div className="bg-white bg-opacity-10 rounded-lg p-4 backdrop-blur-sm">
-              <p className="text-blue-100 text-sm mb-2">Avg Profile Strength</p>
-              <p className="text-4xl font-bold\">78%</p>              
-              <p className="text-blue-200 text-xs mt-2">↑ 5% improvement</p>
-            </div>
-            <div className="bg-white bg-opacity-10 rounded-lg p-4 backdrop-blur-sm">
-              <p className="text-blue-100 text-sm mb-2">Applications Tracked</p>
-              <p className="text-4xl font-bold">1,024</p>
-              <p className="text-blue-200 text-xs mt-2">Across 156 colleges</p>
-            </div>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-white bg-opacity-10 rounded-lg p-4 backdrop-blur-sm">
-              <p className="text-blue-100 text-sm mb-4 font-semibold">Profile Status Distribution</p>
-              <div className="space-y-3">
-                <div>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span>Complete (90-100%)</span>
-                    <span>124 students</span>
-                  </div>
-                  <div className="w-full bg-blue-900 bg-opacity-50 rounded-full h-2">
-                    <div className="bg-green-400 h-2 rounded-full" style={{width: '52%'}}></div>
-                  </div>
-                </div>
-                <div>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span>In Progress (50-89%)</span>
-                    <span>87 students</span>
-                  </div>
-                  <div className="w-full bg-blue-900 bg-opacity-50 rounded-full h-2">
-                    <div className="bg-yellow-400 h-2 rounded-full" style={{width: '36%'}}></div>
-                  </div>
-                </div>
-                <div>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span>Just Started (0-49%)</span>
-                    <span>36 students</span>
-                  </div>
-                  <div className="w-full bg-blue-900 bg-opacity-50 rounded-full h-2">
-                    <div className="bg-red-400 h-2 rounded-full" style={{width: '15%'}}></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white bg-opacity-10 rounded-lg p-4 backdrop-blur-sm">
-              <p className="text-blue-100 text-sm mb-4 font-semibold">College Application Timeline</p>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span>Applied</span>
-                  <span className="font-semibold">342</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Under Review</span>
-                  <span className="font-semibold">456</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Accepted</span>
-                  <span className="font-semibold">158</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Waitlisted</span>
-                  <span className="font-semibold">45</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Rejected</span>
-                  <span className="font-semibold">23</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* Primary Audience Section - Counselors */}
         <div className="bg-white rounded-lg shadow-md p-8 mb-20">
           <div className="mb-12">
@@ -376,6 +288,94 @@ export default function Home() {
               <div>
                 <h4 className="font-semibold text-gray-900">AI-Driven College Matching</h4>
                 <p className="text-gray-700 text-sm">Intelligent algorithms identify target colleges based on student strengths, academic profile, and college requirements. Personalized recommendations for reach, match, and safety schools.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Analytics Dashboard Preview */}
+        <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg shadow-lg p-8 mb-20 text-white">
+          <h2 className="text-3xl font-bold mb-8">Analytics at a Glance</h2>
+          <div className="grid md:grid-cols-4 gap-6 mb-8">
+            <div className="bg-white bg-opacity-10 rounded-lg p-4 backdrop-blur-sm">
+              <p className="text-blue-100 text-sm mb-2">Total Students</p>
+              <p className="text-4xl font-bold">247</p>
+              <p className="text-blue-200 text-xs mt-2">↑ 12% from last month</p>
+            </div>
+            <div className="bg-white bg-opacity-10 rounded-lg p-4 backdrop-blur-sm">
+              <p className="text-blue-100 text-sm mb-2">Profiles Completed</p>
+              <p className="text-4xl font-bold">189</p>
+              <p className="text-blue-200 text-xs mt-2">76% completion rate</p>
+            </div>
+            <div className="bg-white bg-opacity-10 rounded-lg p-4 backdrop-blur-sm">
+              <p className="text-blue-100 text-sm mb-2">Avg Profile Strength</p>
+              <p className="text-4xl font-bold\">78%</p>              
+              <p className="text-blue-200 text-xs mt-2">↑ 5% improvement</p>
+            </div>
+            <div className="bg-white bg-opacity-10 rounded-lg p-4 backdrop-blur-sm">
+              <p className="text-blue-100 text-sm mb-2">Applications Tracked</p>
+              <p className="text-4xl font-bold">1,024</p>
+              <p className="text-blue-200 text-xs mt-2">Across 156 colleges</p>
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="bg-white bg-opacity-10 rounded-lg p-4 backdrop-blur-sm">
+              <p className="text-blue-100 text-sm mb-4 font-semibold">Profile Status Distribution</p>
+              <div className="space-y-3">
+                <div>
+                  <div className="flex justify-between text-sm mb-1">
+                    <span>Complete (90-100%)</span>
+                    <span>124 students</span>
+                  </div>
+                  <div className="w-full bg-blue-900 bg-opacity-50 rounded-full h-2">
+                    <div className="bg-green-400 h-2 rounded-full" style={{width: '52%'}}></div>
+                  </div>
+                </div>
+                <div>
+                  <div className="flex justify-between text-sm mb-1">
+                    <span>In Progress (50-89%)</span>
+                    <span>87 students</span>
+                  </div>
+                  <div className="w-full bg-blue-900 bg-opacity-50 rounded-full h-2">
+                    <div className="bg-yellow-400 h-2 rounded-full" style={{width: '36%'}}></div>
+                  </div>
+                </div>
+                <div>
+                  <div className="flex justify-between text-sm mb-1">
+                    <span>Just Started (0-49%)</span>
+                    <span>36 students</span>
+                  </div>
+                  <div className="w-full bg-blue-900 bg-opacity-50 rounded-full h-2">
+                    <div className="bg-red-400 h-2 rounded-full" style={{width: '15%'}}></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white bg-opacity-10 rounded-lg p-4 backdrop-blur-sm">
+              <p className="text-blue-100 text-sm mb-4 font-semibold">College Application Timeline</p>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span>Applied</span>
+                  <span className="font-semibold">342</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Under Review</span>
+                  <span className="font-semibold">456</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Accepted</span>
+                  <span className="font-semibold">158</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Waitlisted</span>
+                  <span className="font-semibold">45</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Rejected</span>
+                  <span className="font-semibold">23</span>
+                </div>
               </div>
             </div>
           </div>
