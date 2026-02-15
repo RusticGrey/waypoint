@@ -80,6 +80,7 @@ model Student {
 
 model PersonalProfile {
   studentId      String    @id @map("student_id")
+  preferredName  String?   @map("preferred_name")
   phone          String?
   dateOfBirth    DateTime? @map("date_of_birth")
   currentSchool  String?   @map("current_school")
@@ -137,7 +138,7 @@ model Activity {
   activityName String           @map("activity_name")
   category     ActivityCategory // Changed from String to the Enum
   role         String?
-  gradeLevel   GradeLevel       @map("grade_level")
+  gradeLevel  GradeLevel        @map("grade_level")
   hoursPerWeek Int              @map("hours_per_week")
   weeksPerYear Int              @map("weeks_per_year")
   description  String?
@@ -177,6 +178,8 @@ model Achievement {
   dateAchieved     DateTime?         @map("date_achieved")
   description      String?
   recognitionLevel RecognitionLevel? @map("recognition_level")
+  verifiableLink   String?           @map("verifiable_link")
+  metrics          String?
   createdAt        DateTime          @default(now()) @map("created_at")
   updatedAt        DateTime          @updatedAt @map("updated_at")
   student          Student           @relation(fields: [studentId], references: [userId], onDelete: Cascade)
@@ -440,6 +443,7 @@ enum ExperienceType {
   Internship
   Summer_Program
   Work_Experience
+  Volunteer_Project
 }
 
 enum ApplicationStatus {

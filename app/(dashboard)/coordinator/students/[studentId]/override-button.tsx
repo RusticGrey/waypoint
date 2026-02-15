@@ -9,8 +9,8 @@ interface OverrideButtonProps {
   studentId: string;
   currentScore: number;
   existingOverride?: {
-    override_score: number;
-    override_reason: string;
+    overrideScore: number;
+    overrideReason: string;
   } | null;
 }
 
@@ -27,7 +27,7 @@ export default function OverrideButton({
       <Button
         onClick={() => setShowModal(true)}
         variant="outline"
-        size="sm"
+        className="text-sm"
       >
         {existingOverride ? 'Update Override' : 'Override Score'}
       </Button>

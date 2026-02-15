@@ -16,7 +16,7 @@ export default async function MeetingsPage() {
     redirect('/student');
   }
 
-  const meetings = await prisma.Meeting.findMany({
+  const meetings = await prisma.meeting.findMany({
     where: {
       coordinatorId: session.user.id,
     },

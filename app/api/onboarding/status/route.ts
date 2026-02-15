@@ -3,6 +3,8 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: Request) {
   try {
     const session = await getServerSession(authOptions);
@@ -17,7 +19,7 @@ export async function GET(req: Request) {
     }
 
     // Check if student has completed onboarding
-    const student = await prisma.Student.findUnique({
+    const student = await prisma.student.findUnique({
       where: { userId: session.user.id },
       include: {
         personalProfile: true,

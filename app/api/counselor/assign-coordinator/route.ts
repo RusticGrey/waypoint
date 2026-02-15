@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { studentId, coordinatorId } = body;
     
-    await prisma.Student.update({
+    await prisma.student.update({
       where: {
         userId: studentId,
       },

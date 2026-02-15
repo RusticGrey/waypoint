@@ -16,7 +16,7 @@ export async function PATCH(
     
     const body = await req.json();
     
-    const application = await prisma.CollegeApplication.update({
+    const application = await prisma.collegeApplication.update({
       where: {
         id: params.id,
         studentId: session.user.id,
@@ -60,7 +60,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    await prisma.CollegeApplication.delete({
+    await prisma.collegeApplication.delete({
       where: {
         id: params.id,
         studentId: session.user.id,

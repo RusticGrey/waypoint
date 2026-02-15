@@ -3,6 +3,8 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: Request) {
   try {
     const session = await getServerSession(authOptions);
@@ -11,7 +13,7 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const coordinators = await prisma.User.findMany({
+    const coordinators = await prisma.user.findMany({
       where: {
         organizationId: session.user.organizationId,
         role: 'coordinator',

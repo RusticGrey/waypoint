@@ -16,9 +16,9 @@ interface StrengthAnalysis {
   categoryScores: {
     academic: number;
     testing: number;
-    activity: number;
+    activities: number;
     leadership: number;
-    achievement: number;
+    achievements: number;
     projects: number;
   };
   strengths: string[];

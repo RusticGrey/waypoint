@@ -1,6 +1,6 @@
 import { Prisma } from '@prisma/client';
 
-type StudentWithRelations = Prisma.studentGetPayload<{
+type StudentWithRelations = Prisma.StudentGetPayload<{
   include: {
     personalProfile: true;
     academicProfile: true;
@@ -71,9 +71,9 @@ export function analyzeProfileDetailed(student: StudentWithRelations) {
   const categoryScores = {
     academic: Math.round((academic.total / academic.max) * 100),
     testing: Math.round((testing.total / testing.max) * 100),
-    Activity: Math.round((activities.total / activities.max) * 100),
+    activities: Math.round((activities.total / activities.max) * 100),
     leadership: Math.round((leadership.total / leadership.max) * 100),
-    Achievement: Math.round((achievements.total / achievements.max) * 100),
+    achievements: Math.round((achievements.total / achievements.max) * 100),
     projects: Math.round((projects.total / projects.max) * 100),
   };
 

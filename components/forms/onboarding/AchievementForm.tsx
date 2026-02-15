@@ -8,7 +8,8 @@ import { Input } from '@/components/ui/input';
 import { useState } from 'react';
 
 interface Props {
-  onNext: (data: any[]) => void;
+  onNext: (data: any[], completionPercentage?: number) => void;
+  onSave?: (data: any[], completionPercentage?: number) => void;
   onBack: () => void;
   initialData?: any[];
   currentGrade?: string;
@@ -29,9 +30,10 @@ const MONTHS = [
   { value: '12', label: 'December' },
 ];
 
-export default function AchievementForm({ onNext, onBack, initialData = [] }: Props) {
+export default function AchievementForm({ onNext, onSave, onBack, initialData = [] }: Props) {
   const [achievements, setAchievements] = useState<any[]>(initialData);
   const [showForm, setShowForm] = useState(false);
+  const [editIndex, setEditIndex] = useState<number | null>(null);
   const [selectedMonth, setSelectedMonth] = useState('');
   const [selectedYear, setSelectedYear] = useState('');
 
@@ -46,7 +48,7 @@ export default function AchievementForm({ onNext, onBack, initialData = [] }: Pr
     resolver: zodResolver(achievementSchema),
   });
 
-  const achievementType = watch('achievement_type');
+  const achievementType = watch('achievementType');
 
   const getTypeDescription = (type: string) => {
     switch (type) {
@@ -65,6 +67,27 @@ export default function AchievementForm({ onNext, onBack, initialData = [] }: Pr
     }
   };
 
+  const saveAchievements = async (newAchievements: any[]) => {
+    try {
+      const response = await fetch('/api/onboarding/achievements', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ achievements: newAchievements }),
+      });
+
+      if (response.ok) {
+        const responseData = await response.json();
+        if (onSave) {
+          onSave(newAchievements, responseData.completionPercentage);
+        }
+      } else {
+        console.error('Failed to save achievements');
+      }
+    } catch (error) {
+      console.error('Error saving achievements:', error);
+    }
+  };
+
   const onSubmitAchievement = (data: AchievementInput) => {
     // Combine month and year into date string if both selected
     let dateAchieved = null;
@@ -74,18 +97,81 @@ export default function AchievementForm({ onNext, onBack, initialData = [] }: Pr
 
     const achievementWithDate = {
       ...data,
-      date_achieved: dateAchieved,
+      dateAchieved: dateAchieved, // Note: camelCase to match form data structure usually, though API might map it.
+      // Keeping consistent with component state structure
     };
 
-    setAchievements([...achievements, achievementWithDate]);
+    let updatedAchievements;
+    if (editIndex !== null) {
+      updatedAchievements = [...achievements];
+      updatedAchievements[editIndex] = achievementWithDate;
+      setEditIndex(null);
+    } else {
+      updatedAchievements = [...achievements, achievementWithDate];
+    }
+    
+    setAchievements(updatedAchievements);
+    saveAchievements(updatedAchievements);
+    
     reset();
     setSelectedMonth('');
     setSelectedYear('');
     setShowForm(false);
   };
 
+  const editAchievement = (index: number) => {
+    const achievement = achievements[index];
+    
+    // Sanitize data: Convert nulls to empty strings/undefined for form
+    // And exclude dateAchieved (handled via state)
+    const { dateAchieved, ...rest } = achievement;
+    
+    const sanitizedData = Object.entries(rest).reduce((acc, [key, value]) => {
+      // If value is null, use empty string (or undefined if preferred, but inputs usually like strings)
+      acc[key] = value === null ? '' : value;
+      return acc;
+    }, {} as any);
+
+    reset(sanitizedData);
+    
+    // Parse dateAchieved to set month/year
+    if (achievement.dateAchieved) {
+      const date = new Date(achievement.dateAchieved);
+      // Handle "YYYY-MM" string or Date object
+      if (isNaN(date.getTime()) && typeof achievement.dateAchieved === 'string') {
+         // Try parsing manual string format if it was saved that way locally
+         const parts = achievement.dateAchieved.split('-');
+         if (parts.length === 2) {
+           setSelectedYear(parts[0]);
+           setSelectedMonth(parts[1]);
+         }
+      } else if (!isNaN(date.getTime())) {
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear().toString();
+        setSelectedMonth(month);
+        setSelectedYear(year);
+      }
+    } else {
+      setSelectedMonth('');
+      setSelectedYear('');
+    }
+
+    setEditIndex(index);
+    setShowForm(true);
+  };
+
   const removeAchievement = (index: number) => {
-    setAchievements(achievements.filter((_, i) => i !== index));
+    const updatedAchievements = achievements.filter((_, i) => i !== index);
+    setAchievements(updatedAchievements);
+    saveAchievements(updatedAchievements);
+
+    if (editIndex === index) {
+      setEditIndex(null);
+      setShowForm(false);
+      reset();
+      setSelectedMonth('');
+      setSelectedYear('');
+    }
   };
 
   const handleNext = async () => {
@@ -96,7 +182,8 @@ export default function AchievementForm({ onNext, onBack, initialData = [] }: Pr
     });
 
     if (response.ok) {
-      onNext(achievements);
+      const responseData = await response.json();
+      onNext(achievements, responseData.completionPercentage);
     }
   };
 
@@ -130,13 +217,22 @@ export default function AchievementForm({ onNext, onBack, initialData = [] }: Pr
                     {achievement.recognitionLevel && ` • ${achievement.recognitionLevel}`}
                   </p>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => removeAchievement(index)}
-                  className="text-red-600 hover:text-red-800 text-sm"
-                >
-                  Remove
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => editAchievement(index)}
+                    className="text-blue-600 hover:text-blue-800 text-sm"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => removeAchievement(index)}
+                    className="text-red-600 hover:text-red-800 text-sm"
+                  >
+                    Remove
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -146,7 +242,21 @@ export default function AchievementForm({ onNext, onBack, initialData = [] }: Pr
         {!showForm && (
           <Button
             type="button"
-            onClick={() => setShowForm(true)}
+            onClick={() => {
+              setShowForm(true);
+              setEditIndex(null);
+              reset({
+                achievementType: undefined,
+                title: '',
+                organization: '',
+                gradeLevel: undefined,
+                description: '',
+                metrics: '',
+                verifiableLink: '',
+              });
+              setSelectedMonth('');
+              setSelectedYear('');
+            }}
             variant="outline"
             className="w-full"
           >
@@ -156,13 +266,16 @@ export default function AchievementForm({ onNext, onBack, initialData = [] }: Pr
 
         {/* Add achievement form */}
         {showForm && (
-          <form onSubmit={handleSubmit(onSubmitAchievement)} className="space-y-4 p-4 border rounded-lg bg-gray-50">
+          <form 
+            onSubmit={handleSubmit(onSubmitAchievement, (errors) => console.error("Form errors:", errors))} 
+            className="space-y-4 p-4 border rounded-lg bg-gray-50"
+          >
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Achievement Type *
               </label>
               <select
-                {...register('achievement_type')}
+                {...register('achievementType')}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
               >
                 <option value="">Select type</option>
@@ -200,7 +313,7 @@ export default function AchievementForm({ onNext, onBack, initialData = [] }: Pr
                   Grade Level *
                 </label>
                 <select
-                  {...register('grade_level')}
+                  {...register('gradeLevel')}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
                 >
                   <option value="">Select grade</option>
@@ -255,10 +368,10 @@ export default function AchievementForm({ onNext, onBack, initialData = [] }: Pr
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Recognition Level (optional)
+                Recognition Level *
               </label>
               <select
-                {...register('recognition_level')}
+                {...register('recognitionLevel')}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
               >
                 <option value="">Select level</option>
@@ -270,6 +383,10 @@ export default function AchievementForm({ onNext, onBack, initialData = [] }: Pr
                 <option value="National">National</option>
                 <option value="International">International</option>
               </select>
+              
+              {errors.recognitionLevel && (
+                <p className="mt-1 text-sm text-red-600">{errors.recognitionLevel.message}</p>
+              )}
             </div>
 
             <div>
@@ -299,13 +416,13 @@ export default function AchievementForm({ onNext, onBack, initialData = [] }: Pr
             <Input
               label="Verification Link (optional)"
               placeholder="https://..."
-              {...register('verifiable_link')}
+              {...register('verifiableLink')}
               error={errors.verifiableLink?.message}
             />
 
             <div className="flex gap-2">
               <Button type="submit" className="flex-1">
-                Add Achievement
+                {editIndex !== null ? 'Update Achievement' : 'Add Achievement'}
               </Button>
               <Button
                 type="button"
@@ -314,6 +431,7 @@ export default function AchievementForm({ onNext, onBack, initialData = [] }: Pr
                   reset();
                   setSelectedMonth('');
                   setSelectedYear('');
+                  setEditIndex(null);
                 }}
                 variant="outline"
               >

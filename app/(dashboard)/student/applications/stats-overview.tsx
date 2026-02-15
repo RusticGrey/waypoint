@@ -4,8 +4,8 @@ import { Card, CardContent } from '@/components/ui/card';
 
 interface Application {
   id: string;
-  target_category: string;
-  application_status: string;
+  targetCategory: string;
+  applicationStatus: string;
 }
 
 interface StatsProps {

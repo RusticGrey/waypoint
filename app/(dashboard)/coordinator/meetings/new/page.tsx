@@ -121,7 +121,7 @@ export default function NewMeetingPage() {
                 <input
                   type="number"
                   value={formData.durationMinutes}
-                  onChange={(e) => setFormData({ ...formData, duration_minutes: parseInt(e.target.value) })}
+                  onChange={(e) => setFormData({ ...formData, durationMinutes: parseInt(e.target.value) })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
                 />
               </div>

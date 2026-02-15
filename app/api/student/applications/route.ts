@@ -11,7 +11,7 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const applications = await prisma.CollegeApplication.findMany({
+    const applications = await prisma.collegeApplication.findMany({
       where: { studentId: session.user.id },
       include: {
         college: {
@@ -56,7 +56,7 @@ export async function POST(req: Request) {
       );
     }
     
-    const application = await prisma.CollegeApplication.create({
+    const application = await prisma.collegeApplication.create({
       data: {
         studentId: session.user.id,
         collegeId: body.collegeId,

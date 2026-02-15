@@ -8,17 +8,19 @@ import { Input } from '@/components/ui/input';
 import { useState, useMemo, useEffect } from 'react';
 
 interface Props {
-  onNext: (data: any[]) => void;
+  onNext: (data: any[], completionPercentage?: number) => void;
+  onSave?: (data: any[], completionPercentage?: number) => void;
   onBack: () => void;
   initialData?: any[];
   curriculum?: string;
   currentGrade?: string;
 }
 
-export default function TranscriptForm({ onNext, onBack, initialData = [], curriculum, currentGrade }: Props) {
+export default function TranscriptForm({ onNext, onSave, onBack, initialData = [], curriculum, currentGrade }: Props) {
   const [transcripts, setTranscripts] = useState<any[]>(initialData);
   const [showForm, setShowForm] = useState(false);
-  const [availableCourses, setAvailableCourses] = useState<Array<{ id: string; subject_name: string }>>([]);
+  const [editIndex, setEditIndex] = useState<number | null>(null);
+  const [availableCourses, setAvailableCourses] = useState<Array<{ subjectName: string }>>([]);
   const [useCustomCourse, setUseCustomCourse] = useState(false);
 
   // Fetch courses for curriculum
@@ -47,23 +49,96 @@ export default function TranscriptForm({ onNext, onBack, initialData = [], curri
   } = useForm<TranscriptInput>({
     resolver: zodResolver(transcriptSchema),
     defaultValues: {
-      honors_level: 'Standard',
-      is_board_exam: false,
+      honorsLevel: 'Standard',
+      isBoardExam: false,
       semester: 'Full_Year',
     },
   });
 
-  const selectedCourse = watch('course_name');
+  const selectedCourse = watch('courseName');
+
+  const gradeLabels: Record<string, string> = {
+    ninth: '9th Grade',
+    tenth: '10th Grade',
+    eleventh: '11th Grade',
+    twelfth: '12th Grade',
+  };
+
+  const saveTranscripts = async (newTranscripts: any[]) => {
+    try {
+      const response = await fetch('/api/onboarding/transcripts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ transcripts: newTranscripts }),
+      });
+
+      if (response.ok) {
+        const responseData = await response.json();
+        if (onSave) {
+          onSave(newTranscripts, responseData.completionPercentage);
+        }
+      } else {
+        console.error('Failed to save transcripts');
+      }
+    } catch (error) {
+      console.error('Error saving transcripts:', error);
+    }
+  };
 
   const onSubmitCourse = (data: TranscriptInput) => {
-    setTranscripts([...transcripts, data]);
+    // Check for duplicates
+    const isDuplicate = transcripts.some(
+      (t, index) => 
+        index !== editIndex && // Ignore current item if editing
+        t.courseName === data.courseName && 
+        t.gradeLevel === data.gradeLevel && 
+        t.semester === data.semester
+    );
+
+    if (isDuplicate) {
+      alert(`A transcript for ${data.courseName} in ${gradeLabels[data.gradeLevel]} (${data.semester}) already exists.`);
+      return;
+    }
+
+    let updatedTranscripts;
+    if (editIndex !== null) {
+      updatedTranscripts = [...transcripts];
+      updatedTranscripts[editIndex] = data;
+      setEditIndex(null);
+    } else {
+      updatedTranscripts = [...transcripts, data];
+    }
+    
+    setTranscripts(updatedTranscripts);
+    saveTranscripts(updatedTranscripts);
+    
     reset();
     setShowForm(false);
     setUseCustomCourse(false);
   };
 
+  const editCourse = (index: number) => {
+    const course = transcripts[index];
+    reset(course);
+    setEditIndex(index);
+    setShowForm(true);
+    // If course name is not in available courses (custom), set custom mode
+    const isStandard = availableCourses.some(c => c.subjectName === course.courseName);
+    if (!isStandard && course.courseName) {
+      setUseCustomCourse(true);
+    }
+  };
+
   const removeCourse = (index: number) => {
-    setTranscripts(transcripts.filter((_, i) => i !== index));
+    const updatedTranscripts = transcripts.filter((_, i) => i !== index);
+    setTranscripts(updatedTranscripts);
+    saveTranscripts(updatedTranscripts);
+
+    if (editIndex === index) {
+      setEditIndex(null);
+      setShowForm(false);
+      reset();
+    }
   };
 
   const handleNext = async () => {
@@ -74,7 +149,8 @@ export default function TranscriptForm({ onNext, onBack, initialData = [], curri
     });
 
     if (response.ok) {
-      onNext(transcripts);
+      const responseData = await response.json();
+      onNext(transcripts, responseData.completionPercentage);
     }
   };
 
@@ -93,18 +169,11 @@ export default function TranscriptForm({ onNext, onBack, initialData = [], curri
     }
   };
 
-  const gradeLabels: Record<string, string> = {
-    ninth: '9th Grade',
-    tenth: '10th Grade',
-    eleventh: '11th Grade',
-    twelfth: '12th Grade',
-  };
-
   return (
     <div className="space-y-6">
       <div>
         <p className="text-sm text-gray-600 mb-4">
-          Add courses you've completed in grades up to {gradeLabels[currentGrade || 'twelfth']}.
+          Add courses you've completed in grades up to {gradeLabels[currentGrade || 'twelfth']}. Add at least 5 courses.
         </p>
 
         {transcripts.length > 0 && (
@@ -113,18 +182,27 @@ export default function TranscriptForm({ onNext, onBack, initialData = [], curri
             {transcripts.map((transcript, index) => (
               <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded border">
                 <div>
-                  <p className="font-medium text-gray-900">{transcript.course_name}</p>
+                  <p className="font-medium text-gray-900">{transcript.courseName}</p>
                   <p className="text-sm text-gray-600">
-                    Grade: {transcript.grade_value} | {gradeLabels[transcript.gradeLevel]} | {transcript.semester}
+                    Grade: {transcript.gradeValue} | {gradeLabels[transcript.gradeLevel]} | {transcript.semester}
                   </p>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => removeCourse(index)}
-                  className="text-red-600 hover:text-red-800 text-sm"
-                >
-                  Remove
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => editCourse(index)}
+                    className="text-blue-600 hover:text-blue-800 text-sm"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => removeCourse(index)}
+                    className="text-red-600 hover:text-red-800 text-sm"
+                  >
+                    Remove
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -133,7 +211,18 @@ export default function TranscriptForm({ onNext, onBack, initialData = [], curri
         {!showForm && (
           <Button
             type="button"
-            onClick={() => setShowForm(true)}
+            onClick={() => {
+              setShowForm(true);
+              setEditIndex(null);
+              reset({
+                honorsLevel: 'Standard',
+                isBoardExam: false,
+                semester: 'Full_Year',
+                courseName: '',
+                gradeLevel: undefined,
+                gradeValue: ''
+              });
+            }}
             variant="outline"
             className="w-full"
           >
@@ -150,13 +239,13 @@ export default function TranscriptForm({ onNext, onBack, initialData = [], curri
               {!useCustomCourse ? (
                 <div>
                   <select
-                    {...register('course_name')}
+                    {...register('courseName')}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
                   >
                     <option value="">Select a course</option>
                     {availableCourses.map((course) => (
-                      <option key={course.id} value={course.subject_name}>
-                        {course.subject_name}
+                      <option key={course.subjectName} value={course.subjectName}>
+                        {course.subjectName}
                       </option>
                     ))}
                   </select>
@@ -164,7 +253,7 @@ export default function TranscriptForm({ onNext, onBack, initialData = [], curri
                     type="button"
                     onClick={() => {
                       setUseCustomCourse(true);
-                      setValue('course_name', '');
+                      setValue('courseName', '');
                     }}
                     className="mt-2 text-sm text-blue-600 hover:text-blue-700"
                   >
@@ -175,14 +264,14 @@ export default function TranscriptForm({ onNext, onBack, initialData = [], curri
                 <div>
                   <Input
                     placeholder="Enter course name"
-                    {...register('course_name')}
-                    error={errors.course_name?.message}
+                    {...register('courseName')}
+                    error={errors.courseName?.message}
                   />
                   <button
                     type="button"
                     onClick={() => {
                       setUseCustomCourse(false);
-                      setValue('course_name', '');
+                      setValue('courseName', '');
                     }}
                     className="mt-2 text-sm text-blue-600 hover:text-blue-700"
                   >
@@ -190,8 +279,8 @@ export default function TranscriptForm({ onNext, onBack, initialData = [], curri
                   </button>
                 </div>
               )}
-              {errors.course_name && (
-                <p className="mt-1 text-sm text-red-600">{errors.course_name.message}</p>
+              {errors.courseName && (
+                <p className="mt-1 text-sm text-red-600">{errors.courseName.message}</p>
               )}
             </div>
 
@@ -201,7 +290,7 @@ export default function TranscriptForm({ onNext, onBack, initialData = [], curri
                   Grade Level *
                 </label>
                 <select
-                  {...register('grade_level')}
+                  {...register('gradeLevel')}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
                 >
                   <option value="">Select grade</option>
@@ -232,8 +321,8 @@ export default function TranscriptForm({ onNext, onBack, initialData = [], curri
             <Input
               label={getGradeLabel() + ' *'}
               placeholder={curriculum === 'CBSE' ? 'e.g., 95' : 'Your grade'}
-              {...register('grade_value')}
-              error={errors.grade_value?.message}
+              {...register('gradeValue')}
+              error={errors.gradeValue?.message}
             />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -242,7 +331,7 @@ export default function TranscriptForm({ onNext, onBack, initialData = [], curri
                   Honors Level
                 </label>
                 <select
-                  {...register('honors_level')}
+                  {...register('honorsLevel')}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
                 >
                   <option value="Standard">Standard</option>
@@ -257,7 +346,7 @@ export default function TranscriptForm({ onNext, onBack, initialData = [], curri
                 <div className="flex items-center pt-6">
                   <input
                     type="checkbox"
-                    {...register('is_board_exam')}
+                    {...register('isBoardExam')}
                     className="h-4 w-4 text-blue-600 rounded"
                   />
                   <label className="ml-2 text-sm text-gray-700">
@@ -269,7 +358,7 @@ export default function TranscriptForm({ onNext, onBack, initialData = [], curri
 
             <div className="flex gap-2">
               <Button type="submit" className="flex-1">
-                Add Course
+                {editIndex !== null ? 'Update Course' : 'Add Course'}
               </Button>
               <Button
                 type="button"
@@ -277,6 +366,7 @@ export default function TranscriptForm({ onNext, onBack, initialData = [], curri
                   setShowForm(false);
                   reset();
                   setUseCustomCourse(false);
+                  setEditIndex(null);
                 }}
                 variant="outline"
               >
@@ -294,7 +384,7 @@ export default function TranscriptForm({ onNext, onBack, initialData = [], curri
         <Button
           type="button"
           onClick={handleNext}
-          disabled={transcripts.length === 0}
+          disabled={transcripts.length < 5}
         >
           Next →
         </Button>

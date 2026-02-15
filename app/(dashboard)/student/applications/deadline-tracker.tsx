@@ -4,9 +4,9 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 
 interface Application {
   id: string;
-  application_deadline: string | null;
-  decision_deadline: string | null;
-  College: {
+  applicationDeadline: string | null;
+  decisionDeadline: string | null;
+  college: {
     name: string;
   };
 }
@@ -17,7 +17,7 @@ interface DeadlineTrackerProps {
 
 export default function DeadlineTracker({ applications }: DeadlineTrackerProps) {
   const deadlines: Array<{
-    College: string;
+    college: string;
     type: string;
     date: Date;
     daysRemaining: number;
@@ -28,7 +28,7 @@ export default function DeadlineTracker({ applications }: DeadlineTrackerProps) 
       const date = new Date(app.applicationDeadline);
       const daysRemaining = Math.ceil((date.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
       deadlines.push({
-        College: app.college.name,
+        college: app.college.name,
         type: 'Application',
         date,
         daysRemaining,
@@ -38,7 +38,7 @@ export default function DeadlineTracker({ applications }: DeadlineTrackerProps) 
       const date = new Date(app.decisionDeadline);
       const daysRemaining = Math.ceil((date.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
       deadlines.push({
-        College: app.college.name,
+        college: app.college.name,
         type: 'Decision',
         date,
         daysRemaining,

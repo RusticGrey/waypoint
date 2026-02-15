@@ -4,9 +4,11 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { achievementSchema } from '@/lib/validations/activity';
 import { z } from 'zod';
+import { calculateProfileCompletion } from '@/lib/utils/profile-completion';
+import { updateStudentProfileCompletion } from '@/lib/api-helpers/profile';
 
 const achievementsArraySchema = z.object({
-  Achievement: z.array(achievementSchema),
+  achievements: z.array(achievementSchema),
 });
 
 export async function POST(req: Request) {
@@ -24,18 +26,41 @@ export async function POST(req: Request) {
       where: { studentId: session.user.id },
     });
 
-    const createdAchievements = await prisma.Achievement.createMany({
+    const createdAchievements = await prisma.achievement.createMany({
       data: achievements.map((achievement) => ({
         ...achievement,
         // Convert empty string dates to null, convert valid dates to Date objects
         dateAchieved: achievement.dateAchieved && achievement.dateAchieved.trim() !== '' 
           ? new Date(achievement.dateAchieved) 
           : null,
+        description: achievement.description,
+        recognitionLevel: achievement.recognitionLevel,
         studentId: session.user.id,
       })),
     });
 
-    return NextResponse.json(createdAchievements);
+    // Update profile completion percentage
+    const student = await prisma.student.findUnique({
+      where: { userId: session.user.id },
+      include: {
+        personalProfile: true,
+        academicProfile: true,
+        transcripts: true,
+        activities: true,
+        achievements: true,
+        projectExperiences: true,
+        testScores: true,
+      },
+    });
+
+    let completionPercentage = 0;
+    if (student) {
+      const { percentage } = calculateProfileCompletion(student);
+      completionPercentage = percentage;
+      await updateStudentProfileCompletion(session.user.id, percentage);
+    }
+
+    return NextResponse.json({ data: createdAchievements, completionPercentage });
   } catch (error) {
     console.error('Achievements error:', error);
     return NextResponse.json(

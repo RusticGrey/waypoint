@@ -11,7 +11,7 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const student = await prisma.Student.findUnique({
+    const student = await prisma.student.findUnique({
       where: { userId: session.user.id },
       include: {
         academicProfile: true,
@@ -38,7 +38,7 @@ export async function PATCH(req: Request) {
     console.log('Updating academic profile:', body);
     
     // Convert current_gpa to string since it's stored as String in DB
-    const academic = await prisma.AcademicProfile.update({
+    const academic = await prisma.academicProfile.update({
       where: { studentId: session.user.id },
       data: {
         curriculumType: body.curriculumType,

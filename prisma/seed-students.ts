@@ -24,19 +24,19 @@ async function main() {
 
   // --- IDEMPOTENT STUDENT HELPER (Updated for camelCase Mapping) ---
   const upsertStudent = async (
-    email: string, 
-    firstName: string, 
-    lastName: string, 
-    gradYear: number, 
-    grade: GradeLevel, 
-    curriculum: CurriculumType, 
-    grading: GradingSystemType, 
-    gpa: string, 
-    school: string, 
-    loc: string, 
+    email: string,
+    firstName: string,
+    lastName: string,
+    gradYear: number,
+    grade: GradeLevel,
+    curriculum: CurriculumType,
+    grading: GradingSystemType,
+    gpa: string,
+    school: string,
+    loc: string,
     coordId?: string
   ) => {
-    return await prisma.User.upsert({
+    return await prisma.user.upsert({
       where: { email },
       update: {
         firstName,

@@ -3,6 +3,8 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: Request) {
   try {
     const session = await getServerSession(authOptions);
@@ -12,10 +14,10 @@ export async function GET(req: Request) {
     }
     
     // Get students assigned to this coordinator
-    const students = await prisma.Student.findMany({
+    const students = await prisma.student.findMany({
       where: { coordinatorId: session.user.id },
       include: {
-        User: {
+        user: {
           select: {
             firstName: true,
             lastName: true,
@@ -27,7 +29,7 @@ export async function GET(req: Request) {
     const studentIds = students.map(s => s.userId);
     
     // Get upcoming meetings
-    const upcomingMeetings = await prisma.Meeting.findMany({
+    const upcomingMeetings = await prisma.meeting.findMany({
       where: {
         coordinatorId: session.user.id,
         meetingDate: {
@@ -53,7 +55,7 @@ export async function GET(req: Request) {
     });
     
     // Get all applications for assigned students
-    const applications = await prisma.CollegeApplication.findMany({
+    const applications = await prisma.collegeApplication.findMany({
       where: {
         studentId: { in: studentIds },
       },

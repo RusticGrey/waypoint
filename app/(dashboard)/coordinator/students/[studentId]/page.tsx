@@ -7,6 +7,7 @@ import { ProgressBar } from '@/components/ui/progress-bar';
 import { analyzeProfileStrength } from '@/lib/utils/profile-strength';
 import Link from 'next/link';
 import OverrideButton from './override-button';
+import StudentFullProfile from '@/components/dashboard/StudentFullProfile';
 
 const gradeLabels: Record<string, string> = {
   ninth: '9th Grade',
@@ -30,7 +31,7 @@ export default async function StudentProfileViewer({
     redirect('/student');
   }
 
-  const student = await prisma.Student.findUnique({
+  const student = await prisma.student.findUnique({
     where: { userId: params.studentId },
     include: {
       user: true,
@@ -171,16 +172,16 @@ export default async function StudentProfileViewer({
                 }>{analysis.collegeReadiness}</span>
               </p>
               
-              {isOverridden && student.profileOverride && (
+              {isOverridden && student.profileOverride && student.profileOverride.coordinator && (
                 <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded">
                   <p className="text-xs font-medium text-blue-900">
-                    Original Score: {analysis.overall_score}/100
+                    Original Score: {analysis.overallScore}/100
                   </p>
                   <p className="text-xs text-blue-800 mt-1">
                     <strong>Override Reason:</strong> {student.profileOverride.overrideReason}
                   </p>
                   <p className="text-xs text-blue-700 mt-1">
-                    By {student.profileOverride.overriddenBy.firstName} {student.profileOverride.overriddenBy.lastName} on {new Date(student.profileOverride.createdAt).toLocaleDateString()}
+                    By {student.profileOverride.coordinator.firstName} {student.profileOverride.coordinator.lastName} on {new Date(student.profileOverride.createdAt).toLocaleDateString()}
                   </p>
                 </div>
               )}
@@ -209,8 +210,7 @@ export default async function StudentProfileViewer({
         </CardContent>
       </Card>
 
-      {/* Rest of the student profile viewer content... */}
-      {/* (Keep all the existing cards for stats, personal info, goals, colleges, meetings, recommendations) */}
+      <StudentFullProfile student={student} analysis={analysis} />
     </div>
   );
 }

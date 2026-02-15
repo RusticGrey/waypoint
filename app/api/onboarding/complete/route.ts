@@ -12,7 +12,7 @@ export async function POST(req: Request) {
     }
 
     // Calculate profile completion
-    const student = await prisma.Student.findUnique({
+    const student = await prisma.student.findUnique({
       where: { userId: session.user.id },
       include: {
         personalProfile: true,
@@ -28,7 +28,22 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Student not found' }, { status: 404 });
     }
 
-    // Simple completion calculation
+    // Validate minimum onboarding requirements
+    const errors = [];
+    if (!student.personalProfile) errors.push('Personal profile incomplete');
+    if (!student.academicProfile) errors.push('Academic profile incomplete');
+    if ((student.transcripts?.length ?? 0) < 1) errors.push('At least 1 transcript required');
+    if ((student.activities?.length ?? 0) < 3) errors.push('At least 3 activities required');
+    if ((student.achievements?.length ?? 0) < 2) errors.push('At least 2 achievements required');
+
+    if (errors.length > 0) {
+      return NextResponse.json(
+        { error: 'Onboarding incomplete', details: errors },
+        { status: 400 }
+      );
+    }
+
+    // Calculate profile completion
     let completion = 0;
     if (student.personalProfile) completion += 15;
     if (student.academicProfile) completion += 15;
@@ -37,8 +52,13 @@ export async function POST(req: Request) {
     if (student.achievements && student.achievements.length >= 2) completion += 15;
     if (student.projectExperiences && student.projectExperiences.length > 0) completion += 10;
 
+    // Set to 100% when all minimum requirements are met
+    if (completion >= 85) {
+      completion = 100;
+    }
+
     // Update student profile completion
-    await prisma.Student.update({
+    await prisma.student.update({
       where: { userId: session.user.id },
       data: {
         profileCompletionPct: completion,

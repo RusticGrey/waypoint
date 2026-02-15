@@ -8,8 +8,8 @@ interface OverrideModalProps {
   studentId: string;
   currentScore: number;
   existingOverride?: {
-    override_score: number;
-    override_reason: string;
+    overrideScore: number;
+    overrideReason: string;
   };
   onClose: () => void;
   onSuccess: () => void;

@@ -13,6 +13,8 @@ interface Enums {
   goalTypes: string[];
   goalStatuses: string[];
   meetingTypes: string[];
+  targetCategories: string[];
+  applicationStatuses: string[];
 }
 
 export function useEnums() {

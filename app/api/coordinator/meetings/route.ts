@@ -13,7 +13,7 @@ export async function POST(req: Request) {
     
     const body = await req.json();
     
-    const meeting = await prisma.Meeting.create({
+    const meeting = await prisma.meeting.create({
       data: {
         studentId: body.studentId,
         coordinatorId: session.user.id,

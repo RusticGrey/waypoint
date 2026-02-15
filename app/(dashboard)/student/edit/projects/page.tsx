@@ -203,7 +203,7 @@ export default function EditProjectsPage() {
                     </label>
                     <select
                       value={formData.experienceType}
-                      onChange={(e) => setFormData({ ...formData, experience_type: e.target.value })}
+                      onChange={(e) => setFormData({ ...formData, experienceType: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
                     >
                       {PROJECT_TYPES.map(type => (

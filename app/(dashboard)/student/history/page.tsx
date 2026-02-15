@@ -5,11 +5,11 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 
 interface Change {
   id: string;
-  change_type: string;
+  changeType: string;
   entity_type: string;
   action: string;
   description: string;
-  created_at: string;
+  createdAt: string;
 }
 
 export default function ChangeHistoryPage() {

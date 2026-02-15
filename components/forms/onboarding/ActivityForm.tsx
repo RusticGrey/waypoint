@@ -5,27 +5,35 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { activitySchema, ActivityInput } from '@/lib/validations/activity';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import { useEnums } from '@/lib/hooks/useEnums';
 
 interface Props {
-  onNext: (data: any[]) => void;
+  onNext: (data: any[], completionPercentage?: number) => void;
+  onSave?: (data: any[], completionPercentage?: number) => void;
   onBack: () => void;
   initialData?: any[];
 }
 
-const ACTIVITY_CATEGORIES = [
-  'Academic Competitions',
-  'Sports & Athletics',
-  'Arts & Performance',
-  'Community Service',
-  'Leadership',
-  'Work Experience',
-  'Personal Projects',
-];
+// Helper to format enum values for display
+const formatEnumValue = (value: string) => {
+  return value.replace(/_/g, ' ');
+};
 
-export default function ActivityForm({ onNext, onBack, initialData = [] }: Props) {
-  const [activities, setActivities] = useState<any[]>(initialData);
+export default function ActivityForm({ onNext, onSave, onBack, initialData = [] }: Props) {
+  const [activities, setActivities] = useState<any[]>(
+    initialData.map((a) => ({
+      ...a,
+      gradeLevels: a.gradeLevels || (a.gradeLevel ? [a.gradeLevel] : []),
+    }))
+  );
   const [showForm, setShowForm] = useState(false);
+  const [editIndex, setEditIndex] = useState<number | null>(null);
+  const { enums, loading: enumsLoading } = useEnums();
+
+  const activityCategories = useMemo(() => {
+    return enums?.activityCategories || [];
+  }, [enums]);
 
   const {
     register,
@@ -36,24 +44,71 @@ export default function ActivityForm({ onNext, onBack, initialData = [] }: Props
   } = useForm<ActivityInput>({
     resolver: zodResolver(activitySchema),
     defaultValues: {
-      grade_levels: [],
-      hours_per_week: 0,
-      weeks_per_year: 0,
+      gradeLevels: [],
+      hoursPerWeek: 0,
+      weeksPerYear: 0,
     },
   });
 
-  const hoursPerWeek = watch('hours_per_week');
-  const weeksPerYear = watch('weeks_per_year');
+  const hoursPerWeek = watch('hoursPerWeek');
+  const weeksPerYear = watch('weeksPerYear');
   const totalHours = (hoursPerWeek || 0) * (weeksPerYear || 0);
 
+  const saveActivities = async (newActivities: any[]) => {
+    try {
+      const response = await fetch('/api/onboarding/activities', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ activities: newActivities }),
+      });
+
+      if (response.ok) {
+        const responseData = await response.json();
+        if (onSave) {
+          onSave(newActivities, responseData.completionPercentage);
+        }
+      } else {
+        console.error('Failed to save activities');
+      }
+    } catch (error) {
+      console.error('Error saving activities:', error);
+    }
+  };
+
   const onSubmitActivity = (data: ActivityInput) => {
-    setActivities([...activities, data]);
+    let updatedActivities;
+    if (editIndex !== null) {
+      updatedActivities = [...activities];
+      updatedActivities[editIndex] = data;
+      setEditIndex(null);
+    } else {
+      updatedActivities = [...activities, data];
+    }
+    
+    setActivities(updatedActivities);
+    saveActivities(updatedActivities);
+    
     reset();
     setShowForm(false);
   };
 
+  const editActivity = (index: number) => {
+    const activity = activities[index];
+    reset(activity);
+    setEditIndex(index);
+    setShowForm(true);
+  };
+
   const removeActivity = (index: number) => {
-    setActivities(activities.filter((_, i) => i !== index));
+    const updatedActivities = activities.filter((_, i) => i !== index);
+    setActivities(updatedActivities);
+    saveActivities(updatedActivities);
+
+    if (editIndex === index) {
+      setEditIndex(null);
+      setShowForm(false);
+      reset();
+    }
   };
 
   const handleNext = async () => {
@@ -65,9 +120,17 @@ export default function ActivityForm({ onNext, onBack, initialData = [] }: Props
     });
 
     if (response.ok) {
-      onNext(activities);
+      const responseData = await response.json();
+      onNext(activities, responseData.completionPercentage);
+    } else {
+      // Handle error - maybe show a toast
+      console.error('Failed to save activities');
     }
   };
+
+  if (enumsLoading) {
+    return <p>Loading activity options...</p>;
+  }
 
   return (
     <div className="space-y-6">
@@ -85,19 +148,28 @@ export default function ActivityForm({ onNext, onBack, initialData = [] }: Props
                 <div>
                   <p className="font-medium text-gray-900">{activity.activityName}</p>
                   <p className="text-sm text-gray-600">
-                    {activity.category} • {activity.role || 'Member'} • {activity.gradeLevels.length} grade(s)
+                    {formatEnumValue(activity.category)} • {activity.role || 'Member'} • {activity.gradeLevels.length} grade(s)
                   </p>
                   <p className="text-xs text-gray-500">
                     {activity.hoursPerWeek}h/week × {activity.weeksPerYear} weeks = {activity.hoursPerWeek * activity.weeksPerYear} total hours
                   </p>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => removeActivity(index)}
-                  className="text-red-600 hover:text-red-800 text-sm"
-                >
-                  Remove
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => editActivity(index)}
+                    className="text-blue-600 hover:text-blue-800 text-sm"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => removeActivity(index)}
+                    className="text-red-600 hover:text-red-800 text-sm"
+                  >
+                    Remove
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -107,7 +179,18 @@ export default function ActivityForm({ onNext, onBack, initialData = [] }: Props
         {!showForm && (
           <Button
             type="button"
-            onClick={() => setShowForm(true)}
+            onClick={() => {
+              setShowForm(true);
+              setEditIndex(null);
+              reset({
+                gradeLevels: [],
+                hoursPerWeek: 0,
+                weeksPerYear: 0,
+                activityName: '',
+                category: undefined,
+                description: '',
+              });
+            }}
             variant="outline"
             className="w-full"
           >
@@ -121,7 +204,7 @@ export default function ActivityForm({ onNext, onBack, initialData = [] }: Props
             <Input
               label="Activity Name *"
               placeholder="e.g., Varsity Basketball, Robotics Club"
-              {...register('activity_name')}
+              {...register('activityName')}
               error={errors.activityName?.message}
             />
 
@@ -133,10 +216,13 @@ export default function ActivityForm({ onNext, onBack, initialData = [] }: Props
                 <select
                   {...register('category')}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
+                  disabled={enumsLoading}
                 >
                   <option value="">Select category</option>
-                  {ACTIVITY_CATEGORIES.map((cat) => (
-                    <option key={cat} value={cat}>{cat}</option>
+                  {activityCategories.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {formatEnumValue(cat)}
+                    </option>
                   ))}
                 </select>
                 {errors.category && (
@@ -162,7 +248,7 @@ export default function ActivityForm({ onNext, onBack, initialData = [] }: Props
                     <input
                       type="checkbox"
                       value={grade}
-                      {...register('grade_levels')}
+                      {...register('gradeLevels')}
                       className="h-4 w-4 text-blue-600 rounded"
                     />
                     <span className="text-sm text-gray-700 capitalize">{grade} Grade</span>
@@ -179,7 +265,7 @@ export default function ActivityForm({ onNext, onBack, initialData = [] }: Props
                 label="Hours per Week *"
                 type="number"
                 placeholder="e.g., 5"
-                {...register('hours_per_week', { valueAsNumber: true })}
+                {...register('hoursPerWeek', { valueAsNumber: true })}
                 error={errors.hoursPerWeek?.message}
               />
 
@@ -187,7 +273,7 @@ export default function ActivityForm({ onNext, onBack, initialData = [] }: Props
                 label="Weeks per Year *"
                 type="number"
                 placeholder="e.g., 30"
-                {...register('weeks_per_year', { valueAsNumber: true })}
+                {...register('weeksPerYear', { valueAsNumber: true })}
                 error={errors.weeksPerYear?.message}
               />
             </div>
@@ -215,13 +301,14 @@ export default function ActivityForm({ onNext, onBack, initialData = [] }: Props
 
             <div className="flex gap-2">
               <Button type="submit" className="flex-1">
-                Add Activity
+                {editIndex !== null ? 'Update Activity' : 'Add Activity'}
               </Button>
               <Button
                 type="button"
                 onClick={() => {
                   setShowForm(false);
                   reset();
+                  setEditIndex(null);
                 }}
                 variant="outline"
               >

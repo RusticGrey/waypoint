@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
-import { logChange } from '@/lib/utils/change-log';
+import { logChange } from '@/lib/api-helpers/change-log';
 
 const activitySchema = z.object({
   activityName: z.string().min(1),
@@ -23,7 +23,7 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const activities = await prisma.Activity.findMany({
+    const activities = await prisma.activity.findMany({
       where: { studentId: session.user.id },
       orderBy: { activityName: 'asc' },
     });
@@ -46,7 +46,7 @@ export async function POST(req: Request) {
     const body = await req.json();
     const validated = activitySchema.parse(body);
     
-    const activity = await prisma.Activity.create({
+    const activity = await prisma.activity.create({
       data: {
         studentId: session.user.id,
         ...validated,

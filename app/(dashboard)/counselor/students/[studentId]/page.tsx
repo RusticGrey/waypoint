@@ -6,6 +6,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { ProgressBar } from '@/components/ui/progress-bar';
 import { analyzeProfileStrength } from '@/lib/utils/profile-strength';
 import Link from 'next/link';
+import StudentFullProfile from '@/components/dashboard/StudentFullProfile';
 
 const gradeLabels: Record<string, string> = {
   ninth: '9th Grade',
@@ -29,7 +30,7 @@ export default async function CounselorStudentViewer({
     redirect('/coordinator');
   }
 
-  const student = await prisma.Student.findUnique({
+  const student = await prisma.student.findUnique({
     where: { userId: params.studentId },
     include: {
       user: true,
@@ -180,11 +181,15 @@ export default async function CounselorStudentViewer({
               </div>
             ))}
           </div>
-        </CardContent>
+        </CardContent>        
       </Card>
 
+      <div className="mb-6">
+        <StudentFullProfile student={student} analysis={analysis} />
+      </div>
+
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+      {/* <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
         <Card>
           <CardContent className="pt-6">
             <p className="text-sm text-gray-600">Target Colleges</p>
@@ -206,14 +211,15 @@ export default async function CounselorStudentViewer({
         <Card>
           <CardContent className="pt-6">
             <p className="text-sm text-gray-600">Active Goals</p>
-            <p className="text-3xl font-bold text-gray-900">{student.profileGoals?.length || 0}</p>
+            <p className="text-3xl font-bold text-gray-900">{student.goals?.length || 0}</p>
           </CardContent>
         </Card>
-      </div>
+      </div> */}
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6"> */}
+
         {/* Personal Info */}
-        <Card>
+        {/* <Card>
           <CardHeader>
             <CardTitle>Personal Information</CardTitle>
           </CardHeader>
@@ -241,17 +247,17 @@ export default async function CounselorStudentViewer({
               </div>
             </dl>
           </CardContent>
-        </Card>
+        </Card> */}
 
         {/* Active Goals */}
-        <Card>
+        {/* <Card>
           <CardHeader>
-            <CardTitle>Active Goals ({student.profileGoals?.length || 0})</CardTitle>
+            <CardTitle>Active Goals ({student.goals?.length || 0})</CardTitle>
           </CardHeader>
           <CardContent>
-            {student.profileGoals && student.profileGoals.length > 0 ? (
+            {student.goals && student.goals.length > 0 ? (
               <div className="space-y-3">
-                {student.profileGoals.map((goal) => (
+                {student.goals.map((goal) => (
                   <div key={goal.id} className="border-l-4 border-blue-500 pl-3 py-2">
                     <p className="text-sm font-semibold text-gray-900">{goal.category}</p>
                     <p className="text-xs text-gray-600">Target: {goal.targetValue}</p>
@@ -267,10 +273,10 @@ export default async function CounselorStudentViewer({
               <p className="text-sm text-gray-500">No active goals</p>
             )}
           </CardContent>
-        </Card>
+        </Card> */}
 
         {/* Target Colleges */}
-        <Card>
+        {/* <Card>
           <CardHeader>
             <CardTitle>Target Colleges ({student.targetColleges?.length || 0})</CardTitle>
           </CardHeader>
@@ -281,11 +287,11 @@ export default async function CounselorStudentViewer({
                   <div key={tc.id} className="flex items-center justify-between py-2 border-b last:border-0">
                     <span className="text-sm text-gray-900">{tc.college.name}</span>
                     <span className={`text-xs px-2 py-1 rounded font-medium ${
-                      tc.category === 'Reach' ? 'bg-red-100 text-red-800' :
-                      tc.category === 'Match' ? 'bg-yellow-100 text-yellow-800' :
+                      tc.targetCategory === 'Reach' ? 'bg-red-100 text-red-800' :
+                      tc.targetCategory === 'Match' ? 'bg-yellow-100 text-yellow-800' :
                       'bg-green-100 text-green-800'
                     }`}>
-                      {tc.category}
+                      {tc.targetCategory}
                     </span>
                   </div>
                 ))}
@@ -294,10 +300,10 @@ export default async function CounselorStudentViewer({
               <p className="text-sm text-gray-500">No colleges added yet</p>
             )}
           </CardContent>
-        </Card>
+        </Card> */}
 
         {/* Recent Meetings */}
-        <Card>
+        {/* <Card>
           <CardHeader>
             <CardTitle>Recent Meetings</CardTitle>
           </CardHeader>
@@ -316,7 +322,7 @@ export default async function CounselorStudentViewer({
                     </p>
                     <p className="text-xs text-gray-600">
                       {meeting.meetingType.replace('_', ' ')}
-                      {meeting.coordinator && ` with ${meeting.coordinator.firstName} ${meeting.coordinator.lastName}`}
+                      {meeting.user && ` with ${meeting.user.firstName} ${meeting.user.lastName}`}
                     </p>
                     {meeting.notes && (
                       <p className="text-xs text-gray-700 mt-1">{meeting.notes.substring(0, 100)}...</p>
@@ -328,8 +334,8 @@ export default async function CounselorStudentViewer({
               <p className="text-sm text-gray-500">No meetings logged yet</p>
             )}
           </CardContent>
-        </Card>
-      </div>
+        </Card> */}
+      {/* </div> */}
 
       {/* Recommendations */}
       {analysis.recommendations.length > 0 && (

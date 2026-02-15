@@ -20,7 +20,7 @@ export async function POST(req: Request) {
     }
     
     // Upsert override
-    const override = await prisma.ProfileOverride.upsert({
+    const override = await prisma.profileOverride.upsert({
       where: { studentId },
       create: {
         studentId,
@@ -60,7 +60,7 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: 'student_id required' }, { status: 400 });
     }
     
-    await prisma.ProfileOverride.delete({
+    await prisma.profileOverride.delete({
       where: { studentId },
     });
     

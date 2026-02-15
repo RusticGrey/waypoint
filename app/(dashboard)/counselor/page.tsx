@@ -17,7 +17,7 @@ export default async function CounselorDashboard() {
   }
 
   // Get all students in the organization
-  const students = await prisma.Student.findMany({
+  const students = await prisma.student.findMany({
     where: {
       user: {
         organizationId: session.user.organizationId,

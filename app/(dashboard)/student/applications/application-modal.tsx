@@ -75,7 +75,7 @@ export default function ApplicationModal({
         essayStatus: application.essayStatus,
         supplementsStatus: application.supplementsStatus,
         recommendationStatus: application.recommendationStatus,
-        testScoresSent: application.testScores_sent,
+        testScoresSent: application.testScoresSent,
         applicationPortalLink: application.applicationPortalLink || '',
         notes: application.notes || '',
       });

@@ -262,7 +262,7 @@ export default function EditAchievementsPage() {
                     </label>
                     <select
                       value={formData.gradeLevel}
-                      onChange={(e) => setFormData({ ...formData, grade_level: e.target.value })}
+                      onChange={(e) => setFormData({ ...formData, gradeLevel: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
                     >
                       {enums.gradeLevels.map(grade => (

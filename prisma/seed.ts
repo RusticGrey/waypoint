@@ -28,7 +28,7 @@ async function main() {
 
   // 2. Seed One Counselor
   const counselorPassword = await bcrypt.hash('password123', 10);
-  const counselor = await prisma.User.upsert({
+  const counselor = await prisma.user.upsert({
     where: { email: 'counselor@waypoint.edu' },
     update: {
       firstName: 'Sarah', // Mapped field from first_name

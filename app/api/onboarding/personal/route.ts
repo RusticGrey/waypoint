@@ -3,6 +3,8 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
+import { calculateProfileCompletion } from '@/lib/utils/profile-completion';
+import { updateStudentProfileCompletion } from '@/lib/api-helpers/profile';
 
 const personalProfileSchema = z.object({
   preferredName: z.string().optional(),
@@ -30,13 +32,13 @@ export async function POST(req: Request) {
     const { currentGrade, ...personalData } = validatedData;
 
     // Update student's current_grade
-    await prisma.Student.update({
+    await prisma.student.update({
       where: { userId: session.user.id },
       data: { currentGrade },
     });
 
     // Create or update personal profile
-    const profile = await prisma.PersonalProfile.upsert({
+    const profile = await prisma.personalProfile.upsert({
       where: { studentId: session.user.id },
       update: personalData,
       create: {
@@ -45,8 +47,29 @@ export async function POST(req: Request) {
       },
     });
 
+    // Update profile completion percentage
+    const student = await prisma.student.findUnique({
+      where: { userId: session.user.id },
+      include: {
+        personalProfile: true,
+        academicProfile: true,
+        transcripts: true,
+        activities: true,
+        achievements: true,
+        projectExperiences: true,
+        testScores: true,
+      },
+    });
+
+    let completionPercentage = 0;
+    if (student) {
+      const { percentage } = calculateProfileCompletion(student);
+      completionPercentage = percentage;
+      await updateStudentProfileCompletion(session.user.id, percentage);
+    }
+
     // console.log("PERSONAL PROFILE - "+JSON.stringify(profile));
-    return NextResponse.json(profile);
+    return NextResponse.json({ ...profile, completionPercentage });
   } catch (error) {
     console.error('Personal profile error:', error);
     return NextResponse.json(

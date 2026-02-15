@@ -19,7 +19,7 @@ export default async function ProfilePage() {
     redirect('/login');
   }
 
-  const student = await prisma.Student.findUnique({
+  const student = await prisma.student.findUnique({
     where: { userId: session.user.id },
     include: {
       personalProfile: true,

@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
-import { logChange } from '@/lib/utils/change-log';
+import { logChange } from '@/lib/api-helpers/change-log';
 
 const goalSchema = z.object({
   goalType: z.enum(['Academic', 'Testing', 'Activity', 'Achievement', 'Project', 'Other']),

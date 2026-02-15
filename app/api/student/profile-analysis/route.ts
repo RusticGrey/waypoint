@@ -4,6 +4,8 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { analyzeProfileDetailed } from '@/lib/utils/profile-analysis-detailed';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: Request) {
   try {
     const session = await getServerSession(authOptions);
@@ -12,7 +14,7 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const student = await prisma.Student.findUnique({
+    const student = await prisma.student.findUnique({
       where: { userId: session.user.id },
       include: {
         personalProfile: true,
@@ -32,7 +34,7 @@ export async function GET(req: Request) {
     const analysis = analyzeProfileDetailed(student);
     
     // Check for coordinator override
-    const override = await prisma.ProfileOverride.findUnique({
+    const override = await prisma.profileOverride.findUnique({
       where: { studentId: session.user.id },
       include: {
         coordinator: {

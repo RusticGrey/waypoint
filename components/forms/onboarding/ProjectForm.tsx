@@ -9,7 +9,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 interface Props {
-  onNext: (data: any[]) => void;
+  onNext: (data: any[], completionPercentage?: number) => void;
+  onSave?: (data: any[], completionPercentage?: number) => void;
   onBack: () => void;
   initialData?: any[];
 }
@@ -29,10 +30,11 @@ const MONTHS = [
   { value: '12', label: 'December' },
 ];
 
-export default function ProjectForm({ onNext, onBack, initialData = [] }: Props) {
+export default function ProjectForm({ onNext, onSave, onBack, initialData = [] }: Props) {
   const router = useRouter();
   const [projects, setProjects] = useState<any[]>(initialData);
   const [showForm, setShowForm] = useState(false);
+  const [editIndex, setEditIndex] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [startMonth, setStartMonth] = useState('');
@@ -49,13 +51,12 @@ export default function ProjectForm({ onNext, onBack, initialData = [] }: Props)
   } = useForm<ProjectInput>({
     resolver: zodResolver(projectSchema),
     defaultValues: {
-      is_ongoing: false,
-      status: 'Completed',
+      isOngoing: false,
     },
   });
 
-  const experienceType = watch('experience_type');
-  const isOngoing = watch('is_ongoing');
+  const experienceType = watch('experienceType');
+  const isOngoing = watch('isOngoing');
 
   const getTypeDescription = (type: string) => {
     switch (type) {
@@ -76,6 +77,29 @@ export default function ProjectForm({ onNext, onBack, initialData = [] }: Props)
     }
   };
 
+  const saveProjects = async (newProjects: any[]) => {
+    try {
+      const response = await fetch('/api/onboarding/projects', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ projects: newProjects }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save projects');
+      }
+      
+      const responseData = await response.json();
+      if (onSave) {
+        onSave(newProjects, responseData.completionPercentage);
+      }
+      return responseData;
+    } catch (error) {
+      console.error('Error saving projects:', error);
+      throw error;
+    }
+  };
+
   const onSubmitProject = (data: any) => {
     // Validate dates are selected
     if (!startMonth || !startYear) {
@@ -92,12 +116,23 @@ export default function ProjectForm({ onNext, onBack, initialData = [] }: Props)
 
     const projectWithDates = {
       ...data,
-      start_date,
-      end_date,
+      startDate: start_date, // Matching component state / schema (schema uses camelCase for form fields usually, but Prisma uses snake_case sometimes. Let's use what matches the form input if possible or mapped)
+      endDate: end_date,
+      // Note: Component uses startDate/endDate in the list display logic below, so we should use those keys.
     };
 
-    console.log('Adding project:', projectWithDates);
-    setProjects([...projects, projectWithDates]);
+    let updatedProjects;
+    if (editIndex !== null) {
+      updatedProjects = [...projects];
+      updatedProjects[editIndex] = projectWithDates;
+      setEditIndex(null);
+    } else {
+      updatedProjects = [...projects, projectWithDates];
+    }
+    
+    setProjects(updatedProjects);
+    saveProjects(updatedProjects);
+    
     reset();
     setStartMonth('');
     setStartYear('');
@@ -106,8 +141,70 @@ export default function ProjectForm({ onNext, onBack, initialData = [] }: Props)
     setShowForm(false);
   };
 
+  const editProject = (index: number) => {
+    const project = projects[index];
+    
+    // Sanitize data: Convert nulls to empty strings/undefined
+    // And exclude dates (handled via state)
+    const { startDate, endDate, ...rest } = project;
+    
+    const sanitizedData = Object.entries(rest).reduce((acc, [key, value]) => {
+      acc[key] = value === null ? '' : value;
+      return acc;
+    }, {} as any);
+
+    reset(sanitizedData);
+    
+    // Parse dates
+    if (project.startDate) {
+      const parts = project.startDate.split('-'); // Assuming YYYY-MM string from local state
+      if (parts.length >= 2) {
+        setStartYear(parts[0]);
+        setStartMonth(parts[1]);
+      } else if (project.startDate instanceof Date) {
+         // handle if it comes back as Date object from initialData
+         const d = new Date(project.startDate);
+         setStartYear(d.getFullYear().toString());
+         setStartMonth((d.getMonth() + 1).toString().padStart(2, '0'));
+      }
+    } else {
+        setStartMonth('');
+        setStartYear('');
+    }
+
+    if (project.endDate) {
+      const parts = project.endDate.split('-');
+      if (parts.length >= 2) {
+        setEndYear(parts[0]);
+        setEndMonth(parts[1]);
+      } else if (project.endDate instanceof Date) {
+         const d = new Date(project.endDate);
+         setEndYear(d.getFullYear().toString());
+         setEndMonth((d.getMonth() + 1).toString().padStart(2, '0'));
+      }
+    } else {
+        setEndMonth('');
+        setEndYear('');
+    }
+
+    setEditIndex(index);
+    setShowForm(true);
+  };
+
   const removeProject = (index: number) => {
-    setProjects(projects.filter((_, i) => i !== index));
+    const updatedProjects = projects.filter((_, i) => i !== index);
+    setProjects(updatedProjects);
+    saveProjects(updatedProjects);
+
+    if (editIndex === index) {
+      setEditIndex(null);
+      setShowForm(false);
+      reset();
+      setStartMonth('');
+      setStartYear('');
+      setEndMonth('');
+      setEndYear('');
+    }
   };
 
   const handleFinish = async () => {
@@ -116,18 +213,12 @@ export default function ProjectForm({ onNext, onBack, initialData = [] }: Props)
     try {
       console.log('Saving projects:', projects);
       
-      const response = await fetch('/api/onboarding/projects', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ projects }),
-      });
-
-      const responseData = await response.json();
+      // Save projects first (this ensures consistency)
+      const responseData = await saveProjects(projects);
       console.log('Projects API response:', responseData);
 
-      if (!response.ok) {
-        throw new Error(responseData.error || 'Failed to save projects');
-      }
+      // Update parent with projects and percentage
+      onNext(projects, responseData.completionPercentage);
 
       console.log('Marking onboarding complete...');
       const completeResponse = await fetch('/api/onboarding/complete', {
@@ -138,7 +229,10 @@ export default function ProjectForm({ onNext, onBack, initialData = [] }: Props)
       console.log('Complete API response:', completeData);
 
       if (!completeResponse.ok) {
-        throw new Error(completeData.error || 'Failed to mark onboarding as complete');
+        const errorMsg = completeData.details?.length > 0
+          ? `Onboarding incomplete:\n${completeData.details.join('\n')}`
+          : completeData.error || 'Failed to mark onboarding as complete';
+        throw new Error(errorMsg);
       }
 
       console.log('Redirecting to dashboard...');
@@ -179,13 +273,22 @@ export default function ProjectForm({ onNext, onBack, initialData = [] }: Props)
                     {project.isOngoing ? ' - Present' : project.endDate ? ` - ${project.endDate}` : ''}
                   </p>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => removeProject(index)}
-                  className="text-red-600 hover:text-red-800 text-sm"
-                >
-                  Remove
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => editProject(index)}
+                    className="text-blue-600 hover:text-blue-800 text-sm"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => removeProject(index)}
+                    className="text-red-600 hover:text-red-800 text-sm"
+                  >
+                    Remove
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -194,7 +297,28 @@ export default function ProjectForm({ onNext, onBack, initialData = [] }: Props)
         {!showForm && (
           <Button
             type="button"
-            onClick={() => setShowForm(true)}
+            onClick={() => {
+              setShowForm(true);
+              setEditIndex(null);
+              reset({
+                experienceType: undefined,
+                title: '',
+                organization: '',
+                location: '',
+                roleTitle: '',
+                description: '',
+                outcomes: '',
+                skillsLearned: '',
+                projectLink: '',
+                mentorName: '',
+                mentorEmail: '',
+                isOngoing: false,
+              });
+              setStartMonth('');
+              setStartYear('');
+              setEndMonth('');
+              setEndYear('');
+            }}
             variant="outline"
             className="w-full"
           >
@@ -203,13 +327,16 @@ export default function ProjectForm({ onNext, onBack, initialData = [] }: Props)
         )}
 
         {showForm && (
-          <form onSubmit={handleSubmit(onSubmitProject)} className="space-y-4 p-4 border rounded-lg bg-gray-50">
+          <form 
+            onSubmit={handleSubmit(onSubmitProject, (errors) => console.error("Project form errors:", errors))} 
+            className="space-y-4 p-4 border rounded-lg bg-gray-50"
+          >
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Experience Type *
               </label>
               <select
-                {...register('experience_type')}
+                {...register('experienceType')}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
               >
                 <option value="">Select type</option>
@@ -287,7 +414,7 @@ export default function ProjectForm({ onNext, onBack, initialData = [] }: Props)
               <label className="flex items-center mb-2">
                 <input
                   type="checkbox"
-                  {...register('is_ongoing')}
+                  {...register('isOngoing')}
                   className="h-4 w-4 text-blue-600 rounded"
                 />
                 <span className="ml-2 text-sm font-medium text-gray-700">Currently ongoing</span>
@@ -332,7 +459,7 @@ export default function ProjectForm({ onNext, onBack, initialData = [] }: Props)
               <Input
                 label="Your Role / Title (optional)"
                 placeholder="e.g., Software Development Intern"
-                {...register('role_title')}
+                {...register('roleTitle')}
                 error={errors.roleTitle?.message}
               />
             )}
@@ -367,14 +494,14 @@ export default function ProjectForm({ onNext, onBack, initialData = [] }: Props)
             <Input
               label="Skills Learned (optional)"
               placeholder="e.g., Python, Leadership, Research Methods"
-              {...register('skills_learned')}
+              {...register('skillsLearned')}
               error={errors.skillsLearned?.message}
             />
 
             <Input
               label="Project Link (optional)"
               placeholder="https://..."
-              {...register('project_link')}
+              {...register('projectLink')}
               error={errors.projectLink?.message}
             />
 
@@ -385,14 +512,14 @@ export default function ProjectForm({ onNext, onBack, initialData = [] }: Props)
                   <Input
                     label="Mentor Name"
                     placeholder="e.g., Dr. Anjali Sharma"
-                    {...register('mentor_name')}
+                    {...register('mentorName')}
                     error={errors.mentorName?.message}
                   />
 
                   <Input
                     label="Mentor Email"
                     placeholder="for potential recommendation letters"
-                    {...register('mentor_email')}
+                    {...register('mentorEmail')}
                     error={errors.mentorEmail?.message}
                   />
                 </div>
@@ -401,7 +528,7 @@ export default function ProjectForm({ onNext, onBack, initialData = [] }: Props)
 
             <div className="flex gap-2">
               <Button type="submit" className="flex-1">
-                Add Project
+                {editIndex !== null ? 'Update Project' : 'Add Project'}
               </Button>
               <Button
                 type="button"
@@ -412,6 +539,7 @@ export default function ProjectForm({ onNext, onBack, initialData = [] }: Props)
                   setStartYear('');
                   setEndMonth('');
                   setEndYear('');
+                  setEditIndex(null);
                 }}
                 variant="outline"
               >

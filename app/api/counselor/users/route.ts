@@ -12,7 +12,7 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
             
-    const users = await prisma.User.findMany({
+    const users = await prisma.user.findMany({
       where: {
         organizationId: session.user.organizationId,
         role: {
@@ -51,7 +51,7 @@ export async function POST(req: Request) {
     
     console.log("SESSION USER = "+JSON.stringify(session.user));
         
-    const sessionUser = await prisma.User.findUnique({
+    const sessionUser = await prisma.user.findUnique({
       where: { id: session.user.id },
       include: {
         student: true,
@@ -63,7 +63,7 @@ export async function POST(req: Request) {
     const { email, password, firstName, lastName, role, currentGrade, graduationYear, coordinatorId } = body;
     
     // Check if user already exists
-    const existingUser = await prisma.User.findUnique({
+    const existingUser = await prisma.user.findUnique({
       where: { email },
     });
     
@@ -74,7 +74,7 @@ export async function POST(req: Request) {
     const hashedPassword = await bcrypt.hash(password, 10);
     
     // Create user
-    const user = await prisma.User.create({
+    const user = await prisma.user.create({
       data: {
         email,
         passwordHash: hashedPassword,
@@ -87,7 +87,7 @@ export async function POST(req: Request) {
     
     // If student, create student record
     if (role === 'student') {
-      await prisma.Student.create({
+      await prisma.student.create({
         data: {
           userId: user.id,
           currentGrade: currentGrade || 'eleventh',

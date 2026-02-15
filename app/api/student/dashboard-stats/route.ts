@@ -3,6 +3,8 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: Request) {
   try {
     const session = await getServerSession(authOptions);
@@ -13,7 +15,7 @@ export async function GET(req: Request) {
     
     // Fetch all relevant data
     const [applications, goals, activities, achievements, projects] = await Promise.all([
-      prisma.CollegeApplication.findMany({
+      prisma.collegeApplication.findMany({
         where: { studentId: session.user.id },
         include: {
           college: {
@@ -23,19 +25,19 @@ export async function GET(req: Request) {
           },
         },
       }),
-      prisma.ProfileGoal.findMany({
-        where: { 
+      prisma.profileGoal.findMany({
+        where: {
           studentId: session.user.id,
           status: { in: ['Not_Started', 'In_Progress'] },
         },
       }),
-      prisma.Activity.count({
+      prisma.activity.count({
         where: { studentId: session.user.id },
       }),
-      prisma.Achievement.count({
+      prisma.achievement.count({
         where: { studentId: session.user.id },
       }),
-      prisma.ProjectExperience.count({
+      prisma.projectExperience.count({
         where: { studentId: session.user.id },
       }),
     ]);

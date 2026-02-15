@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { useState } from 'react';
 
 interface Props {
-  onNext: (data: AcademicProfileInput) => void;
+  onNext: (data: AcademicProfileInput, completionPercentage?: number) => void;
   onBack: () => void;
   initialData?: Partial<AcademicProfileInput>;
 }
@@ -26,7 +26,7 @@ export default function AcademicProfileForm({ onNext, onBack, initialData }: Pro
     defaultValues: initialData,
   });
 
-  const curriculumType = watch('curriculum_type');
+  const curriculumType = watch('curriculumType');
 
   const getSuggestedGradingSystem = (curriculum: string) => {
     switch (curriculum) {
@@ -51,7 +51,8 @@ export default function AcademicProfileForm({ onNext, onBack, initialData }: Pro
     });
 
     if (response.ok) {
-      onNext(data);
+      const responseData = await response.json();
+      onNext(data, responseData.completionPercentage);
     }
   };
 
@@ -86,7 +87,7 @@ export default function AcademicProfileForm({ onNext, onBack, initialData }: Pro
             How are your grades recorded? *
           </label>
           <select
-            {...register('grading_system_type')}
+            {...register('gradingSystemType')}
             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           >
             <option value="">Select grading system</option>
@@ -109,7 +110,7 @@ export default function AcademicProfileForm({ onNext, onBack, initialData }: Pro
       <Input
         label="Current GPA/CGPA (optional)"
         placeholder="e.g., 3.8/4.0 or 9.5/10"
-        {...register('current_gpa')}
+        {...register('currentGpa')}
         error={errors.currentGpa?.message}
       />
       <p className="text-sm text-gray-500">

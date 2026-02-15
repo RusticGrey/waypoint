@@ -1,6 +1,6 @@
 import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { prisma } from './prisma';
 
 export const authOptions: NextAuthOptions = {
@@ -16,7 +16,7 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        const user = await prisma.User.findUnique({
+        const user = await prisma.user.findUnique({
           where: { email: credentials.email }
         });
 
@@ -38,6 +38,7 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           role: user.role,
           name: `${user.firstName} ${user.lastName}`,
+          organizationId: user.organizationId,
         };
       }
     })

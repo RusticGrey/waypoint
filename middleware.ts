@@ -16,51 +16,20 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // If authenticated as student
-  if (token && token.role === 'student') {
-    // Allow access to onboarding and API routes
-    const allowedStudentRoutes = [
-      '/student/onboarding',
-      '/api/onboarding',
-      '/api/auth',
-      '/api/subjects',
-    ];
-    
-    const isAllowedRoute = allowedStudentRoutes.some(route => pathname.startsWith(route));
-
-    // If trying to access any other student route, check onboarding status
-    if (!isAllowedRoute && pathname.startsWith('/student')) {
-      try {
-        const checkUrl = new URL('/api/onboarding/status', request.url);
-        const response = await fetch(checkUrl, {
-          headers: {
-            cookie: request.headers.get('cookie') || '',
-          },
-        });
-        
-        if (response.ok) {
-          const data = await response.json();
-          
-          // If onboarding not complete, redirect to onboarding
-          if (!data.isComplete) {
-            const onboardingUrl = new URL('/student/onboarding', request.url);
-            return NextResponse.redirect(onboardingUrl);
-          }
-        }
-      } catch (error) {
-        console.error('Error checking onboarding status:', error);
-      }
-    }
+  // student trying to access counselor or coordinator routes - redirect to student dashboard
+  if (token && token.role === 'student' && (pathname.startsWith('/coordinator') || pathname.startsWith('/counselor'))) {
+    const studentUrl = new URL('/student', request.url);
+    return NextResponse.redirect(studentUrl);
   }
 
   // Coordinator trying to access student routes - redirect to coordinator dashboard
-  if (token && token.role === 'coordinator' && pathname.startsWith('/student')) {
+  if (token && token.role === 'coordinator' && (pathname.startsWith('/student') || pathname.startsWith('/counselor'))) {
     const coordinatorUrl = new URL('/coordinator', request.url);
     return NextResponse.redirect(coordinatorUrl);
   }
 
   // Counselor trying to access student routes - redirect to counselor dashboard
-  if (token && token.role === 'counselor' && pathname.startsWith('/student')) {
+  if (token && token.role === 'counselor' && (pathname.startsWith('/student') || pathname.startsWith('/coordinator'))) {
     const counselorUrl = new URL('/counselor', request.url);
     return NextResponse.redirect(counselorUrl);
   }

@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 const personalProfileWithGradeSchema = z.object({
-  // preferredName: z.string().optional(),
+  preferredName: z.string().optional(),
   phone: z.string().optional(),
   currentSchool: z.string().min(1, 'School name is required'),
   schoolLocation: z.string().min(1, 'School location is required'),
@@ -20,7 +20,7 @@ const personalProfileWithGradeSchema = z.object({
 type PersonalProfileWithGradeInput = z.infer<typeof personalProfileWithGradeSchema>;
 
 interface Props {
-  onNext: (data: PersonalProfileWithGradeInput) => void;
+  onNext: (data: PersonalProfileWithGradeInput, completionPercentage?: number) => void;
   initialData?: Partial<PersonalProfileWithGradeInput>;
 }
 
@@ -43,7 +43,8 @@ export default function PersonalProfileForm({ onNext, initialData }: Props) {
     });
 
     if (response.ok) {
-      onNext(data);
+      const responseData = await response.json();
+      onNext(data, responseData.completionPercentage);
     }
   };
 
