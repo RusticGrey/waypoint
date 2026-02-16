@@ -379,6 +379,303 @@ export default function Home() {
           </div>
         </div>
 
+        {/* Role-Based Dashboard Previews */}
+        <div className="mb-24">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Experience the Power of Waypoint</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Tailored dashboards for every role ensure everyone has the right tools to succeed.
+            </p>
+          </div>
+
+          <div className="space-y-24">
+            {/* Counselor Dashboard Preview */}
+            <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+              <div className="bg-gray-50 border-b border-gray-200 p-4 flex items-center space-x-2">
+                <div className="flex space-x-2">
+                  <div className="w-3 h-3 rounded-full bg-red-400"></div>
+                  <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
+                  <div className="w-3 h-3 rounded-full bg-green-400"></div>
+                </div>
+                <div className="flex-1 text-center">
+                  <span className="text-sm font-medium text-gray-500">Counselor Dashboard</span>
+                </div>
+              </div>
+              <div className="p-8">
+                <div className="flex flex-col lg:flex-row gap-8">
+                  <div className="lg:w-1/3 space-y-6">
+                    <div>
+                      <h3 className="text-2xl font-bold text-gray-900 mb-2">Command Center for Counselors</h3>
+                      <p className="text-gray-600">
+                        Get a bird's-eye view of your entire student cohort. Identify at-risk students, track application submission rates, and manage your counseling team effectively.
+                      </p>
+                    </div>
+                    <ul className="space-y-3">
+                      <li className="flex items-center text-gray-700">
+                        <svg className="w-5 h-5 text-blue-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                        Real-time application status tracking
+                      </li>
+                      <li className="flex items-center text-gray-700">
+                        <svg className="w-5 h-5 text-blue-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                        Automated flagging of missed deadlines
+                      </li>
+                      <li className="flex items-center text-gray-700">
+                        <svg className="w-5 h-5 text-blue-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                        Coordinator performance oversight
+                      </li>
+                    </ul>
+                  </div>
+                  <div className="lg:w-2/3 bg-gray-50 rounded-xl p-6 border border-gray-200">
+                    {/* Mock Dashboard UI */}
+                    <div className="grid grid-cols-3 gap-4 mb-6">
+                      <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                        <div className="text-sm text-gray-500 mb-1">Total Students</div>
+                        <div className="text-2xl font-bold text-gray-900">1,248</div>
+                        <div className="text-xs text-green-600 mt-1">↑ 24 new this week</div>
+                      </div>
+                      <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                        <div className="text-sm text-gray-500 mb-1">Pending Reviews</div>
+                        <div className="text-2xl font-bold text-gray-900">15</div>
+                        <div className="text-xs text-yellow-600 mt-1">Needs attention</div>
+                      </div>
+                      <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                        <div className="text-sm text-gray-500 mb-1">Acceptance Rate</div>
+                        <div className="text-2xl font-bold text-gray-900">89%</div>
+                        <div className="text-xs text-green-600 mt-1">↑ 4% vs last year</div>
+                      </div>
+                    </div>
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+                      <div className="px-4 py-3 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                        <span className="font-semibold text-gray-700">Priority Attention Needed</span>
+                        <span className="text-xs text-blue-600 hover:text-blue-800 cursor-pointer">View All</span>
+                      </div>
+                      <div className="divide-y divide-gray-100">
+                        <div className="px-4 py-3 flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold text-xs">JD</div>
+                            <div>
+                              <div className="text-sm font-medium text-gray-900">John Davis</div>
+                              <div className="text-xs text-gray-500">Missing Common App Essay</div>
+                            </div>
+                          </div>
+                          <span className="px-2 py-1 bg-red-50 text-red-700 text-xs rounded-full">Urgent</span>
+                        </div>
+                        <div className="px-4 py-3 flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-8 h-8 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600 font-bold text-xs">AS</div>
+                            <div>
+                              <div className="text-sm font-medium text-gray-900">Alice Smith</div>
+                              <div className="text-xs text-gray-500">Low GPA Alert (Math)</div>
+                            </div>
+                          </div>
+                          <span className="px-2 py-1 bg-yellow-50 text-yellow-700 text-xs rounded-full">Review</span>
+                        </div>
+                        <div className="px-4 py-3 flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xs">MK</div>
+                            <div>
+                              <div className="text-sm font-medium text-gray-900">Michael Kim</div>
+                              <div className="text-xs text-gray-500">New Transcript Uploaded</div>
+                            </div>
+                          </div>
+                          <span className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-full">New</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Coordinator Dashboard Preview */}
+            <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+              <div className="bg-gray-50 border-b border-gray-200 p-4 flex items-center space-x-2">
+                <div className="flex space-x-2">
+                  <div className="w-3 h-3 rounded-full bg-red-400"></div>
+                  <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
+                  <div className="w-3 h-3 rounded-full bg-green-400"></div>
+                </div>
+                <div className="flex-1 text-center">
+                  <span className="text-sm font-medium text-gray-500">Coordinator Dashboard</span>
+                </div>
+              </div>
+              <div className="p-8">
+                <div className="flex flex-col lg:flex-row-reverse gap-8">
+                  <div className="lg:w-1/3 space-y-6">
+                    <div>
+                      <h3 className="text-2xl font-bold text-gray-900 mb-2">Efficiency for Coordinators</h3>
+                      <p className="text-gray-600">
+                        Streamline your daily workflow. Manage appointments, track student progress notes, and ensure no student falls through the cracks.
+                      </p>
+                    </div>
+                    <ul className="space-y-3">
+                      <li className="flex items-center text-gray-700">
+                        <svg className="w-5 h-5 text-indigo-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                        Integrated calendar & scheduling
+                      </li>
+                      <li className="flex items-center text-gray-700">
+                        <svg className="w-5 h-5 text-indigo-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                        Quick-access student profiles
+                      </li>
+                      <li className="flex items-center text-gray-700">
+                        <svg className="w-5 h-5 text-indigo-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                        Task management & reminders
+                      </li>
+                    </ul>
+                  </div>
+                  <div className="lg:w-2/3 bg-gray-50 rounded-xl p-6 border border-gray-200">
+                    <div className="flex space-x-4 mb-6">
+                      <div className="flex-1 bg-white p-4 rounded-lg shadow-sm border-l-4 border-indigo-500">
+                        <div className="text-xs text-gray-500 uppercase font-bold">Upcoming Meetings</div>
+                        <div className="text-xl font-bold text-gray-900 mt-1">4 Today</div>
+                      </div>
+                      <div className="flex-1 bg-white p-4 rounded-lg shadow-sm border-l-4 border-pink-500">
+                        <div className="text-xs text-gray-500 uppercase font-bold">Pending Tasks</div>
+                        <div className="text-xl font-bold text-gray-900 mt-1">12 Actions</div>
+                      </div>
+                    </div>
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-100">
+                      <div className="px-4 py-3 border-b border-gray-100 bg-gray-50">
+                        <span className="font-semibold text-gray-700">Today's Schedule</span>
+                      </div>
+                      <div className="p-4 space-y-4">
+                        <div className="flex items-start space-x-4">
+                          <div className="flex-shrink-0 w-16 text-center">
+                            <div className="text-sm font-bold text-gray-900">10:00</div>
+                            <div className="text-xs text-gray-500">AM</div>
+                          </div>
+                          <div className="flex-1 bg-indigo-50 rounded-lg p-3 border border-indigo-100">
+                            <div className="font-medium text-indigo-900">Profile Review: Sarah Connor</div>
+                            <div className="text-sm text-indigo-700 mt-1">Zoom Meeting • Review College List</div>
+                          </div>
+                        </div>
+                        <div className="flex items-start space-x-4">
+                          <div className="flex-shrink-0 w-16 text-center">
+                            <div className="text-sm font-bold text-gray-900">11:30</div>
+                            <div className="text-xs text-gray-500">AM</div>
+                          </div>
+                          <div className="flex-1 bg-white rounded-lg p-3 border border-gray-200">
+                            <div className="font-medium text-gray-900">Essay Brainstorming: Mike Ross</div>
+                            <div className="text-sm text-gray-600 mt-1">In-Person • Room 302</div>
+                          </div>
+                        </div>
+                        <div className="flex items-start space-x-4">
+                          <div className="flex-shrink-0 w-16 text-center">
+                            <div className="text-sm font-bold text-gray-900">02:00</div>
+                            <div className="text-xs text-gray-500">PM</div>
+                          </div>
+                          <div className="flex-1 bg-white rounded-lg p-3 border border-gray-200">
+                            <div className="font-medium text-gray-900">Check-in: Jessica Pearson</div>
+                            <div className="text-sm text-gray-600 mt-1">Phone Call</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Student Dashboard Preview */}
+            <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+              <div className="bg-gray-50 border-b border-gray-200 p-4 flex items-center space-x-2">
+                <div className="flex space-x-2">
+                  <div className="w-3 h-3 rounded-full bg-red-400"></div>
+                  <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
+                  <div className="w-3 h-3 rounded-full bg-green-400"></div>
+                </div>
+                <div className="flex-1 text-center">
+                  <span className="text-sm font-medium text-gray-500">Student Dashboard</span>
+                </div>
+              </div>
+              <div className="p-8">
+                <div className="flex flex-col lg:flex-row gap-8">
+                  <div className="lg:w-1/3 space-y-6">
+                    <div>
+                      <h3 className="text-2xl font-bold text-gray-900 mb-2">Clarity for Students</h3>
+                      <p className="text-gray-600">
+                        Demystify the college application process. Students know exactly what to do next, when it's due, and where they stand with every application.
+                      </p>
+                    </div>
+                    <ul className="space-y-3">
+                      <li className="flex items-center text-gray-700">
+                        <svg className="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                        Personalized "Next Steps" checklist
+                      </li>
+                      <li className="flex items-center text-gray-700">
+                        <svg className="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                        Visual progress bars for all tasks
+                      </li>
+                      <li className="flex items-center text-gray-700">
+                        <svg className="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                        Centralized document management
+                      </li>
+                    </ul>
+                  </div>
+                  <div className="lg:w-2/3 bg-gray-50 rounded-xl p-6 border border-gray-200">
+                    <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl p-6 text-white mb-6">
+                      <div className="flex justify-between items-center mb-4">
+                        <h4 className="text-lg font-semibold">Overall Progress</h4>
+                        <span className="bg-white/20 px-3 py-1 rounded-full text-sm font-medium">On Track</span>
+                      </div>
+                      <div className="w-full bg-black/20 rounded-full h-3 mb-2">
+                        <div className="bg-green-400 h-3 rounded-full" style={{ width: '68%' }}></div>
+                      </div>
+                      <div className="flex justify-between text-sm text-blue-100">
+                        <span>Profile: 90% Complete</span>
+                        <span>Applications: 4/8 Submitted</span>
+                      </div>
+                    </div>
+                    
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
+                        <h5 className="font-semibold text-gray-900 mb-3 flex items-center">
+                          <svg className="w-5 h-5 text-red-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                          Upcoming Deadlines
+                        </h5>
+                        <ul className="space-y-3 text-sm">
+                          <li className="flex justify-between items-center">
+                            <span className="text-gray-700">Stanford Regular</span>
+                            <span className="text-red-600 font-medium">Jan 01</span>
+                          </li>
+                          <li className="flex justify-between items-center">
+                            <span className="text-gray-700">Financial Aid Forms</span>
+                            <span className="text-yellow-600 font-medium">Jan 15</span>
+                          </li>
+                          <li className="flex justify-between items-center">
+                            <span className="text-gray-700">Teacher Recs</span>
+                            <span className="text-gray-500">Feb 01</span>
+                          </li>
+                        </ul>
+                      </div>
+                      <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
+                        <h5 className="font-semibold text-gray-900 mb-3 flex items-center">
+                          <svg className="w-5 h-5 text-purple-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                          Recent Achievements
+                        </h5>
+                        <ul className="space-y-3 text-sm">
+                          <li className="flex items-center">
+                            <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                            <span className="text-gray-600">Submitted UC Berkeley</span>
+                          </li>
+                          <li className="flex items-center">
+                            <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                            <span className="text-gray-600">Finished Personal Statement</span>
+                          </li>
+                          <li className="flex items-center">
+                            <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                            <span className="text-gray-600">SAT Score Uploaded (1450)</span>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Primary Audience Section - Counselors */}
         <div className="bg-white rounded-lg shadow-md p-8 mb-20">
           <div className="mb-12">
