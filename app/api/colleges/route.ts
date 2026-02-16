@@ -91,3 +91,40 @@ export async function DELETE(req: Request) {
         );
     }
 }
+
+export async function PUT(req: Request) {
+    try {
+        const session = await getServerSession(authOptions);
+        
+        if (!session?.user?.id || (session.user.role !== 'counselor' && session.user.role !== 'coordinator')) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+    
+        const body = await req.json();
+        
+        if (!body.id) {
+            return NextResponse.json({ error: 'College ID required' }, { status: 400 });
+        }
+
+        const college = await prisma.college.update({
+            where: { id: body.id },
+            data: {
+                name: body.name,
+                country: body.country,
+                acceptanceRate: body.acceptanceRate ? parseFloat(body.acceptanceRate) : null,
+                rankingUsNews: body.rankingUsNews ? parseInt(body.rankingUsNews) : null,
+                avgGpa: body.avgGpa ? parseFloat(body.avgGpa) : null,
+                avgSat: body.avgSat ? parseInt(body.avgSat) : null,
+                avgAct: body.avgAct ? parseInt(body.avgAct) : null,
+            },
+        });
+    
+        return NextResponse.json(college);
+    } catch (error) {
+        console.error('College update error:', error);
+        return NextResponse.json(
+            { error: 'Failed to update college' },
+            { status: 500 }
+        );
+    }
+}

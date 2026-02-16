@@ -27,6 +27,7 @@ export default function CollegesManagementPage() {
     avgSat: '',
     avgAct: '',
   });
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -49,28 +50,53 @@ export default function CollegesManagementPage() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const addCollege = async () => {
+  const startEditing = (college: College) => {
+    setEditingId(college.id);
+    setFormData({
+      name: college.name,
+      country: college.country,
+      acceptanceRate: college.acceptanceRate?.toString() || '',
+      rankingUsNews: college.rankingUsNews?.toString() || '',
+      avgGpa: college.avgGpa?.toString() || '',
+      avgSat: college.avgSat?.toString() || '',
+      avgAct: college.avgAct?.toString() || '',
+    });
+    // Scroll to top to see the form
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const cancelEditing = () => {
+    setEditingId(null);
+    setFormData({
+      name: '',
+      country: 'United States',
+      acceptanceRate: '',
+      rankingUsNews: '',
+      avgGpa: '',
+      avgSat: '',
+      avgAct: '',
+    });
+  };
+
+  const handleSubmit = async () => {
     if (!formData.name.trim()) return;
 
     setLoading(true);
     try {
-      await fetch('/api/colleges', {
-        method: 'POST',
+      const url = '/api/colleges';
+      const method = editingId ? 'PUT' : 'POST';
+      const body = editingId ? { ...formData, id: editingId } : formData;
+
+      await fetch(url, {
+        method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(body),
       });
-      setFormData({
-        name: '',
-        country: 'United States',
-        acceptanceRate: '',
-        rankingUsNews: '',
-        avgGpa: '',
-        avgSat: '',
-        avgAct: '',
-      });
+
+      cancelEditing();
       fetchColleges();
     } catch (error) {
-      alert('Failed to add college');
+      alert(`Failed to ${editingId ? 'update' : 'add'} college`);
     } finally {
       setLoading(false);
     }
@@ -99,7 +125,7 @@ export default function CollegesManagementPage() {
 
       <Card className="mb-8">
         <CardHeader>
-          <CardTitle>Add New College</CardTitle>
+          <CardTitle>{editingId ? 'Edit College' : 'Add New College'}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
@@ -187,9 +213,14 @@ export default function CollegesManagementPage() {
               />
             </div>
           </div>
-          <div className="flex justify-end">
-             <Button onClick={addCollege} disabled={loading || !formData.name.trim()}>
-              {loading ? 'Adding...' : 'Add College'}
+          <div className="flex justify-end gap-2">
+             {editingId && (
+                <Button variant="outline" onClick={cancelEditing} disabled={loading}>
+                  Cancel
+                </Button>
+             )}
+             <Button onClick={handleSubmit} disabled={loading || !formData.name.trim()}>
+              {loading ? (editingId ? 'Updating...' : 'Adding...') : (editingId ? 'Update College' : 'Add College')}
             </Button>
           </div>
         </CardContent>
@@ -240,7 +271,13 @@ export default function CollegesManagementPage() {
                                 <div>ACT: {college.avgAct || '-'}</div>
                             </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                        <button 
+                            onClick={() => startEditing(college)}
+                            className="text-blue-600 hover:text-blue-900"
+                        >
+                            Edit
+                        </button>
                         <button 
                             onClick={() => deleteCollege(college.id)}
                             className="text-red-600 hover:text-red-900"
@@ -252,7 +289,7 @@ export default function CollegesManagementPage() {
                     ))}
                     {filteredColleges.length === 0 && (
                     <tr>
-                        <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
+                        <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
                         No colleges found matching your search.
                         </td>
                     </tr>
