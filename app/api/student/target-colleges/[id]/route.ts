@@ -87,7 +87,7 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
     //   return NextResponse.json({ error: 'ID required' }, { status: 400 });
     // }
     
-    await prisma.TargetCollege.delete({
+    await prisma.targetCollege.delete({
       where: {
         id: params.id,
         studentId: session.user.id, // Ensure student owns this target

@@ -11,6 +11,9 @@ interface College {
   country: string;
   acceptanceRate: number | null;
   rankingUsNews: number | null;
+  avgGpa: number | null;
+  avgSat: number | null;
+  avgAct: number | null;
 }
 
 interface TargetCollege {
@@ -187,7 +190,11 @@ export default function CollegesPage() {
                     }`}
                   >
                     <div className="font-medium text-gray-900">{college.name}</div>
-                    <div className="text-sm text-gray-600">{college.country}</div>
+                    <div className="text-sm text-gray-600 flex gap-3">
+                      <span>{college.country}</span>
+                      {college.acceptanceRate && <span>• {college.acceptanceRate}% Acceptance</span>}
+                      {college.rankingUsNews && <span>• #{college.rankingUsNews} Ranked</span>}
+                    </div>
                   </button>
                 ))}
               </div>
@@ -238,7 +245,14 @@ export default function CollegesPage() {
                         <div key={tc.id} className="flex justify-between items-center p-3 border rounded-lg hover:bg-gray-50">
                           <div>
                             <p className="font-medium text-gray-900">{tc.college.name}</p>
-                            <p className="text-sm text-gray-600">{tc.college.country}</p>
+                            <div className="text-sm text-gray-600 flex flex-wrap gap-x-4 gap-y-1 mt-1">
+                              <span>{tc.college.country}</span>
+                              {tc.college.acceptanceRate && <span>• {tc.college.acceptanceRate}% Acceptance</span>}
+                              {tc.college.rankingUsNews && <span>• #{tc.college.rankingUsNews} Ranked</span>}
+                              {tc.college.avgGpa && <span>• Avg GPA: {tc.college.avgGpa}</span>}
+                              {tc.college.avgSat && <span>• Avg SAT: {tc.college.avgSat}</span>}
+                              {tc.college.avgAct && <span>• Avg ACT: {tc.college.avgAct}</span>}
+                            </div>
                           </div>
                           <div className="flex items-center gap-3">
                             <span className={`px-2 py-1 text-xs rounded ${getCategoryColor(tc.targetCategory)}`}>

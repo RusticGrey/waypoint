@@ -19,7 +19,7 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const targetColleges = await prisma.TargetCollege.findMany({
+    const targetColleges = await prisma.targetCollege.findMany({
       where: {
         studentId: session.user.id,
       },
@@ -52,7 +52,7 @@ export async function POST(req: Request) {
     const body = await req.json();
     const validatedData = targetCollegeSchema.parse(body);
     
-    const targetCollege = await prisma.TargetCollege.create({
+    const targetCollege = await prisma.targetCollege.create({
       data: {
         studentId: session.user.id,
         ...validatedData,

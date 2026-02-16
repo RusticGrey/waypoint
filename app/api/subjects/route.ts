@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { CurriculumType } from '@prisma/client';
 
 export async function GET(req: Request) {
   try {
@@ -19,9 +20,9 @@ export async function GET(req: Request) {
     // }
     
         
-    const subjects = await prisma.Subject.findMany({
+    const subjects = await prisma.subject.findMany({
       where: {
-        curriculumType: curriculum,
+        curriculumType: curriculum as CurriculumType,
       },
       select: {
         subjectName: true, // Only select the name
@@ -56,16 +57,16 @@ export async function POST(req: Request) {
         
     const session = await getServerSession(authOptions);
     
-    if (!session?.user?.id || session.user.role !== 'counselor') {
+    if (!session?.user?.id || (session.user.role !== 'counselor' && session.user.role !== 'coordinator')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
     const body = await req.json();
     
-    const subject = await prisma.Subject.create({
+    const subject = await prisma.subject.create({
       data: {
         subjectName: body.subjectName,
-        curriculumType: body.curriculumType,
+        curriculumType: body.curriculumType as CurriculumType,
       },
     });
     
