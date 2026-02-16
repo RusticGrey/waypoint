@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import Link from 'next/link';
+import { FeatureOverview } from '@/components/dashboard/FeatureOverview';
 
 interface DashboardStats {
   phase: string;
@@ -77,6 +78,8 @@ export default function StudentDashboard() {
           {isCollegeApps && "Manage your college applications and track deadlines."}
         </p>
       </div>
+
+      <FeatureOverview role="student" />
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">

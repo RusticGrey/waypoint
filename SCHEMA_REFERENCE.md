@@ -121,6 +121,7 @@ model Student {
   primaryCoordinatorId String?
   profileCompletionPct Int     @default(0)
   coordinatorId        String?
+  phase                StudentPhase @default(Onboarding)
 
   // Relations
   user                 User @relation("UserToStudent", fields: [userId], references: [id])
@@ -520,6 +521,15 @@ enum UserRole {
 }
 ```
 
+### StudentPhase
+```typescript
+enum StudentPhase {
+  Onboarding
+  Profile_Building
+  College_Applications
+}
+```
+
 ### GradeLevel
 ```typescript
 enum GradeLevel {
@@ -814,5 +824,5 @@ const activities = await prisma.activity.findMany({
 
 ---
 
-**Last Updated**: February 15, 2026
-**Version**: 2.0 (Complete Reference)
+**Last Updated**: February 16, 2026
+**Version**: 2.1 (Complete Reference)

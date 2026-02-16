@@ -118,8 +118,8 @@ prisma/
 ### Models (20 total)
 User, Student, PersonalProfile, AcademicProfile, Transcript, Activity, Achievement, ProjectExperience, TestScore, College, TargetCollege, CollegeApplication, Meeting, MeetingLog, ProfileGoal, ProfileOverride, ProfileComment, ChangeLog, Subject, Organization
 
-### Enums (17 total)
-UserRole, GradeLevel, CurriculumType, GradingSystemType, Semester, HonorsLevel, AchievementType, RecognitionLevel, ExperienceType, ActivityCategory, GoalType, GoalStatus, TargetCategory, ApplicationStatus, ChangeType, ChangeAction, MeetingType
+### Enums (18 total)
+UserRole, StudentPhase, GradeLevel, CurriculumType, GradingSystemType, Semester, HonorsLevel, AchievementType, RecognitionLevel, ExperienceType, ActivityCategory, GoalType, GoalStatus, TargetCategory, ApplicationStatus, ChangeType, ChangeAction, MeetingType
 
 See [SCHEMA_REFERENCE.md](SCHEMA_REFERENCE.md) for detailed schema information.
 
@@ -223,4 +223,4 @@ All rights reserved. Waypoint College Counseling Platform.
 
 ---
 
-**Last Updated**: February 15, 2026
+**Last Updated**: February 16, 2026

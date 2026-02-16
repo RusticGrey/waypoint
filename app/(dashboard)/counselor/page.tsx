@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import Link from 'next/link';
+import { FeatureOverview } from '@/components/dashboard/FeatureOverview';
 
 export default async function CounselorDashboard() {
   const session = await getServerSession(authOptions);
@@ -126,6 +127,8 @@ export default async function CounselorDashboard() {
           Welcome back, {session.user.name}!
         </p>
       </div>
+
+      <FeatureOverview role="counselor" />
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">

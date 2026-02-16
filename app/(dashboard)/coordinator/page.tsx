@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import Link from 'next/link';
+import { FeatureOverview } from '@/components/dashboard/FeatureOverview';
 
 export default async function CoordinatorDashboard() {
   const session = await getServerSession(authOptions);
@@ -17,7 +18,7 @@ export default async function CoordinatorDashboard() {
   }
 
   // Get students assigned to this coordinator
-  const students = await prisma.Student.findMany({
+  const students = await prisma.student.findMany({
     where: {
       coordinatorId: session.user.id,
     },
@@ -76,6 +77,8 @@ export default async function CoordinatorDashboard() {
           Welcome back, {session.user.name}!
         </p>
       </div>
+
+      <FeatureOverview role="coordinator" />
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
