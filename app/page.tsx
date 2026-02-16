@@ -85,6 +85,300 @@ export default function Home() {
           </Link>
         </div>
 
+        {/* Core Feature Buckets */}
+        <div className="mb-24">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Everything You Need for College Success</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Waypoint provides a comprehensive suite of tools designed to guide students from their first day to their final acceptance letter.
+            </p>
+          </div>
+
+          <div className="space-y-20">
+            {/* Bucket 1: Onboarding */}
+            <div className="flex flex-col md:flex-row items-center gap-12">
+              <div className="flex-1">
+                <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mb-6">
+                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                  </svg>
+                </div>
+                <h3 className="text-3xl font-bold text-gray-900 mb-4">Seamless Onboarding</h3>
+                <p className="text-lg text-gray-600 mb-6">
+                  Get started quickly with our intuitive onboarding wizard. We collect essential information efficiently to build a personalized roadmap for every student.
+                </p>
+                <ul className="space-y-3">
+                  <li className="flex items-start">
+                    <svg className="w-6 h-6 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-gray-700">Role-specific entry paths for Students, Counselors, and Coordinators</span>
+                  </li>
+                  <li className="flex items-start">
+                    <svg className="w-6 h-6 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-gray-700">7-step guided profile initialization wizard</span>
+                  </li>
+                  <li className="flex items-start">
+                    <svg className="w-6 h-6 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-gray-700">Immediate access to personalized dashboards upon completion</span>
+                  </li>
+                </ul>
+              </div>
+              <div className="flex-1 bg-white rounded-xl shadow-xl border border-gray-100 p-8 transform rotate-1 hover:rotate-0 transition-transform duration-300">
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-4 border-b pb-4">
+                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">1</div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900">Personal Details</h4>
+                      <p className="text-sm text-gray-500">Basic info & demographics</p>
+                    </div>
+                    <div className="ml-auto text-green-500">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-4 border-b pb-4">
+                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">2</div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900">Academic Profile</h4>
+                      <p className="text-sm text-gray-500">GPA, coursework, & interests</p>
+                    </div>
+                    <div className="ml-auto text-green-500">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold">3</div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900">Extracurriculars</h4>
+                      <p className="text-sm text-gray-500">Activities & leadership roles</p>
+                    </div>
+                    <div className="ml-auto">
+                      <span className="text-xs font-semibold bg-blue-100 text-blue-800 px-2 py-1 rounded">In Progress</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Bucket 2: Profile Building */}
+            <div className="flex flex-col md:flex-row-reverse items-center gap-12">
+              <div className="flex-1">
+                <div className="w-16 h-16 bg-purple-100 text-purple-600 rounded-2xl flex items-center justify-center mb-6">
+                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                </div>
+                <h3 className="text-3xl font-bold text-gray-900 mb-4">Holistic Profile Building</h3>
+                <p className="text-lg text-gray-600 mb-6">
+                  Go beyond just grades. Our platform helps students construct a compelling narrative through a comprehensive digital portfolio.
+                </p>
+                <ul className="space-y-3">
+                  <li className="flex items-start">
+                    <svg className="w-6 h-6 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-gray-700">Detailed academic tracking (GPA, course rigor, standardized tests)</span>
+                  </li>
+                  <li className="flex items-start">
+                    <svg className="w-6 h-6 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-gray-700">Extracurricular activity logging with leadership highlights</span>
+                  </li>
+                  <li className="flex items-start">
+                    <svg className="w-6 h-6 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-gray-700">Achievement showcase for awards and honors</span>
+                  </li>
+                  <li className="flex items-start">
+                    <svg className="w-6 h-6 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-gray-700">Project portfolios to demonstrate real-world skills</span>
+                  </li>
+                </ul>
+              </div>
+              <div className="flex-1 bg-white rounded-xl shadow-xl border border-gray-100 p-8 transform -rotate-1 hover:rotate-0 transition-transform duration-300">
+                <div className="space-y-6">
+                  <div>
+                    <div className="flex justify-between items-end mb-2">
+                      <span className="font-semibold text-gray-700">Profile Strength</span>
+                      <span className="text-purple-600 font-bold">85%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2.5">
+                      <div className="bg-purple-600 h-2.5 rounded-full" style={{ width: '85%' }}></div>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-purple-50 p-4 rounded-lg text-center">
+                      <div className="text-2xl font-bold text-purple-700">3.8</div>
+                      <div className="text-xs text-purple-600 uppercase tracking-wide">GPA</div>
+                    </div>
+                    <div className="bg-purple-50 p-4 rounded-lg text-center">
+                      <div className="text-2xl font-bold text-purple-700">1450</div>
+                      <div className="text-xs text-purple-600 uppercase tracking-wide">SAT</div>
+                    </div>
+                    <div className="bg-purple-50 p-4 rounded-lg text-center">
+                      <div className="text-2xl font-bold text-purple-700">4</div>
+                      <div className="text-xs text-purple-600 uppercase tracking-wide">Activities</div>
+                    </div>
+                    <div className="bg-purple-50 p-4 rounded-lg text-center">
+                      <div className="text-2xl font-bold text-purple-700">2</div>
+                      <div className="text-xs text-purple-600 uppercase tracking-wide">Projects</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Bucket 3: College App Prep */}
+            <div className="flex flex-col md:flex-row items-center gap-12">
+              <div className="flex-1">
+                <div className="w-16 h-16 bg-green-100 text-green-600 rounded-2xl flex items-center justify-center mb-6">
+                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
+                </div>
+                <h3 className="text-3xl font-bold text-gray-900 mb-4">College App Preparation</h3>
+                <p className="text-lg text-gray-600 mb-6">
+                  Navigate the complex application landscape with confidence. Waypoint provides the tools to manage deadlines, requirements, and submissions.
+                </p>
+                <ul className="space-y-3">
+                  <li className="flex items-start">
+                    <svg className="w-6 h-6 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-gray-700">Smart college list building (Reach, Match, Safety)</span>
+                  </li>
+                  <li className="flex items-start">
+                    <svg className="w-6 h-6 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-gray-700">Application deadline tracker & automated reminders</span>
+                  </li>
+                  <li className="flex items-start">
+                    <svg className="w-6 h-6 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-gray-700">Requirements management for each institution</span>
+                  </li>
+                  <li className="flex items-start">
+                    <svg className="w-6 h-6 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-gray-700">Status tracking from "Not Started" to "Accepted"</span>
+                  </li>
+                </ul>
+              </div>
+              <div className="flex-1 bg-white rounded-xl shadow-xl border border-gray-100 p-8 transform rotate-1 hover:rotate-0 transition-transform duration-300">
+                <div className="space-y-4">
+                  <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-r">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h4 className="font-bold text-gray-900">Stanford University</h4>
+                        <p className="text-sm text-red-600">Early Action Deadline</p>
+                      </div>
+                      <span className="bg-red-100 text-red-800 text-xs font-semibold px-2 py-1 rounded">5 Days Left</span>
+                    </div>
+                  </div>
+                  <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded-r">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h4 className="font-bold text-gray-900">UC Berkeley</h4>
+                        <p className="text-sm text-yellow-600">Regular Decision</p>
+                      </div>
+                      <span className="bg-yellow-100 text-yellow-800 text-xs font-semibold px-2 py-1 rounded">14 Days Left</span>
+                    </div>
+                  </div>
+                  <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded-r">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h4 className="font-bold text-gray-900">University of Washington</h4>
+                        <p className="text-sm text-green-600">Application Submitted</p>
+                      </div>
+                      <span className="bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded">Done</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Bucket 4: Enhanced Coordination */}
+            <div className="flex flex-col md:flex-row-reverse items-center gap-12">
+              <div className="flex-1">
+                <div className="w-16 h-16 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center mb-6">
+                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                </div>
+                <h3 className="text-3xl font-bold text-gray-900 mb-4">Enhanced Coordination</h3>
+                <p className="text-lg text-gray-600 mb-6">
+                  Bridge the gap between counselors, students, and coordinators. Keep everyone aligned with centralized communication and oversight.
+                </p>
+                <ul className="space-y-3">
+                  <li className="flex items-start">
+                    <svg className="w-6 h-6 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-gray-700">Meeting scheduling & action item tracking</span>
+                  </li>
+                  <li className="flex items-start">
+                    <svg className="w-6 h-6 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-gray-700">Counselor oversight of entire student cohorts</span>
+                  </li>
+                  <li className="flex items-start">
+                    <svg className="w-6 h-6 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-gray-700">Coordinator assignment & student load management</span>
+                  </li>
+                  <li className="flex items-start">
+                    <svg className="w-6 h-6 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-gray-700">Profile overrides for expert corrections & feedback</span>
+                  </li>
+                </ul>
+              </div>
+              <div className="flex-1 bg-white rounded-xl shadow-xl border border-gray-100 p-8 transform -rotate-1 hover:rotate-0 transition-transform duration-300">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between border-b pb-4">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-bold">JD</div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">John Doe</h4>
+                        <p className="text-xs text-gray-500">Coordinator</p>
+                      </div>
+                    </div>
+                    <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">Active</span>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex items-center text-sm text-gray-600">
+                      <svg className="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                      Meeting scheduled with Sarah (Student)
+                    </div>
+                    <div className="flex items-center text-sm text-gray-600">
+                      <svg className="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                      Profile review completed for Mike
+                    </div>
+                    <div className="flex items-center text-sm text-gray-600">
+                      <svg className="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-2a6 6 0 0112 0v2zm0 0h6v-2a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                      New student assigned: Emily
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Primary Audience Section - Counselors */}
         <div className="bg-white rounded-lg shadow-md p-8 mb-20">
           <div className="mb-12">
@@ -112,7 +406,7 @@ export default function Home() {
             <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-6 border border-blue-200">
               <div className="w-12 h-12 bg-blue-600 text-white rounded-lg flex items-center justify-center mb-4">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138z" />
                 </svg>
               </div>
               <h3 className="font-semibold text-gray-900 mb-2">Automated Workflows</h3>
