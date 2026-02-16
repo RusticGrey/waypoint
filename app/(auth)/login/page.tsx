@@ -35,8 +35,10 @@ export default function LoginPage() {
         router.push('/counselor');
       } else if (session?.user?.role === 'coordinator') {
         router.push('/coordinator');
-      } else {
+      } else if (session?.user?.role === 'student') {
         router.push('/student');
+      } else {
+        router.push('/');
       }
       router.refresh();
     }
@@ -99,9 +101,9 @@ export default function LoginPage() {
         </form>
         <div className="text-center text-xs text-gray-500 space-y-1">
           <p>Test Accounts:</p>
-          <p>Counselor: counselor@pilot.com / password123</p>
-          <p>Coordinator: coordinator@pilot.com / coordinator123</p>
-          <p>Student: student@test.com / student123</p>
+          <p>Counselor: counselor@waypoint.com / password123</p>
+          <p>Coordinator: coordinator@waypoint.com / coordinator123</p>
+          <p>Student: student@waypoint.com / student123</p>
         </div>
       </div>
     </div>

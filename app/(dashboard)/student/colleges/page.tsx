@@ -24,6 +24,7 @@ export default function CollegesPage() {
   const [targetColleges, setTargetColleges] = useState<TargetCollege[]>([]);
   const [allColleges, setAllColleges] = useState<College[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCountry, setSelectedCountry] = useState<string>('');
   const [selectedCollege, setSelectedCollege] = useState<string>('');
   const [targetCategory, setTargetCategory] = useState<string>('Match');
   const [loading, setLoading] = useState(true);
@@ -57,10 +58,14 @@ export default function CollegesPage() {
     }
   };
 
-  const filteredColleges = allColleges.filter(college =>
-    college.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    college.country.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const countries = Array.from(new Set(allColleges.map(c => c.country))).sort();
+
+  const filteredColleges = allColleges.filter(college => {
+    const matchesSearch = college.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      college.country.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCountry = selectedCountry ? college.country === selectedCountry : true;
+    return matchesSearch && matchesCountry;
+  });
 
   const handleAddCollege = async () => {
     if (!selectedCollege) {
@@ -142,15 +147,33 @@ export default function CollegesPage() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <Input
-              label="Search Colleges"
-              type="text"
-              placeholder="Search by name or country..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+            <div className="grid md:grid-cols-2 gap-4">
+              <Input
+                label="Search Colleges"
+                type="text"
+                placeholder="Search by name..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-900 mb-1">
+                  Filter by Country
+                </label>
+                <select
+                  value={selectedCountry}
+                  onChange={(e) => setSelectedCountry(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="">All Countries</option>
+                  {countries.map(country => (
+                    <option key={country} value={country}>{country}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
 
-            {searchTerm && filteredColleges.length > 0 && (
+            {(searchTerm || selectedCountry) && filteredColleges.length > 0 && (
               <div className="border rounded-md max-h-60 overflow-y-auto">
                 {filteredColleges.slice(0, 10).map(college => (
                   <button

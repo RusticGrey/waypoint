@@ -37,15 +37,15 @@ export default async function OnboardingPage() {
   // }
 
   return (
-    <div className="max-w-5xl mx-auto px-4">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="mb-8 text-center">
         <div className="mb-4">
-          <h1 className="text-4xl font-bold text-gray-900">WayPoint</h1>
+          <h1 className="text-4xl font-bold text-gray-900">Student Profile</h1>
           <div className="w-24 h-1 bg-blue-600 mx-auto mt-2"></div>
         </div>
-        <h2 className="text-2xl font-semibold text-gray-800">Build Your Profile</h2>
-        <p className="mt-2 text-gray-600 max-w-2xl mx-auto">
-          Complete these 6 steps to create your comprehensive student profile. 
+        {/* <h2 className="text-2xl font-semibold text-gray-800">Build Your Profile</h2> */}
+        <p className="mt-2 text-gray-600 max-w-4xl mx-auto">
+          Complete these steps to create your comprehensive student profile. 
           This will take approximately 15-20 minutes.
         </p>
       </div>

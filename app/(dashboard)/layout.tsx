@@ -3,6 +3,8 @@ import { authOptions } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
+import { isNewStudent } from '@/lib/api-helpers/profile';
+import { boolean } from 'zod';
 
 export default async function DashboardLayout({
   children,
@@ -15,19 +17,20 @@ export default async function DashboardLayout({
     redirect('/login');
   }
 
-  let hasCompletedOnboarding = false;
+  let newStudentCheck = false;
 
   if (session.user.role === 'student') {
-    const student = await prisma.student.findUnique({
-      where: { userId: session.user.id },
-      include: {
-        personalProfile: true,
-        academicProfile: true,
-      },
-    });
-
-    hasCompletedOnboarding = !!(student?.personalProfile && student?.academicProfile);
-  }
+    // const student = await prisma.student.findUnique({
+    //   where: { userId: session.user.id },
+    //   include: {
+    //     personalProfile: true,
+    //     academicProfile: true,
+    //   },
+    // });
+  // Check if this is a new student
+  // let newStudentCheck = false;
+    newStudentCheck = await isNewStudent(session.user.id);
+  }  
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -39,7 +42,7 @@ export default async function DashboardLayout({
                 WayPoint
               </Link>
               
-              {session.user.role === 'student' && hasCompletedOnboarding && (
+              { (session.user.role === 'student') && (!newStudentCheck) && (
                 <nav className="hidden md:flex gap-6">
                   <Link href="/student" className="text-gray-700 hover:text-blue-600 font-medium">
                     Dashboard
@@ -117,7 +120,7 @@ export default async function DashboardLayout({
         {children}
       </main>
 
-      {(session.user.role === 'counselor' || session.user.role === 'coordinator' || hasCompletedOnboarding) && (
+      {(session.user.role === 'counselor' || session.user.role === 'coordinator' || !newStudentCheck) && (
         <footer className="bg-white border-t mt-auto">
           <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
             <p className="text-center text-sm text-gray-500">

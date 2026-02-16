@@ -13,7 +13,7 @@ export default async function CounselorDashboard() {
   }
 
   if (session.user.role !== 'counselor') {
-    redirect('/student');
+    redirect('/');
   }
 
   // Get all students in the organization

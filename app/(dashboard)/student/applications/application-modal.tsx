@@ -163,11 +163,26 @@ export default function ApplicationModal({
             disabled={!!application}
           >
             <option value="">Select a college</option>
-            {colleges.map(college => (
-              <option key={college.id} value={college.id}>
-                {college.name} ({college.country})
-              </option>
-            ))}
+            {Object.entries(
+              colleges.reduce((acc, college) => {
+                const country = college.country || 'Other';
+                if (!acc[country]) acc[country] = [];
+                acc[country].push(college);
+                return acc;
+              }, {} as Record<string, College[]>)
+            )
+              .sort(([a], [b]) => a.localeCompare(b))
+              .map(([country, countryColleges]) => (
+                <optgroup key={country} label={country}>
+                  {countryColleges
+                    .sort((a, b) => a.name.localeCompare(b.name))
+                    .map(college => (
+                      <option key={college.id} value={college.id}>
+                        {college.name}
+                      </option>
+                    ))}
+                </optgroup>
+              ))}
           </Select>
 
           <div className="grid grid-cols-2 gap-4">
