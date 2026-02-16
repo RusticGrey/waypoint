@@ -25,8 +25,19 @@ export default async function StudentLayout({
   });
 
   // If onboarding not complete (missing profiles), redirect to onboarding
-  if (student && (!student.profileCompletionPct || student.profileCompletionPct < 100)) {
-    redirect('/onboarding');
+  // Also check if the student is still in the Onboarding phase
+  if (student && (student.phase === 'Onboarding')) {
+    // Auto-fix for students with 100% completion but still in Onboarding phase
+    if (student.profileCompletionPct === 100) {
+      console.log('Auto-updating student phase to Profile_Building due to 100% completion');
+      await prisma.student.update({
+        where: { userId: session.user.id },
+        data: { phase: 'Profile_Building' },
+      });
+      // Allow access to children (dashboard)
+    } else {
+      redirect('/onboarding');
+    }
   }
 
   return <>{children}</>;

@@ -7,6 +7,7 @@ import { ProgressBar } from '@/components/ui/progress-bar';
 import { analyzeProfileStrength } from '@/lib/utils/profile-strength';
 import Link from 'next/link';
 import StudentFullProfile from '@/components/dashboard/StudentFullProfile';
+import { PhaseControl } from './phase-control';
 
 const gradeLabels: Record<string, string> = {
   ninth: '9th Grade',
@@ -133,6 +134,8 @@ export default async function CounselorStudentViewer({
           )}
         </div>
       </div>
+
+      <PhaseControl studentId={student.userId} currentPhase={student.phase} />
 
       {/* Profile Strength */}
       <Card className="mb-6">

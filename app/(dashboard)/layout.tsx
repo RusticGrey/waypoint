@@ -18,17 +18,16 @@ export default async function DashboardLayout({
   }
 
   let newStudentCheck = false;
+  let studentPhase = 'Onboarding';
 
   if (session.user.role === 'student') {
-    // const student = await prisma.student.findUnique({
-    //   where: { userId: session.user.id },
-    //   include: {
-    //     personalProfile: true,
-    //     academicProfile: true,
-    //   },
-    // });
-  // Check if this is a new student
-  // let newStudentCheck = false;
+    const student = await prisma.student.findUnique({
+      where: { userId: session.user.id },
+      select: { phase: true },
+    });
+    studentPhase = student?.phase || 'Onboarding';
+    
+    // Check if this is a new student (fallback for onboarding check)
     newStudentCheck = await isNewStudent(session.user.id);
   }  
 
@@ -42,32 +41,42 @@ export default async function DashboardLayout({
                 WayPoint
               </Link>
               
-              { (session.user.role === 'student') && (!newStudentCheck) && (
+              { (session.user.role === 'student') && (studentPhase !== 'Onboarding') && (
                 <nav className="hidden md:flex gap-6">
                   <Link href="/student" className="text-gray-700 hover:text-blue-600 font-medium">
                     Dashboard
                   </Link>
-                  <Link href="/student/analysis" className="text-gray-700 hover:text-blue-600 font-medium">
-                    Analysis
-                  </Link>
-                  <Link href="/student/goals" className="text-gray-700 hover:text-blue-600 font-medium">
-                    Goals
-                  </Link>
-                  <Link href="/student/colleges" className="text-gray-700 hover:text-blue-600 font-medium">
-                    Colleges
-                  </Link>
-                  <Link href="/student/history" className="text-gray-700 hover:text-blue-600 font-medium">
-                    History
-                  </Link>
                   <Link href="/student/profile" className="text-gray-700 hover:text-blue-600 font-medium">
                     Profile
                   </Link>
-                  <Link href="/student/applications" className="text-gray-700 hover:text-blue-600 font-medium">
-                    Applications
-                  </Link>
-                  <Link href="/student/test-scores" className="text-gray-700 hover:text-blue-600 font-medium">
-                    Test Scores
-                  </Link>
+                  
+                  {studentPhase !== 'Onboarding' && (
+                    <>
+                      <Link href="/student/goals" className="text-gray-700 hover:text-blue-600 font-medium">
+                        Goals
+                      </Link>
+                      <Link href="/student/test-scores" className="text-gray-700 hover:text-blue-600 font-medium">
+                        Test Scores
+                      </Link>
+                      <Link href="/student/history" className="text-gray-700 hover:text-blue-600 font-medium">
+                        History
+                      </Link>
+                    </>
+                  )}
+
+                  {studentPhase === 'College_Applications' && (
+                    <>
+                      <Link href="/student/colleges" className="text-gray-700 hover:text-blue-600 font-medium">
+                        Colleges
+                      </Link>
+                      <Link href="/student/applications" className="text-gray-700 hover:text-blue-600 font-medium">
+                        Applications
+                      </Link>
+                      <Link href="/student/analysis" className="text-gray-700 hover:text-blue-600 font-medium">
+                        Analysis
+                      </Link>
+                    </>
+                  )}
                 </nav>
               )}
 

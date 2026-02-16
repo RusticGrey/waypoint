@@ -43,6 +43,79 @@ export default async function CounselorDashboard() {
     },
   });
 
+  const studentsByPhase = {
+    Onboarding: students.filter((s) => s.phase === 'Onboarding'),
+    Profile_Building: students.filter((s) => s.phase === 'Profile_Building'),
+    College_Applications: students.filter((s) => s.phase === 'College_Applications'),
+  };
+
+  const renderStudentTable = (title: string, studentList: typeof students) => (
+    <Card className="mb-8">
+      <CardHeader>
+        <CardTitle>{title} ({studentList.length})</CardTitle>
+      </CardHeader>
+      <CardContent>
+        {studentList.length > 0 ? (
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead>
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Student</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Grade</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Curriculum</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Profile</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {studentList.map((student) => (
+                  <tr key={student.userId}>
+                    <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                      {student.user.firstName} {student.user.lastName}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-600">
+                      {student.user.email}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-600">
+                      {student.currentGrade}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-600">
+                      {student.academicProfile?.curriculumType || '-'}
+                    </td>
+                    <td className="px-4 py-3 text-sm">
+                      <div className="flex items-center">
+                        <div className="w-16 bg-gray-200 rounded-full h-2 mr-2">
+                          <div
+                            className="bg-blue-600 h-2 rounded-full"
+                            style={{ width: `${student.profileCompletionPct || 0}%` }}
+                          />
+                        </div>
+                        <span className="text-xs text-gray-600">
+                          {student.profileCompletionPct || 0}%
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-sm">
+                      <Link
+                        href={`/counselor/students/${student.userId}`}
+                        className="text-blue-600 hover:text-blue-700"
+                      >
+                        View Profile
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <p className="text-gray-500 text-center py-8">No students in this phase.</p>
+        )}
+      </CardContent>
+    </Card>
+  );
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="mb-8">
@@ -103,71 +176,9 @@ export default async function CounselorDashboard() {
         </Card>
       </div>
 
-      {/* Students List */}
-      <Card>
-        <CardHeader>
-          <CardTitle>My Students</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {students.length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead>
-                  <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Student</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Grade</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Curriculum</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Profile</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {students.map((student) => (
-                    <tr key={student.userId}>
-                      <td className="px-4 py-3 text-sm font-medium text-gray-900">
-                        {student.user.firstName} {student.user.lastName}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-600">
-                        {student.user.email}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-600">
-                        {student.currentGrade}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-600">
-                        {student.academicProfile?.curriculumType || '-'}
-                      </td>
-                      <td className="px-4 py-3 text-sm">
-                        <div className="flex items-center">
-                          <div className="w-16 bg-gray-200 rounded-full h-2 mr-2">
-                            <div
-                              className="bg-blue-600 h-2 rounded-full"
-                              style={{ width: `${student.profileCompletionPct || 0}%` }}
-                            />
-                          </div>
-                          <span className="text-xs text-gray-600">
-                            {student.profileCompletionPct || 0}%
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-sm">
-                        <Link
-                          href={`/counselor/students/${student.userId}`}
-                          className="text-blue-600 hover:text-blue-700"
-                        >
-                          View Profile
-                        </Link>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <p className="text-gray-500 text-center py-8">No students yet</p>
-          )}
-        </CardContent>
-      </Card>
+      {renderStudentTable('Onboarding Phase', studentsByPhase.Onboarding)}
+      {renderStudentTable('Profile Building Phase', studentsByPhase.Profile_Building)}
+      {renderStudentTable('College Applications Phase', studentsByPhase.College_Applications)}
 
       {/* Quick Actions */}
       <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">

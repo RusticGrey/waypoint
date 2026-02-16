@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+evemimport { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
@@ -14,7 +14,11 @@ export async function GET(req: Request) {
     }
     
     // Fetch all relevant data
-    const [applications, goals, activities, achievements, projects] = await Promise.all([
+    const [student, applications, goals, activities, achievements, projects] = await Promise.all([
+      prisma.student.findUnique({
+        where: { userId: session.user.id },
+        select: { phase: true },
+      }),
       prisma.collegeApplication.findMany({
         where: { studentId: session.user.id },
         include: {
@@ -47,7 +51,7 @@ export async function GET(req: Request) {
       .filter(app => app.applicationDeadline)
       .map(app => ({
         College: app.college.name,
-        deadline: app.applicationDeadline,
+        deadline: app.applicationDeadline ? app.applicationDeadline.toISOString() : null,
         daysRemaining: Math.ceil(
           (new Date(app.applicationDeadline!).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
         ),
@@ -71,6 +75,7 @@ export async function GET(req: Request) {
     };
     
     return NextResponse.json({
+      phase: student?.phase || 'Onboarding',
       upcomingDeadlines,
       applicationStats,
       activeGoals: goals.length,

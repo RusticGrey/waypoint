@@ -52,6 +52,7 @@ model Student {
   primaryCoordinatorId String?    @map("primary_coordinator_id")
   profileCompletionPct Int        @default(0) @map("profile_completion_pct")
   coordinatorId        String?    @map("coordinator_id")
+  phase                StudentPhase @default(Onboarding)
 
   // Relations
   user               User                 @relation("UserToStudent", fields: [userId], references: [id], onDelete: Cascade)
@@ -377,6 +378,12 @@ enum UserRole {
   counselor
   coordinator
   student
+}
+
+enum StudentPhase {
+  Onboarding
+  Profile_Building
+  College_Applications
 }
 
 enum GradeLevel {
