@@ -7,13 +7,12 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Public routes that don't need authentication
-  const publicRoutes = ['/', '/login', '/api/auth'];
-  const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
+  const isPublicRoute = pathname === '/' || pathname.startsWith('/login') || pathname.startsWith('/api/auth') || pathname.startsWith('/_next') || pathname.startsWith('/static');
 
   // If not authenticated and trying to access protected route
   if (!token && !isPublicRoute) {
-    const loginUrl = new URL('/login', request.url);
-    return NextResponse.redirect(loginUrl);
+    const landingUrl = new URL('/', request.url);
+    return NextResponse.redirect(landingUrl);
   }
 
   // student trying to access counselor or coordinator routes - redirect to student dashboard
