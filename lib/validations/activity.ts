@@ -15,7 +15,7 @@ export const activitySchema = z.object({
   gradeLevels: z.array(createEnumSchema(enums.gradeLevels)).min(1, 'Select at least one grade level'),
   hoursPerWeek: z.number().min(0, 'Hours must be positive').max(168, 'Cannot exceed 168 hours per week'),
   weeksPerYear: z.number().min(0, 'Weeks must be positive').max(52, 'Cannot exceed 52 weeks per year'),
-  description: z.string().min(10, 'Please provide a description (at least 10 characters)').max(500, 'Description too long'),
+  description: z.string().min(10, "Please provide a description (at least 10 characters)").max(500, 'Description too long').optional().nullable(),
 });
 
 export const achievementSchema = z.object({

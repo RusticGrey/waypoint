@@ -32,7 +32,27 @@ const MONTHS = [
 
 export default function ProjectForm({ onNext, onSave, onBack, initialData = [] }: Props) {
   const router = useRouter();
-  const [projects, setProjects] = useState<any[]>(initialData);
+  
+  // Sanitize initialData to ensure dates are strings (handling potential Date objects from server props)
+  const sanitizedInitialData = initialData.map(item => {
+    // If startDate/endDate are Date objects, convert to string (YYYY-MM or similar expected format)
+    // The form expects YYYY-MM if we want to repopulate dropdowns, but for list display we just need string.
+    // Let's assume standard ISO or YYYY-MM-DD for now, or just toISOString to be safe for rendering.
+    // Better yet, try to keep the format if it's already string, otherwise convert.
+    
+    const startDate = item.startDate instanceof Date 
+      ? item.startDate.toISOString().split('T')[0].substring(0, 7) // YYYY-MM
+      : item.startDate;
+      
+    const endDate = item.endDate instanceof Date 
+      ? item.endDate.toISOString().split('T')[0].substring(0, 7) // YYYY-MM
+      : item.endDate;
+
+    const { createdAt, updatedAt, ...rest } = item;
+    return { ...rest, startDate, endDate };
+  });
+
+  const [projects, setProjects] = useState<any[]>(sanitizedInitialData);
   const [showForm, setShowForm] = useState(false);
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);

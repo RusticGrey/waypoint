@@ -31,7 +31,16 @@ const MONTHS = [
 ];
 
 export default function AchievementForm({ onNext, onSave, onBack, initialData = [] }: Props) {
-  const [achievements, setAchievements] = useState<any[]>(initialData);
+  // Sanitize initialData to ensure dates are strings and remove incompatible objects
+  const sanitizedInitialData = initialData.map(item => {
+    const { createdAt, updatedAt, dateAchieved, ...rest } = item;
+    return {
+      ...rest,
+      dateAchieved: dateAchieved ? new Date(dateAchieved).toISOString() : null,
+    };
+  });
+
+  const [achievements, setAchievements] = useState<any[]>(sanitizedInitialData);
   const [showForm, setShowForm] = useState(false);
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [selectedMonth, setSelectedMonth] = useState('');
