@@ -31,7 +31,22 @@ export function SimpleSlotPicker({ hostId, onSlotSelected }: SimpleSlotPickerPro
         // Fetch occupied slots (scheduled meetings + pending requests)
         const occupiedRes = await fetch(`/api/meetings/occupied-slots?hostId=${hostId}&days=${nextDays}`);
         const occupiedData = await occupiedRes.json();
-        setOccupiedSlots(Array.isArray(occupiedData) ? occupiedData : []);
+        const appOccupied = Array.isArray(occupiedData) ? occupiedData : [];
+
+        // Fetch Google Calendar busy slots
+        const now = new Date();
+        const futureDate = new Date();
+        futureDate.setDate(now.getDate() + nextDays);
+        
+        const freeBusyRes = await fetch(`/api/integrations/calendar/freebusy?hostId=${hostId}&timeMin=${now.toISOString()}&timeMax=${futureDate.toISOString()}`);
+        const freeBusyData = await freeBusyRes.json();
+        const gcalBusy = Array.isArray(freeBusyData.busy) ? freeBusyData.busy.map((b: any) => ({
+          startTime: b.start,
+          endTime: b.end,
+          type: 'google-busy'
+        })) : [];
+
+        setOccupiedSlots([...appOccupied, ...gcalBusy]);
       } catch (error) {
         console.error('Failed to fetch availability:', error);
       } finally {

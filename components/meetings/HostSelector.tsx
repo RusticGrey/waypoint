@@ -22,7 +22,7 @@ export function HostSelector({ onSelect }: { onSelect: (hostId: string) => void 
     async function fetchHosts() {
       try {
         // Fetch all coordinators and counselors available to this student
-        const res = await fetch('/api/coordinator/students');
+        const res = await fetch('/api/student/hosts');
         const data = await res.json();
         // Filter to get unique hosts (coordinators and counselors)
         const hostList = Array.isArray(data) ? data : [];
