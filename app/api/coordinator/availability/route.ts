@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session || session.user.role !== 'coordinator') {
+    if (!session || (session.user.role !== 'coordinator' && session.user.role !== 'counselor')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

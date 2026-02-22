@@ -29,6 +29,18 @@ export default async function CoordinatorProfilePage() {
       </div>
       
       <div className="space-y-8">
+        <section className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+          <div className="flex justify-between items-center mb-4">
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900">Availability Settings</h2>
+              <p className="text-sm text-gray-600 mt-1">Set your weekly working hours for student meetings.</p>
+            </div>
+            <Link href="/coordinator/meetings/availability">
+              <Button>Manage Availability</Button>
+            </Link>
+          </div>
+        </section>
+
         <section>
           <h2 className="text-xl font-semibold mb-4">Meeting Integrations</h2>
           <IntegrationSetupCard status={status} />

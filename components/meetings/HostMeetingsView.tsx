@@ -1,7 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { MeetingGate } from '@/components/meetings/MeetingGate';
 import { MeetingRequestQueue } from '@/components/meetings/MeetingRequestQueue';
 import { ScheduledMeetingCard } from '@/components/meetings/ScheduledMeetingCard';
@@ -53,7 +55,11 @@ export function HostMeetingsView({
           <h1 className="text-3xl font-bold text-gray-900">
             {role === 'counselor' ? 'Global Meetings Admin' : 'Meetings Management'}
           </h1>
-          <div className="flex bg-gray-100 p-1 rounded-lg">
+          <div className="flex gap-4 items-center">
+            <Link href={`/${role}/meetings/availability`}>
+              <Button variant="outline">Set Availability</Button>
+            </Link>
+            <div className="flex bg-gray-100 p-1 rounded-lg">
             <button
               onClick={() => setViewMode('calendar')}
               className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
@@ -70,6 +76,7 @@ export function HostMeetingsView({
             >
               List View
             </button>
+          </div>
           </div>
         </div>
         

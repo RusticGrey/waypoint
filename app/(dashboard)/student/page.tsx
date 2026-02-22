@@ -44,6 +44,7 @@ export default function StudentDashboard() {
   const fetchDashboardStats = async () => {
     try {
       const res = await fetch('/api/student/dashboard-stats');
+      if (!res.ok) throw new Error('Failed to fetch');
       const data = await res.json();
       setStats(data);
     } catch (error) {
@@ -86,23 +87,23 @@ export default function StudentDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         {isCollegeApps && (
           <>
-            <Card>
-              <CardContent className="pt-6">
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-blue-600">{stats?.applicationStats.total || 0}</div>
-                  <p className="text-sm text-gray-600 mt-1">Applications</p>
-                </div>
-              </CardContent>
-            </Card>
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <div className="text-3xl font-bold text-blue-600">{stats?.applicationStats?.total || 0}</div>
+              <p className="text-sm text-gray-600 mt-1">Applications</p>
+            </div>
+          </CardContent>
+        </Card>
 
-            <Card>
-              <CardContent className="pt-6">
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-green-600">{stats?.applicationStats.decisions.accepted || 0}</div>
-                  <p className="text-sm text-gray-600 mt-1">Acceptances</p>
-                </div>
-              </CardContent>
-            </Card>
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <div className="text-3xl font-bold text-green-600">{stats?.applicationStats?.decisions?.accepted || 0}</div>
+              <p className="text-sm text-gray-600 mt-1">Acceptances</p>
+            </div>
+          </CardContent>
+        </Card>
           </>
         )}
 
@@ -118,7 +119,7 @@ export default function StudentDashboard() {
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <div className="text-3xl font-bold text-purple-600">{stats?.profileStats.activities || 0}</div>
+              <div className="text-3xl font-bold text-purple-600">{stats?.profileStats?.activities || 0}</div>
               <p className="text-sm text-gray-600 mt-1">Activities</p>
             </div>
           </CardContent>
@@ -129,7 +130,7 @@ export default function StudentDashboard() {
              <Card>
               <CardContent className="pt-6">
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-indigo-600">{stats?.profileStats.projects || 0}</div>
+                  <div className="text-3xl font-bold text-indigo-600">{stats?.profileStats?.projects || 0}</div>
                   <p className="text-sm text-gray-600 mt-1">Projects</p>
                 </div>
               </CardContent>
@@ -137,7 +138,7 @@ export default function StudentDashboard() {
              <Card>
               <CardContent className="pt-6">
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-pink-600">{stats?.profileStats.achievements || 0}</div>
+                  <div className="text-3xl font-bold text-pink-600">{stats?.profileStats?.achievements || 0}</div>
                   <p className="text-sm text-gray-600 mt-1">Achievements</p>
                 </div>
               </CardContent>
