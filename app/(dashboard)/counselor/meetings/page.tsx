@@ -39,8 +39,8 @@ export default async function CounselorMeetingsPage() {
 
   return (
     <CounselorMeetingsClient 
-      initialRequests={JSON.parse(JSON.stringify(requests))} 
-      initialMeetings={JSON.parse(JSON.stringify(upcomingMeetings))} 
+      initialRequests={JSON.parse(JSON.stringify(requests || []))} 
+      initialMeetings={JSON.parse(JSON.stringify(upcomingMeetings || []))} 
       userId={session.user.id} 
     />
   );

@@ -4,9 +4,9 @@ import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { IntegrationSetupCard } from '@/components/meetings/IntegrationSetupCard';
-import { ProfileBackButton } from './ProfileBackButton';
+import { ProfileBackButton } from '../../coordinator/profile/ProfileBackButton';
 
-export default async function CoordinatorProfilePage({ searchParams }: { searchParams: { reason?: string } }) {
+export default async function CounselorProfilePage({ searchParams }: { searchParams: { reason?: string } }) {
   const session = await getServerSession(authOptions);
   if (!session) return null;
 
@@ -35,7 +35,7 @@ export default async function CoordinatorProfilePage({ searchParams }: { searchP
       )}
 
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold text-black">Coordinator Profile</h1>
+        <h1 className="text-3xl font-bold text-black">Counselor Profile</h1>
         <ProfileBackButton />
       </div>
       
@@ -46,7 +46,7 @@ export default async function CoordinatorProfilePage({ searchParams }: { searchP
               <h2 className="text-xl font-semibold text-gray-900">Availability Settings</h2>
               <p className="text-sm text-gray-600 mt-1">Set your weekly working hours for student meetings.</p>
             </div>
-            <Link href="/coordinator/meetings/availability">
+            <Link href="/counselor/meetings/availability">
               <Button>Manage Availability</Button>
             </Link>
           </div>
@@ -54,7 +54,7 @@ export default async function CoordinatorProfilePage({ searchParams }: { searchP
 
         <section>
           <h2 className="text-xl font-semibold mb-4">Meeting Integrations</h2>
-          <IntegrationSetupCard status={status} />
+          <IntegrationSetupCard status={status} role="counselor" />
         </section>
       </div>
     </div>

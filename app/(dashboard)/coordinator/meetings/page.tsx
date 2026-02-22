@@ -38,8 +38,8 @@ export default async function CoordinatorMeetingsPage() {
 
   return (
     <CoordinatorMeetingsClient 
-      initialRequests={JSON.parse(JSON.stringify(requests))} 
-      initialMeetings={JSON.parse(JSON.stringify(upcomingMeetings))} 
+      initialRequests={JSON.parse(JSON.stringify(requests || []))} 
+      initialMeetings={JSON.parse(JSON.stringify(upcomingMeetings || []))} 
       userId={session.user.id} 
     />
   );

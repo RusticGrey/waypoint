@@ -12,7 +12,7 @@ interface MeetingRequestQueueProps {
 export function MeetingRequestQueue({ requests, onUpdate }: MeetingRequestQueueProps) {
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-semibold">Pending Requests</h2>
+      <h2 className="text-xl font-semibold text-black">Pending Requests</h2>
       {requests.length === 0 ? (
         <p className="text-gray-500 italic">No pending requests.</p>
       ) : (
@@ -37,9 +37,15 @@ function MeetingRequestCard({ request, onUpdate }: { request: any; onUpdate: () 
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: 'Accepted' }),
       });
-      if (res.ok) onUpdate();
+      if (res.ok) {
+        onUpdate();
+      } else {
+        const data = await res.json();
+        alert(`Failed to accept request: ${data.error || 'Unknown error'}${data.details ? `\nDetails: ${data.details}` : ''}`);
+      }
     } catch (error) {
       console.error('Accept error:', error);
+      alert('An error occurred while accepting the request.');
     } finally {
       setLoading(false);
     }
@@ -67,13 +73,13 @@ function MeetingRequestCard({ request, onUpdate }: { request: any; onUpdate: () 
       <CardContent className="pt-6">
         <div className="flex justify-between items-start">
           <div className="space-y-1">
-            <h3 className="font-bold text-lg">
+            <h3 className="font-bold text-lg text-black">
               {request.student.user.firstName} {request.student.user.lastName}
             </h3>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-700">
               {new Date(request.requestedStart).toLocaleString()} - {new Date(request.requestedEnd).toLocaleTimeString()}
             </p>
-            <p className="text-sm font-medium text-blue-600">{request.meetingType}</p>
+            <p className="text-sm font-medium text-blue-600 font-bold">{request.meetingType}</p>
             {request.studentNote && (
               <div className="mt-2 p-2 bg-gray-50 rounded text-sm text-gray-700 italic border-l-2 border-gray-300">
                 "{request.studentNote}"

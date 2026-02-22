@@ -1,5 +1,5 @@
 import { HostAvailabilityView } from '@/components/meetings/HostAvailabilityView';
 
-export default function CoordinatorAvailabilityPage() {
+export default function CounselorAvailabilityPage() {
   return <HostAvailabilityView />;
 }

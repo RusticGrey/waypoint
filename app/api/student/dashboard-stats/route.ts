@@ -59,7 +59,7 @@ export async function GET(req: Request) {
       prisma.scheduledMeeting.findFirst({
         where: { studentId: session.user.id, status: 'Upcoming', startTime: { gte: new Date() } },
         orderBy: { startTime: 'asc' },
-        select: { startTime: true }
+        include: { host: true }
       })
     ]);
     
@@ -103,7 +103,12 @@ export async function GET(req: Request) {
       },
       meetingStats: {
         openActionItems,
-        nextMeetingDate: nextMeeting?.startTime ? nextMeeting.startTime.toISOString() : null
+        nextMeeting: nextMeeting ? {
+          id: nextMeeting.id,
+          startTime: nextMeeting.startTime.toISOString(),
+          meetingType: nextMeeting.meetingType,
+          hostName: `${nextMeeting.host.firstName} ${nextMeeting.host.lastName}`
+        } : null
       }
     });
   } catch (error) {

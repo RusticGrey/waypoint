@@ -39,7 +39,7 @@ export async function PATCH(
         },
         host: true,
       },
-    });
+    }) as any;
 
     if (!request) {
       return NextResponse.json({ error: 'Request not found' }, { status: 404 });
@@ -47,12 +47,12 @@ export async function PATCH(
 
     // Role checks
     if (validated.status === 'Cancelled') {
-      if (session.user.id !== request.studentId && session.user.id !== request.hostId) {
+      if (session.user.id !== request.studentId && session.user.id !== request.hostId && session.user.role !== 'counselor') {
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
       }
     } else {
       // Accepted, Declined, ChangeSuggested are host-only
-      if (session.user.id !== request.hostId) {
+      if (session.user.id !== request.hostId && session.user.role !== 'counselor') {
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
       }
     }
@@ -105,8 +105,7 @@ export async function PATCH(
         where: { id: requestId },
         data: {
           status: 'Accepted',
-          scheduledMeetingId: scheduledMeeting.id,
-          googleCalendarEventId: null, // Clear it as it's deleted
+          scheduledMeeting: { connect: { id: scheduledMeeting.id } },
         },
       });
 
@@ -135,7 +134,9 @@ export async function PATCH(
       
       if (request.googleCalendarEventId && (validated.status === 'Declined' || validated.status === 'Cancelled' || validated.status === 'ChangeSuggested')) {
         try {
+          console.log('Attempting to delete tentative GCal event:', request.googleCalendarEventId);
           await deleteEvent(request.hostId, request.googleCalendarEventId);
+          console.log('Tentative GCal event deleted successfully');
         } catch (e) {
           console.error('Failed to delete tentative event:', e);
         }
@@ -148,7 +149,6 @@ export async function PATCH(
           hostNote: validated.hostNote || null,
           suggestedStart: validated.suggestedStart ? new Date(validated.suggestedStart) : null,
           suggestedEnd: validated.suggestedEnd ? new Date(validated.suggestedEnd) : null,
-          googleCalendarEventId: null, // Clear it as it's deleted
         },
         include: {
           student: { include: { user: true } },
@@ -160,12 +160,15 @@ export async function PATCH(
 
       return NextResponse.json(updatedRequest);
     }
-  } catch (error) {
+  } catch (error: any) {
     if (error instanceof ZodError) {
       return NextResponse.json({ error: error.issues }, { status: 400 });
     }
     console.error('Update Meeting Request Error:', error);
-    return NextResponse.json({ error: 'Failed to update request' }, { status: 500 });
+    return NextResponse.json({ 
+      error: 'Failed to update request', 
+      details: error.message 
+    }, { status: 500 });
   }
 }
 

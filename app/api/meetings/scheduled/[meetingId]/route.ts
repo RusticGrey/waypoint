@@ -33,9 +33,6 @@ export async function GET(
           },
         },
         host: true,
-        recording: true,
-        intelligence: true,
-        actionItems: true,
       },
     });
 
@@ -78,7 +75,7 @@ export async function PATCH(
       return NextResponse.json({ error: 'Meeting not found' }, { status: 404 });
     }
 
-    if (session.user.id !== meeting.hostId) {
+    if (session.user.id !== meeting.hostId && session.user.id !== meeting.studentId && session.user.role !== 'counselor') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
@@ -91,16 +88,18 @@ export async function PATCH(
     });
 
     if (validated.status === 'Cancelled') {
-      if (meeting.conferencePlatform === 'Zoom' && meeting.conferenceId) {
+      if (updatedMeeting.conferencePlatform === 'Zoom' && updatedMeeting.conferenceId) {
         try {
           await deleteZoomMeeting(meeting.hostId, meeting.conferenceId);
         } catch (e) {
           console.error('Failed to delete Zoom meeting:', e);
         }
       }
-      if (meeting.googleCalendarEventId) {
+      if (updatedMeeting.googleCalendarEventId) {
         try {
-          await deleteEvent(meeting.hostId, meeting.googleCalendarEventId);
+          console.log('Attempting to delete GCal event:', updatedMeeting.googleCalendarEventId);
+          await deleteEvent(updatedMeeting.hostId, updatedMeeting.googleCalendarEventId!);
+          console.log('GCal event deleted successfully');
         } catch (e) {
           console.error('Failed to delete Google Calendar event:', e);
         }

@@ -24,6 +24,42 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
     const validated = createSchema.parse(body);
+    const requestedStart = new Date(validated.requestedStart);
+    const requestedEnd = new Date(validated.requestedEnd);
+
+    // Check for student double-booking
+    const [overlappingRequests, overlappingMeetings] = await Promise.all([
+      prisma.meetingRequest.findMany({
+        where: {
+          studentId: session.user.id,
+          status: 'Pending',
+          OR: [
+            {
+              requestedStart: { lt: requestedEnd },
+              requestedEnd: { gt: requestedStart },
+            }
+          ]
+        }
+      }),
+      prisma.scheduledMeeting.findMany({
+        where: {
+          studentId: session.user.id,
+          status: 'Upcoming',
+          OR: [
+            {
+              startTime: { lt: requestedEnd },
+              endTime: { gt: requestedStart },
+            }
+          ]
+        }
+      })
+    ]);
+
+    if (overlappingRequests.length > 0 || overlappingMeetings.length > 0) {
+      return NextResponse.json({ 
+        error: 'You already have a pending request or confirmed meeting at this time.' 
+      }, { status: 400 });
+    }
 
     // Create the request first
     let request = await prisma.meetingRequest.create({
@@ -43,7 +79,7 @@ export async function POST(req: Request) {
         },
         host: true,
       },
-    });
+    }) as any;
 
     // Create tentative event in Google Calendar (blocks slot)
     try {
@@ -59,7 +95,7 @@ export async function POST(req: Request) {
         });
 
         // Update request with event ID
-        request = await prisma.meetingRequest.update({
+        request = await (prisma.meetingRequest.update as any)({
           where: { id: request.id },
           data: { googleCalendarEventId: eventId },
           include: {
@@ -98,14 +134,15 @@ export async function GET(req: Request) {
   const where: any = {};
   if (session.user.role === 'student') {
     where.studentId = session.user.id;
-  } else if (session.user.role === 'coordinator') {
-    where.hostId = session.user.id;
-  } else if (session.user.role === 'counselor') {
-    const hostId = searchParams.get('hostId');
-    if (hostId) {
-      where.hostId = hostId;
+  } else if (session.user.role === 'coordinator' || session.user.role === 'counselor') {
+    if (session.user.role === 'coordinator') {
+      where.hostId = session.user.id;
+    } else {
+      const hostId = searchParams.get('hostId');
+      if (hostId) {
+        where.hostId = hostId;
+      }
     }
-    // Else: show all (global view)
   }
 
   if (statusFilter) {

@@ -161,12 +161,16 @@ export default function StudentDashboard() {
           <Card>
             <CardContent className="pt-6 px-2">
               <div className="text-center">
-                <div className="text-lg font-bold text-blue-800">
-                  {(stats as any)?.meetingStats?.nextMeetingDate 
-                    ? new Date((stats as any).meetingStats.nextMeetingDate).toLocaleDateString()
+                <div className="text-lg font-bold text-black">
+                  {(stats as any)?.meetingStats?.nextMeeting 
+                    ? new Date((stats as any).meetingStats.nextMeeting.startTime).toLocaleDateString()
                     : 'None'}
                 </div>
-                <p className="text-sm text-gray-600 mt-1">Next Meeting</p>
+                <p className="text-sm text-gray-600 mt-1">
+                  {(stats as any)?.meetingStats?.nextMeeting 
+                    ? `${(stats as any).meetingStats.nextMeeting.meetingType} session`
+                    : 'Next Meeting'}
+                </p>
               </div>
             </CardContent>
           </Card>

@@ -29,11 +29,11 @@ export function ScheduledMeetingCard({ meeting }: ScheduledMeetingCardProps) {
                     {new Date(meeting.startTime).toLocaleDateString()}
                   </span>
                 </div>
-                <h3 className="font-bold text-gray-900">{meeting.meetingType}</h3>
-                <p className="text-sm text-gray-600">
+                <h3 className="font-bold text-black">{meeting.meetingType}</h3>
+                <p className="text-sm text-gray-700">
                   {new Date(meeting.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(meeting.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </p>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-600 mt-1">
                   With {meeting.student.user.firstName} {meeting.student.user.lastName}
                 </p>
               </div>
@@ -41,11 +41,22 @@ export function ScheduledMeetingCard({ meeting }: ScheduledMeetingCardProps) {
                 <div className={`text-xs font-bold mb-2 ${isUpcoming ? 'text-blue-600' : 'text-gray-500'}`}>
                   {meeting.status}
                 </div>
-                {isUpcoming && meeting.conferenceJoinUrl && (
-                  <Button className="h-8 text-xs px-3" onClick={() => window.open(meeting.conferenceJoinUrl, '_blank')}>
-                    Join
-                  </Button>
-                )}
+                {isUpcoming && meeting.conferenceJoinUrl && (() => {
+                  const now = new Date();
+                  const start = new Date(meeting.startTime);
+                  const end = new Date(meeting.endTime);
+                  const isJoinable = now.getTime() >= (start.getTime() - 10 * 60000) && now.getTime() <= end.getTime();
+                  
+                  return (
+                    <Button 
+                      className={`h-8 text-xs px-3 ${isJoinable ? 'bg-blue-600' : 'bg-gray-400 cursor-not-allowed'}`} 
+                      onClick={() => isJoinable && window.open(meeting.conferenceJoinUrl, '_blank')}
+                      disabled={!isJoinable}
+                    >
+                      {isJoinable ? 'Join Now' : 'Join later'}
+                    </Button>
+                  );
+                })()}
               </div>
             </div>
             <div className="mt-4 flex justify-end border-t pt-2">

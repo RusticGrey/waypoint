@@ -130,6 +130,7 @@ export async function createEvent(
   });
 
   const calendarId = config?.googleCalendarId || 'primary';
+  console.log(`GCal: Creating event on calendar: ${calendarId}`);
 
   const event: any = {
     summary: details.title,
@@ -161,6 +162,8 @@ export async function createEvent(
     requestBody: event,
     conferenceDataVersion: details.requestMeetLink ? 1 : 0,
   });
+
+  console.log('GCal: Event created with ID:', response.data.id);
 
   let meetLink = null;
   if (details.requestMeetLink) {
@@ -206,6 +209,7 @@ export async function updateEvent(
 }
 
 export async function deleteEvent(hostUserId: string, eventId: string) {
+  console.log(`GCal: Deleting event ${eventId} for user ${hostUserId}`);
   const client = await getAuthenticatedClient(hostUserId);
   const calendar = google.calendar({ version: 'v3', auth: client });
 
@@ -214,9 +218,20 @@ export async function deleteEvent(hostUserId: string, eventId: string) {
   });
 
   const calendarId = config?.googleCalendarId || 'primary';
+  console.log(`GCal: Using calendarId ${calendarId}`);
 
-  await calendar.events.delete({
-    calendarId,
-    eventId,
-  });
+  try {
+    const res = await calendar.events.delete({
+      calendarId,
+      eventId,
+    });
+    console.log('GCal: Delete response status:', res.status);
+  } catch (error: any) {
+    console.error('GCal: Delete request failed:', error.message);
+    if (error.code === 404) {
+       console.log('GCal: Event already deleted or not found on this calendar.');
+    } else {
+       throw error;
+    }
+  }
 }

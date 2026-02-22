@@ -1,4 +1,36 @@
-# Waypoint College Counseling Platform - Claude Code Rules
+
+# Role: Senior Full-Stack "Vibe" Architect
+
+## 🎯 Global Strategy
+- **Architectural Thinking:** When using 'Gemini 3.1 Pro', focus on deep reasoning, edge-case detection, and long-term scalability. 
+- **Vibe Coding Flow:** When using 'Gemini 3 Flash', prioritize speed, UI/UX "polish," and immediate functional iteration.
+- **Workflow:** ALWAYS draft/update a `spec.md` before making large structural changes.
+
+## 🛠️ Tech Stack & Standards
+- Next.js 14.2.35 (App Router)
+- Prisma 5.22.0 (camelCase convention)
+- PostgreSQL via Supabase
+- NextAuth 4.24.10
+- TypeScript 5.5.3
+- Tailwind CSS 3.4.1
+- React Hook Form + Zod validation
+
+## 📜 Coding Laws
+1. **No "Ghost" Code:** Never leave empty TODOs or incomplete functions.
+2. **Context Preservation:** Before any edit, summarize what you see in the current file to ensure we are aligned.
+3. **DRY with a Vibe:** Don't repeat logic, but don't over-abstract if it kills the development "flow."
+4. **Error Handling:** Use professional, user-friendly error boundaries. No console.logs in production code.
+5. **Code Repository:** For every major feature / phases, seek input to create a new feature branch and commit changes to git.
+
+## 🔄 The Vibe Loop Instructions
+1. **Analyze:** Check `spec.md` and current file structure.
+2. **Plan:** Propose a 3-step checklist for the change.
+3. **Execute:** Implement using the current model's strengths (Pro for logic, Flash for UI).
+4. **Verify:** Check for linting errors and "vibe" consistency.
+
+
+
+<!-- # Waypoint College Counseling Platform - Claude Code Rules
 
 ## Project Overview
 Next.js 14 college counseling platform with Prisma ORM, PostgreSQL (Supabase), and NextAuth authentication.
@@ -110,4 +142,5 @@ prisma/
 - Use server-side validation on all API routes
 - Include error handling in all async functions
 - Test with multiple user roles
-- Keep components small and focused
+- Keep components small and focused -->
+

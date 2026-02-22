@@ -1,33 +1,39 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { BookingModal } from './BookingModal';
 
 interface CalendarViewProps {
   hostId: string;
   isHostView?: boolean;
+  refreshKey?: number;
+  onSlotSelected?: (start: Date, end: Date) => void;
 }
 
-export function CalendarView({ hostId, isHostView = false }: CalendarViewProps) {
+export function CalendarView({ hostId, isHostView = false, refreshKey = 0, onSlotSelected }: CalendarViewProps) {
   const [busy, setBusy] = useState<any[]>([]);
   const [scheduledMeetings, setScheduledMeetings] = useState<any[]>([]);
   const [pendingRequests, setPendingRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentWeek, setCurrentWeek] = useState(new Date());
   const [selectedSlot, setSelectedSlot] = useState<{ start: Date; end: Date } | null>(null);
+  const router = useRouter();
 
   // Helper function to consistently calculate week start
-  const getStartOfWeek = (d: Date) => {
-    const date = new Date(d);
+  const startOfWeek = useMemo(() => {
+    const date = new Date(currentWeek);
     date.setHours(0, 0, 0, 0);
     const day = date.getDay();
     const diff = date.getDate() - day;
     return new Date(date.setDate(diff));
-  };
+  }, [currentWeek]);
 
-  const startOfWeek = getStartOfWeek(currentWeek);
-  const endOfWeek = new Date(startOfWeek);
-  endOfWeek.setDate(startOfWeek.getDate() + 7);
+  const endOfWeek = useMemo(() => {
+    const date = new Date(startOfWeek);
+    date.setDate(startOfWeek.getDate() + 7);
+    return date;
+  }, [startOfWeek]);
 
   useEffect(() => {
     async function fetchData() {
@@ -44,14 +50,15 @@ export function CalendarView({ hostId, isHostView = false }: CalendarViewProps) 
         // 2. Fetch Waypoint Scheduled Meetings for the host
         const meetRes = await fetch(`/api/meetings/scheduled?status=Upcoming`);
         const meetData = await meetRes.json();
-        setScheduledMeetings(meetData.filter((m: any) => m.hostId === hostId));
+        const appMeetings = Array.isArray(meetData) ? meetData.filter((m: any) => String(m.hostId) === String(hostId)) : [];
+        setScheduledMeetings(appMeetings);
 
         // 3. Fetch Pending Requests for the host (to show as tentative)
-        // Only if isHostView is true, or if we want students to see "Tentative" blocks as busy (which GCal handles, but visual distinction is nice)
         if (isHostView) {
           const reqRes = await fetch(`/api/meetings/requests?status=Pending`);
           const reqData = await reqRes.json();
-          setPendingRequests(reqData.filter((r: any) => r.hostId === hostId));
+          const appRequests = Array.isArray(reqData) ? reqData.filter((r: any) => String(r.hostId) === String(hostId)) : [];
+          setPendingRequests(appRequests);
         }
 
       } catch (error) {
@@ -62,7 +69,7 @@ export function CalendarView({ hostId, isHostView = false }: CalendarViewProps) 
     }
 
     fetchData();
-  }, [hostId, currentWeek, isHostView, startOfWeek, endOfWeek]);
+  }, [hostId, currentWeek, isHostView, startOfWeek, endOfWeek, refreshKey]);
 
   const nextWeek = () => {
     const next = new Date(currentWeek);
@@ -77,7 +84,11 @@ export function CalendarView({ hostId, isHostView = false }: CalendarViewProps) 
   };
 
   const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  const hours = Array.from({ length: 12 }, (_, i) => i + 8); // 8 AM to 8 PM
+  // Generate 30-min intervals from 8 AM to 8 PM
+  const intervals = Array.from({ length: 24 }, (_, i) => ({
+    hour: Math.floor(i / 2) + 8,
+    minute: (i % 2) * 30
+  }));
 
   const getSlotContent = (date: Date) => {
     const time = date.getTime();
@@ -111,6 +122,7 @@ export function CalendarView({ hostId, isHostView = false }: CalendarViewProps) 
     const isBusy = busy.some((b: any) => {
       const bStart = new Date(b.start).getTime();
       const bEnd = new Date(b.end).getTime();
+      // Added a small buffer to avoid exact edge match issues
       return time >= bStart && time < bEnd;
     });
 
@@ -121,17 +133,30 @@ export function CalendarView({ hostId, isHostView = false }: CalendarViewProps) 
     return null;
   };
 
-  const handleSlotClick = (dayIndex: number, hour: number) => {
-    if (isHostView) return; // Hosts don't book via this modal
-
+  const handleSlotClick = (dayIndex: number, hour: number, minute: number) => {
     const start = new Date(startOfWeek);
     start.setDate(startOfWeek.getDate() + dayIndex);
-    start.setHours(hour, 0, 0, 0);
+    start.setHours(hour, minute, 0, 0);
     
     const end = new Date(start);
-    end.setHours(hour + 1);
+    end.setMinutes(start.getMinutes() + 30);
 
     const content = getSlotContent(start);
+
+    if (isHostView) {
+      if (content?.type === 'meeting') {
+        router.push(`./meetings/${content.data.id}`);
+        return;
+      }
+      
+      if (onSlotSelected && !content) {
+        onSlotSelected(start, end);
+        return;
+      }
+      
+      return;
+    }
+
     if (!content) {
       setSelectedSlot({ start, end });
     }
@@ -140,11 +165,11 @@ export function CalendarView({ hostId, isHostView = false }: CalendarViewProps) 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
       <div className="flex flex-col sm:flex-row items-center justify-between p-4 border-b border-gray-200 bg-gray-50 gap-4">
-        <h2 className="font-bold text-gray-900 text-lg">
+        <h2 className="font-bold text-black text-lg">
           {startOfWeek.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
         </h2>
         <div className="flex items-center gap-4">
-           <div className="hidden md:flex gap-3 text-[10px] mr-4 font-bold uppercase tracking-tight">
+           <div className="hidden md:flex gap-3 text-[10px] mr-4 font-bold uppercase tracking-tight text-black">
               <div className="flex items-center gap-1"><span className="w-3 h-3 bg-blue-500 rounded"></span> Confirmed</div>
               {isHostView && <div className="flex items-center gap-1"><span className="w-3 h-3 bg-yellow-400 rounded"></span> Requested</div>}
               <div className="flex items-center gap-1"><span className="w-3 h-3 bg-gray-300 rounded"></span> Busy</div>
@@ -177,23 +202,23 @@ export function CalendarView({ hostId, isHostView = false }: CalendarViewProps) 
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
           </div>
         )}
-        {hours.map((hour) => (
-          <div key={hour} className="grid grid-cols-8 border-b border-gray-100 last:border-b-0">
-            <div className="p-2 text-right text-[10px] font-bold text-gray-400 border-r border-gray-200 bg-gray-50/50 flex flex-col justify-center">
-              {hour > 12 ? `${hour - 12} PM` : hour === 12 ? '12 PM' : `${hour} AM`}
+        {intervals.map(({ hour, minute }) => (
+          <div key={`${hour}-${minute}`} className="grid grid-cols-8 border-b border-gray-100 last:border-b-0">
+            <div className="p-1 text-right text-[9px] font-bold text-gray-400 border-r border-gray-200 bg-gray-50/50 flex flex-col justify-center min-h-[50px]">
+              {minute === 0 ? (hour > 12 ? `${hour - 12} PM` : hour === 12 ? '12 PM' : `${hour} AM`) : ''}
             </div>
             {days.map((_, i) => {
               const slotDate = new Date(startOfWeek);
               slotDate.setDate(startOfWeek.getDate() + i);
-              slotDate.setHours(hour, 0, 0, 0);
+              slotDate.setHours(hour, minute, 0, 0);
               const content = getSlotContent(slotDate);
 
               return (
                 <div
                   key={i}
-                  onClick={() => handleSlotClick(i, hour)}
-                  className={`p-1 border-r border-gray-100 last:border-r-0 min-h-[80px] transition-all relative ${
-                    !content && !isHostView ? 'hover:bg-blue-50/50 cursor-pointer group' : 'bg-transparent'
+                  onClick={() => handleSlotClick(i, hour, minute)}
+                  className={`p-0.5 border-r border-gray-100 last:border-r-0 min-h-[50px] transition-all relative ${
+                    (!content && !isHostView) || (isHostView && content?.type === 'meeting') ? 'hover:bg-blue-50/50 cursor-pointer group' : 'bg-transparent'
                   }`}
                 >
                   {content?.type === 'meeting' && (

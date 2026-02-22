@@ -94,7 +94,7 @@ export default async function DashboardLayout({
                   </Link>
                   {showMeetings && (
                     <Link href="/coordinator/meetings" className="text-gray-700 hover:text-blue-600 font-medium">
-                      Meetings
+                      Manage Meetings
                     </Link>
                   )}
                   <Link href="/admin/subjects" className="text-gray-700 hover:text-blue-600 font-medium">
@@ -113,7 +113,7 @@ export default async function DashboardLayout({
                   </Link>
                   {showMeetings && (
                     <Link href="/counselor/meetings" className="text-gray-700 hover:text-blue-600 font-medium">
-                      Meetings
+                      Manage Meetings
                     </Link>
                   )}
                   <Link href="/counselor/manage-users" className="text-gray-700 hover:text-blue-600 font-medium">

@@ -130,6 +130,31 @@ export default async function CounselorDashboard() {
 
       <FeatureOverview role="counselor" />
 
+      {/* Meeting Management Quick Links */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <Link href="/counselor/meetings" className="group p-4 bg-white rounded-lg border border-gray-200 hover:border-blue-500 hover:shadow-md transition-all flex items-center gap-3">
+          <span className="text-2xl group-hover:scale-110 transition-transform">🗓️</span>
+          <div>
+            <span className="font-bold text-black block">Manage Meetings</span>
+            <span className="text-xs text-gray-500">View calendar and requests</span>
+          </div>
+        </Link>
+        <Link href="/counselor/meetings/availability" className="group p-4 bg-white rounded-lg border border-gray-200 hover:border-blue-500 hover:shadow-md transition-all flex items-center gap-3">
+          <span className="text-2xl group-hover:scale-110 transition-transform">⏰</span>
+          <div>
+            <span className="font-bold text-black block">Set Availability</span>
+            <span className="text-xs text-gray-500">Define your working hours</span>
+          </div>
+        </Link>
+        <Link href="/counselor/profile" className="group p-4 bg-white rounded-lg border border-gray-200 hover:border-blue-500 hover:shadow-md transition-all flex items-center gap-3">
+          <span className="text-2xl group-hover:scale-110 transition-transform">⚙️</span>
+          <div>
+            <span className="font-bold text-black block">Setup & Profile</span>
+            <span className="text-xs text-gray-500">Manage integrations</span>
+          </div>
+        </Link>
+      </div>
+
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <Card>

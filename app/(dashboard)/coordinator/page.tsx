@@ -17,12 +17,16 @@ export default async function CoordinatorDashboard() {
       prisma.meetingRequest.count({
         where: { hostId: session.user.id, status: 'Pending' }
       }),
-      prisma.scheduledMeeting.findMany({
-        where: { hostId: session.user.id, status: 'Upcoming' },
-        include: { student: { include: { user: true } } },
-        orderBy: { startTime: 'asc' },
-        take: 3
-      })
+    prisma.scheduledMeeting.findMany({
+      where: { 
+        hostId: session.user.id, 
+        status: 'Upcoming',
+        startTime: { gte: new Date() }
+      },
+      include: { student: { include: { user: true } } },
+      orderBy: { startTime: 'asc' },
+      take: 3
+    })
     ]);
   }
 

@@ -26,7 +26,16 @@ export async function createConferenceMeeting(
     where: { userId: hostUserId },
   });
 
-  const preferredConference = config?.preferredConference || 'Zoom';
+  let preferredConference = config?.preferredConference || 'Zoom';
+
+  // Fallback if preferred is Zoom but Zoom is not connected
+  if (preferredConference === 'Zoom' && !config?.zoomConnected) {
+    if (config?.googleConnected) {
+      preferredConference = 'GoogleMeet';
+    } else {
+      throw new Error('No conference provider connected (Zoom or Google Calendar)');
+    }
+  }
 
   if (preferredConference === 'Zoom') {
     // 1. Create Zoom Meeting
