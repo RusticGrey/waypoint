@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { IntegrationSetupCard } from '@/components/meetings/IntegrationSetupCard';
 
-export default async function CoordinatorProfilePage() {
+export default async function CoordinatorProfilePage({ searchParams }: { searchParams: { reason?: string } }) {
   const session = await getServerSession(authOptions);
   if (!session) return null;
 
@@ -21,8 +21,20 @@ export default async function CoordinatorProfilePage() {
 
   return (
     <div className="p-8 max-w-4xl mx-auto">
+      {searchParams.reason === 'setup_required' && (
+        <div className="bg-amber-50 border border-amber-200 text-amber-800 p-4 rounded-lg mb-6 flex items-start gap-3">
+          <span className="text-xl">⚠️</span>
+          <div>
+            <p className="font-bold">Setup Required</p>
+            <p className="text-sm mt-1">
+              You must connect Google Calendar before managing meetings. Zoom is optional but recommended.
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Coordinator Profile</h1>
+        <h1 className="text-3xl font-bold text-black">Coordinator Profile</h1>
         <Link href="/coordinator">
           <Button variant="outline">← Back to Dashboard</Button>
         </Link>

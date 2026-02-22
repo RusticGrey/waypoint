@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
@@ -27,6 +28,7 @@ export default function CoordinatorAvailabilityPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
+  const router = useRouter();
 
   useEffect(() => {
     fetchAvailability();
@@ -117,44 +119,53 @@ export default function CoordinatorAvailabilityPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Set Your Availability</h1>
-        <p className="text-gray-600 mt-1">Define your working hours for student meetings</p>
+    <div className="max-w-4xl mx-auto p-8 space-y-8">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-black">Set Your Availability</h1>
+          <p className="text-gray-600 mt-1">Define your working hours for student meetings</p>
+        </div>
+        <Button variant="outline" onClick={() => router.back()}>
+          Back
+        </Button>
       </div>
 
-      <Card>
+      <Card className="bg-white">
         <CardHeader>
-          <CardTitle>Weekly Schedule</CardTitle>
+          <CardTitle className="text-black">Weekly Schedule</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {availability.map((day) => (
-            <div key={day.dayOfWeek} className="p-4 border rounded-lg flex items-center gap-4">
+            <div key={day.dayOfWeek} className="p-4 border rounded-lg flex items-center gap-4 hover:bg-gray-50 transition-colors">
               <input
                 type="checkbox"
                 checked={day.isActive}
                 onChange={() => handleToggleDay(day.dayOfWeek)}
-                className="w-5 h-5"
+                className="w-5 h-5 cursor-pointer accent-blue-600"
               />
               <div className="flex-1">
-                <label className="font-medium text-gray-900">{DAYS[day.dayOfWeek]}</label>
+                <label className="font-medium text-black cursor-pointer" onClick={() => handleToggleDay(day.dayOfWeek)}>
+                  {DAYS[day.dayOfWeek]}
+                </label>
               </div>
-              {day.isActive && (
+              {day.isActive ? (
                 <div className="flex items-center gap-2">
                   <input
                     type="time"
                     value={day.startTime}
                     onChange={(e) => handleTimeChange(day.dayOfWeek, 'startTime', e.target.value)}
-                    className="px-2 py-1 border rounded"
+                    className="px-3 py-2 border rounded-md text-black focus:ring-2 focus:ring-blue-500 outline-none"
                   />
                   <span className="text-gray-500">to</span>
                   <input
                     type="time"
                     value={day.endTime}
                     onChange={(e) => handleTimeChange(day.dayOfWeek, 'endTime', e.target.value)}
-                    className="px-2 py-1 border rounded"
+                    className="px-3 py-2 border rounded-md text-black focus:ring-2 focus:ring-blue-500 outline-none"
                   />
                 </div>
+              ) : (
+                <span className="text-sm text-gray-400 italic">Unavailable</span>
               )}
             </div>
           ))}
@@ -169,9 +180,14 @@ export default function CoordinatorAvailabilityPage() {
         </div>
       )}
 
-      <Button onClick={handleSave} disabled={saving} className="w-full">
-        {saving ? 'Saving...' : 'Save Availability'}
-      </Button>
+      <div className="flex justify-end gap-4">
+        <Button variant="outline" onClick={() => router.back()}>
+          Cancel
+        </Button>
+        <Button onClick={handleSave} disabled={saving} className="min-w-[150px]">
+          {saving ? 'Saving...' : 'Save Availability'}
+        </Button>
+      </div>
     </div>
   );
 }

@@ -13,9 +13,10 @@ export function MeetingGate({ children, role }: { children: React.ReactNode, rol
         const res = await fetch('/api/integrations/status');
         const data = await res.json();
 
-        if (!data.googleConnected || !data.zoomConnected) {
-          // Redirect to setup page for integration configuration
-          router.replace(`/${role}/meetings/setup`);
+        if (!data.googleConnected) {
+          // Redirect to setup page for integration configuration (Google is mandatory)
+          // Zoom is optional but recommended
+          router.replace(`/${role}/meetings/setup?reason=setup_required`);
         } else {
           setLoading(false);
         }
