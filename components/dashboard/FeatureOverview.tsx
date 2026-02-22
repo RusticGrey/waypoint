@@ -53,11 +53,11 @@ export function FeatureOverview({ role }: FeatureOverviewProps) {
         title: 'Manage Students',
         description: 'View assigned students and monitor their progress.'
       },
-      {
+      ...(process.env.NEXT_PUBLIC_ENABLE_MEETINGS === 'true' ? [{
         icon: '📅',
         title: 'Log Meetings',
         description: 'Record meeting notes, action items, and student mood.'
-      },
+      }] : []),
       {
         icon: '⚙️',
         title: 'Profile Override',
