@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import Link from 'next/link';
 import { FeatureOverview } from '@/components/dashboard/FeatureOverview';
+import { FeatureFlagGate } from '@/components/meetings/FeatureFlagGate';
 
 interface DashboardStats {
   phase: string;
@@ -143,6 +144,32 @@ export default function StudentDashboard() {
             </Card>
           </>
         )}
+
+        <FeatureFlagGate>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-blue-600">{(stats as any)?.meetingStats?.openActionItems || 0}</div>
+                <p className="text-sm text-gray-600 mt-1">Action Items</p>
+              </div>
+            </CardContent>
+          </Card>
+        </FeatureFlagGate>
+        
+        <FeatureFlagGate>
+          <Card>
+            <CardContent className="pt-6 px-2">
+              <div className="text-center">
+                <div className="text-lg font-bold text-blue-800">
+                  {(stats as any)?.meetingStats?.nextMeetingDate 
+                    ? new Date((stats as any).meetingStats.nextMeetingDate).toLocaleDateString()
+                    : 'None'}
+                </div>
+                <p className="text-sm text-gray-600 mt-1">Next Meeting</p>
+              </div>
+            </CardContent>
+          </Card>
+        </FeatureFlagGate>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

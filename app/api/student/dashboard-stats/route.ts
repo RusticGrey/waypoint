@@ -14,7 +14,16 @@ export async function GET(req: Request) {
     }
     
     // Fetch all relevant data
-    const [student, applications, goals, activities, achievements, projects] = await Promise.all([
+    const [
+      student, 
+      applications, 
+      goals, 
+      activities, 
+      achievements, 
+      projects,
+      openActionItems,
+      nextMeeting
+    ] = await Promise.all([
       prisma.student.findUnique({
         where: { userId: session.user.id },
         select: { phase: true },
@@ -44,6 +53,14 @@ export async function GET(req: Request) {
       prisma.projectExperience.count({
         where: { studentId: session.user.id },
       }),
+      prisma.meetingActionItem.count({
+        where: { studentId: session.user.id, status: { in: ['Open', 'InProgress'] } }
+      }),
+      prisma.scheduledMeeting.findFirst({
+        where: { studentId: session.user.id, status: 'Upcoming', startTime: { gte: new Date() } },
+        orderBy: { startTime: 'asc' },
+        select: { startTime: true }
+      })
     ]);
     
     // Calculate upcoming deadlines
@@ -84,6 +101,10 @@ export async function GET(req: Request) {
         achievements,
         projects,
       },
+      meetingStats: {
+        openActionItems,
+        nextMeetingDate: nextMeeting?.startTime ? nextMeeting.startTime.toISOString() : null
+      }
     });
   } catch (error) {
     console.error('Dashboard stats error:', error);

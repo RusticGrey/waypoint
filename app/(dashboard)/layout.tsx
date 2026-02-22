@@ -17,6 +17,8 @@ export default async function DashboardLayout({
     redirect('/');
   }
 
+  const showMeetings = process.env.NEXT_PUBLIC_ENABLE_MEETINGS === 'true';
+
   let newStudentCheck = false;
   let studentPhase = 'Onboarding';
 
@@ -61,6 +63,11 @@ export default async function DashboardLayout({
                       <Link href="/student/history" className="text-gray-700 hover:text-blue-600 font-medium">
                         History
                       </Link>
+                      {showMeetings && (
+                        <Link href="/student/meetings" className="text-gray-700 hover:text-blue-600 font-medium">
+                          Meetings
+                        </Link>
+                      )}
                     </>
                   )}
 
@@ -85,9 +92,11 @@ export default async function DashboardLayout({
                   <Link href="/coordinator" className="text-gray-700 hover:text-blue-600 font-medium">
                     Dashboard
                   </Link>
-                  <Link href="/coordinator/meetings" className="text-gray-700 hover:text-blue-600 font-medium">
-                    Meetings
-                  </Link>
+                  {showMeetings && (
+                    <Link href="/coordinator/meetings" className="text-gray-700 hover:text-blue-600 font-medium">
+                      Meetings
+                    </Link>
+                  )}
                   <Link href="/admin/subjects" className="text-gray-700 hover:text-blue-600 font-medium">
                     Manage Courses
                   </Link>
@@ -102,6 +111,11 @@ export default async function DashboardLayout({
                   <Link href="/counselor" className="text-gray-700 hover:text-blue-600 font-medium">
                     Dashboard
                   </Link>
+                  {showMeetings && (
+                    <Link href="/counselor/meetings" className="text-gray-700 hover:text-blue-600 font-medium">
+                      Meetings
+                    </Link>
+                  )}
                   <Link href="/counselor/manage-users" className="text-gray-700 hover:text-blue-600 font-medium">
                     Manage Users
                   </Link>

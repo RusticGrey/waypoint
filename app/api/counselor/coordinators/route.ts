@@ -3,38 +3,33 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
-export const dynamic = 'force-dynamic';
+export async function GET() {
+  const session = await getServerSession(authOptions);
 
-export async function GET(req: Request) {
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session?.user?.id || session.user.role !== 'counselor') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-    
     const coordinators = await prisma.user.findMany({
-      where: {
-        organizationId: session.user.organizationId,
-        role: 'coordinator',
+      where: { 
+        OR: [
+          { role: 'coordinator' },
+          { role: 'counselor' }
+        ]
       },
       select: {
         id: true,
         firstName: true,
         lastName: true,
+        role: true,
         email: true,
-      },
-      orderBy: {
-        lastName: 'asc',
-      },
+      }
     });
-    
-    return NextResponse.json({ coordinators });
+
+    return NextResponse.json(coordinators);
   } catch (error) {
-    console.error('Coordinators fetch error:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch coordinators' },
-      { status: 500 }
-    );
+    console.error('Fetch Hosts Error:', error);
+    return NextResponse.json({ error: 'Failed to fetch hosts' }, { status: 500 });
   }
 }

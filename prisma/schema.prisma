@@ -5,7 +5,6 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  //  directUrl = env("DIRECT_URL")
 }
 
 //===============================================================
@@ -34,13 +33,17 @@ model User {
   createdAt      DateTime @default(now()) @map("created_at")
 
   // Relations
-  organization Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  student      Student?          @relation("UserToStudent")
-  meetings     Meeting[]         @relation("CoordinatorMeetings")
-  meetingLogs  MeetingLog[]
-  comments     ProfileComment[]
-  overrides    ProfileOverride[]
-  students     Student[]
+  organization             Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  student                  Student?            @relation("UserToStudent")
+  meetings                 Meeting[]           @relation("CoordinatorMeetings")
+  meetingLogs              MeetingLog[]
+  comments                 ProfileComment[]
+  overrides                ProfileOverride[]
+  students                 Student[]
+  hostedScheduledMeetings ScheduledMeeting[]  @relation("HostScheduledMeetings")
+  hostMeetingRequests     MeetingRequest[]    @relation("HostMeetingRequests")
+  integrationConfig       UserIntegrationConfig?
+  availabilities          CoordinatorAvailability[] @relation("CoordinatorAvailabilities")
 
   @@map("User")
 }
@@ -55,22 +58,24 @@ model Student {
   phase                StudentPhase @default(Onboarding)
 
   // Relations
-  user               User                 @relation("UserToStudent", fields: [userId], references: [id], onDelete: Cascade)
-  coordinator        User?                @relation(fields: [coordinatorId], references: [id])
-  academicProfile    AcademicProfile?
-  personalProfile    PersonalProfile?
-  achievements       Achievement[]
-  activities         Activity[]
-  transcripts        Transcript[]
-  testScores         TestScore[]
-  projectExperiences ProjectExperience[]
-  applications       CollegeApplication[]
-  meetings           Meeting[]
-  meetingLogs        MeetingLog[]
-  goals              ProfileGoal[]
-  changeLogs         ChangeLog[]
-  profileOverride    ProfileOverride?
-  targetColleges     TargetCollege[]
+  user                User                 @relation("UserToStudent", fields: [userId], references: [id], onDelete: Cascade)
+  coordinator         User?                @relation(fields: [coordinatorId], references: [id])
+  academicProfile     AcademicProfile?
+  personalProfile     PersonalProfile?
+  achievements        Achievement[]
+  activities          Activity[]
+  transcripts         Transcript[]
+  testScores          TestScore[]
+  projectExperiences  ProjectExperience[]
+  applications        CollegeApplication[]
+  meetings            Meeting[]
+  meetingLogs         MeetingLog[]
+  goals               ProfileGoal[]
+  changeLogs          ChangeLog[]
+  profileOverride     ProfileOverride?
+  targetColleges      TargetCollege[]
+  scheduledMeetings   ScheduledMeeting[]   @relation("StudentScheduledMeetings")
+  meetingRequests     MeetingRequest[]     @relation("StudentMeetingRequests")
 
   @@map("Student")
 }
@@ -112,7 +117,7 @@ model Subject {
   subjectName    String         @map("subject_name")
   curriculumType CurriculumType @map("curriculum_type")
 
-  @@unique([subjectName, curriculumType]) // Critical for seed-subjects.ts
+  @@unique([subjectName, curriculumType])
   @@map("Subject")
 }
 
@@ -137,9 +142,9 @@ model Activity {
   id           String           @id @default(cuid())
   studentId    String           @map("student_id")
   activityName String           @map("activity_name")
-  category     ActivityCategory // Changed from String to the Enum
+  category     ActivityCategory
   role         String?
-  gradeLevel  GradeLevel        @map("grade_level")
+  gradeLevel   GradeLevel       @map("grade_level")
   hoursPerWeek Int              @map("hours_per_week")
   weeksPerYear Int              @map("weeks_per_year")
   description  String?
@@ -239,7 +244,7 @@ model CollegeApplication {
 model TestScore {
   id                  String   @id @default(cuid())
   studentId           String   @map("student_id")
-  testType            String   @map("test_type") // e.g., SAT, ACT, Duolingo
+  testType            String   @map("test_type")
   testDate            DateTime @map("test_date")
   compositeScore      Int      @map("composite_score")
   mathScore           Int?     @map("math_score")
@@ -286,8 +291,8 @@ model Meeting {
   createdAt       DateTime    @default(now()) @map("created_at")
   updatedAt       DateTime    @updatedAt @map("updated_at")
 
-  user            User    @relation("CoordinatorMeetings", fields: [coordinatorId], references: [id], onDelete: Cascade)
-  student         Student @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+  user    User    @relation("CoordinatorMeetings", fields: [coordinatorId], references: [id], onDelete: Cascade)
+  student Student @relation(fields: [studentId], references: [userId], onDelete: Cascade)
 
   @@map("Meeting")
 }
@@ -353,8 +358,8 @@ model ProfileOverride {
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
 
-  coordinator    User    @relation(fields: [overriddenBy], references: [id])
-  student        Student @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+  coordinator User    @relation(fields: [overriddenBy], references: [id])
+  student     Student @relation(fields: [studentId], references: [userId], onDelete: Cascade)
 
   @@map("ProfileOverride")
 }
@@ -368,6 +373,97 @@ model ProfileComment {
   user User @relation(fields: [userId], references: [id])
 
   @@map("ProfileComment")
+}
+
+// -------------------------------------------------
+// --- NEW MEETING MANAGEMENT MODULE MODELS ---
+// -------------------------------------------------
+
+model ScheduledMeeting {
+  id                    String                 @id @default(uuid())
+  studentId             String                 @map("student_id")
+  hostId                String                 @map("host_id")
+  meetingType           MeetingType            @map("meeting_type")
+  startTime             DateTime               @map("start_time")
+  endTime               DateTime               @map("end_time")
+  timezone              String                 @default("UTC")
+  status                ScheduledMeetingStatus @default(Upcoming)
+  conferencePlatform    PreferredConference?   @map("conference_platform")
+  conferenceId          String?                @map("conference_id")
+  conferenceJoinUrl     String?                @map("conference_join_url")
+  conferenceHostUrl     String?                @map("conference_host_url")
+  googleCalendarEventId String?                @map("google_calendar_event_id")
+  agenda                String?
+  createdAt             DateTime               @default(now()) @map("created_at")
+  updatedAt             DateTime               @updatedAt @map("updated_at")
+
+  student        Student              @relation("StudentScheduledMeetings", fields: [studentId], references: [userId], onDelete: Cascade)
+  host           User                 @relation("HostScheduledMeetings", fields: [hostId], references: [id], onDelete: Cascade)
+  meetingRequest MeetingRequest?
+
+  @@map("ScheduledMeeting")
+}
+
+model MeetingRequest {
+  id                 String               @id @default(uuid())
+  studentId          String               @map("student_id")
+  hostId             String               @map("host_id")
+  requestedStart     DateTime             @map("requested_start")
+  requestedEnd       DateTime             @map("requested_end")
+  meetingType        MeetingType          @map("meeting_type")
+  studentNote        String?              @map("student_note")
+  status             MeetingRequestStatus @default(Pending)
+  hostNote           String?              @map("host_note")
+  suggestedStart     DateTime?            @map("suggested_start")
+  suggestedEnd       DateTime?            @map("suggested_end")
+  scheduledMeetingId String?              @unique @map("scheduled_meeting_id")
+  googleCalendarEventId String?           @map("google_calendar_event_id")
+  createdAt          DateTime             @default(now()) @map("created_at")
+  updatedAt          DateTime             @updatedAt @map("updated_at")
+
+  student          Student           @relation("StudentMeetingRequests", fields: [studentId], references: [userId], onDelete: Cascade)
+  host             User              @relation("HostMeetingRequests", fields: [hostId], references: [id], onDelete: Cascade)
+  scheduledMeeting ScheduledMeeting? @relation(fields: [scheduledMeetingId], references: [id])
+
+  @@map("MeetingRequest")
+}
+
+model UserIntegrationConfig {
+  userId              String              @id @map("user_id")
+  preferredConference PreferredConference @default(Zoom) @map("preferred_conference")
+  googleAccessToken   String?             @map("google_access_token")
+  googleRefreshToken  String?             @map("google_refresh_token")
+  googleTokenExpiry   DateTime?           @map("google_token_expiry")
+  googleCalendarId    String?             @map("google_calendar_id")
+  googleConnected     Boolean             @default(false) @map("google_connected")
+  zoomAccessToken     String?             @map("zoom_access_token")
+  zoomRefreshToken    String?             @map("zoom_refresh_token")
+  zoomTokenExpiry     DateTime?           @map("zoom_token_expiry")
+  zoomUserId          String?             @map("zoom_user_id")
+  zoomConnected       Boolean             @default(false) @map("zoom_connected")
+  createdAt           DateTime            @default(now()) @map("created_at")
+  updatedAt           DateTime            @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("UserIntegrationConfig")
+}
+
+
+model CoordinatorAvailability {
+  id            String  @id @default(uuid())
+  coordinatorId String  @map("coordinator_id")
+  dayOfWeek     Int     @map("day_of_week") // 0-6, where 0 = Sunday
+  startTime     String  @map("start_time") // "09:00"
+  endTime       String  @map("end_time")   // "17:00"
+  isActive      Boolean @default(true) @map("is_active")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  coordinator User @relation("CoordinatorAvailabilities", fields: [coordinatorId], references: [id], onDelete: Cascade)
+
+  @@unique([coordinatorId, dayOfWeek])
+  @@map("CoordinatorAvailability")
 }
 
 //===============================================================
@@ -523,4 +619,26 @@ enum ActivityCategory {
   Cultural
   Leadership
   Other
+}
+
+enum MeetingRequestStatus {
+  Pending
+  Accepted
+  Declined
+  ChangeSuggested
+  Cancelled
+}
+
+enum ScheduledMeetingStatus {
+  Upcoming
+  InProgress
+  Completed
+  Cancelled
+  NoShow
+}
+
+
+enum PreferredConference {
+  Zoom
+  GoogleMeet
 }
