@@ -33,6 +33,25 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(counselorUrl);
   }
 
+  // Feature Flag: Meeting Management
+  const meetingsEnabled = process.env.NEXT_PUBLIC_ENABLE_MEETINGS === 'true';
+  const isMeetingRoute = pathname.includes('/meetings') || 
+                         pathname.startsWith('/api/meetings') || 
+                         pathname.startsWith('/api/integrations') ||
+                         pathname.startsWith('/api/auth/google') ||
+                         pathname.startsWith('/api/auth/zoom');
+
+  if (!meetingsEnabled && isMeetingRoute) {
+    // If it's an API route, return 404 or 403
+    if (pathname.startsWith('/api/')) {
+      return new NextResponse(null, { status: 404 });
+    }
+    // For UI routes, redirect to the user's dashboard "softly"
+    const role = token?.role || 'login';
+    const dashboardUrl = new URL(`/${role}`, request.url);
+    return NextResponse.redirect(dashboardUrl);
+  }
+
   return NextResponse.next();
 }
 

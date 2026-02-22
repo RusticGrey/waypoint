@@ -87,10 +87,12 @@ export default async function CoordinatorDashboard() {
             <span className="text-2xl group-hover:scale-110 transition-transform">👥</span>
             <span className="font-medium text-gray-700 group-hover:text-blue-700">My Students</span>
           </Link>
-          <Link href="/coordinator/profile" className="group p-4 bg-white rounded-lg border border-gray-200 hover:border-blue-500 hover:shadow-md transition-all flex items-center gap-3">
-            <span className="text-2xl group-hover:scale-110 transition-transform">⚙️</span>
-            <span className="font-medium text-gray-700 group-hover:text-blue-700">Setup & Profile</span>
-          </Link>
+          {showMeetings && (
+            <Link href="/coordinator/profile" className="group p-4 bg-white rounded-lg border border-gray-200 hover:border-blue-500 hover:shadow-md transition-all flex items-center gap-3">
+              <span className="text-2xl group-hover:scale-110 transition-transform">⚙️</span>
+              <span className="font-medium text-gray-700 group-hover:text-blue-700">Setup & Profile</span>
+            </Link>
+          )}
         </div>
       </section>
     </div>
