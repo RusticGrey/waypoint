@@ -38,9 +38,13 @@ export async function GET(req: Request) {
       where: { studentId: session.user.id },
       include: {
         counselor: {
-          select: {
-            firstName: true,
-            lastName: true,
+          include: {
+            user: {
+              select: {
+                firstName: true,
+                lastName: true,
+              },
+            },
           },
         },
       },

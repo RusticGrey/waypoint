@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import Link from 'next/link';
-import { FeatureOverview } from '@/components/dashboard/FeatureOverview';
 import { FeatureFlagGate } from '@/components/meetings/FeatureFlagGate';
 
 interface DashboardStats {
@@ -80,8 +79,6 @@ export default function StudentDashboard() {
           {isCollegeApps && "Manage your college applications and track deadlines."}
         </p>
       </div>
-
-      <FeatureOverview role="student" />
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
@@ -278,23 +275,27 @@ export default function StudentDashboard() {
 
       {/* Quick Actions */}
       <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Link href="/student/profile" className="block">
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-            <CardContent className="pt-6">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <span className="text-2xl">📝</span>
+
+        {/* Schedule Meetings */}
+        {(isCollegeApps || isProfileBuilding) && (
+          <Link href="/student/meetings" className="block">
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+              <CardContent className="pt-6">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <span className="text-2xl">📋</span>
+                    </div>
+                  </div>
+                  <div className="ml-4">
+                    <h3 className="text-lg font-semibold text-gray-900">Schedule Meetings</h3>
+                    <p className="text-sm text-gray-600">Speak to your Counselor </p>
                   </div>
                 </div>
-                <div className="ml-4">
-                  <h3 className="text-lg font-semibold text-gray-900">Edit Profile</h3>
-                  <p className="text-sm text-gray-600">Update your information</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </Link>
+              </CardContent>
+            </Card>
+          </Link>
+        )}
 
         {isCollegeApps && (
           <Link href="/student/applications" className="block">

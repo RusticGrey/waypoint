@@ -4,7 +4,6 @@ import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import Link from 'next/link';
-import { FeatureOverview } from '@/components/dashboard/FeatureOverview';
 
 export default async function StaffDashboard() {
   const session = await getServerSession(authOptions);
@@ -141,8 +140,6 @@ export default async function StaffDashboard() {
         </p>
       </div>
 
-      <FeatureOverview role={role as any} isAdmin={isAdmin} />
-
       {/* Meeting Management Quick Links */}
       {showMeetings && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
@@ -222,35 +219,6 @@ export default async function StaffDashboard() {
       {renderStudentTable('Onboarding Phase', studentsByPhase.Onboarding)}
       {renderStudentTable('Profile Building Phase', studentsByPhase.Profile_Building)}
       {renderStudentTable('College Applications Phase', studentsByPhase.College_Applications)}
-
-      {/* Quick Actions */}
-      <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {isAdmin && (
-                <Link
-                  href="/counselor/manage-users"
-                  className="block px-4 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg border border-blue-600 transition-colors text-white"
-                >
-                  <p className="font-medium">Manage Users</p>
-                  <p className="text-sm text-blue-100">Set up students and counselors</p>
-                </Link>
-              )}
-              <Link
-                href="/admin/subjects"
-                className="block px-4 py-3 bg-blue-50 hover:bg-blue-100 rounded-lg border border-blue-200 transition-colors"
-              >
-                <p className="font-medium text-blue-900">Manage Course List</p>
-                <p className="text-sm text-blue-700">Add or edit courses for each curriculum</p>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
     </div>
   );
 }

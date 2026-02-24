@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import { isNewStudent } from '@/lib/api-helpers/profile';
 import { boolean } from 'zod';
+import { NavClientComponent } from '@/components/dashboard/NavClientComponent';
 
 export default async function DashboardLayout({
   children,
@@ -119,6 +120,10 @@ export default async function DashboardLayout({
                   {session.user.role}
                 </span>
               </div>
+
+              <div className="w-px h-6 bg-gray-300"></div>
+              
+              <NavClientComponent role={session.user.role} isAdmin={session.user.isAdmin} />
               
               <Link
                 href="/api/auth/signout"
