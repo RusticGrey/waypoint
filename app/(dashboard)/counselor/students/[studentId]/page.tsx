@@ -27,7 +27,7 @@ export default async function CounselorStudentViewer({
     redirect('/login');
   }
 
-  if (session.user.role !== 'counselor' && session.user.role !== 'counselor') {
+  if (session.user.role !== 'counselor') {
     redirect('/');
   }
 
@@ -38,10 +38,14 @@ export default async function CounselorStudentViewer({
     include: {
       user: true,
       counselor: {
-        select: {
-          firstName: true,
-          lastName: true,
-          email: true,
+        include: {
+          user: {
+            select: {
+              firstName: true,
+              lastName: true,
+              email: true,
+            },
+          }
         },
       },
       personalProfile: true,
@@ -88,15 +92,19 @@ export default async function CounselorStudentViewer({
       },
       meetings: {
         include: {
-          counselor: {
-            select: {
-              firstName: true,
-              lastName: true,
+          host: {
+            include: {
+              user: {
+                select: {
+                  firstName: true,
+                  lastName: true,
+                },
+              },
             },
           },
         },
         orderBy: {
-          meetingDate: 'desc',
+          startTime: 'desc',
         },
         take: 5,
       },
@@ -107,10 +115,10 @@ export default async function CounselorStudentViewer({
     notFound();
   }
 
-  // Permission check for counselors
-  if (isCounselor && student.counselorId !== session.user.id) {
-    redirect('/counselor');
-  }
+  // // Permission check for counselors
+  // if (isCounselor && (student.counselorId !== session.user.id) || student.counselor.isAdmin == true) {
+  //   redirect('/counselor');
+  // }
 
   const analysis = analyzeProfileStrength(student);
 
