@@ -30,34 +30,31 @@ export default async function StudentMeetingDetailPage({ params }: { params: { m
   if (meeting.studentId !== session.user.id && session.user.role !== 'counselor') return notFound();
 
   return (
-    <div className="p-8 space-y-8 max-w-4xl mx-auto">
+    <div className="p-8 space-y-8 max-w-5xl mx-auto">
       <div className="flex justify-start">
-        <MeetingBackButton />
+        <MeetingBackButton label="Back to Meetings" variant="outline" />
       </div>
 
-      <div className="bg-white p-8 rounded-xl border border-gray-200 shadow-sm space-y-6">
-        <div className="flex justify-between items-start border-b pb-6">
-          <div>
-            <h1 className="text-3xl font-bold text-black">{meeting.meetingType} Session</h1>
-            <p className="text-gray-600 mt-2">
-              With <span className="font-semibold text-black">{meeting.host.user.firstName} {meeting.host.user.lastName}</span>
-            </p>
-            <div className="flex items-center gap-4 mt-4">
-              <div className="flex items-center gap-2 text-sm text-gray-700 bg-gray-50 px-3 py-1.5 rounded-md border border-gray-200">
-                <span className="text-lg">📅</span>
-                {new Date(meeting.startTime).toLocaleDateString(undefined, { dateStyle: 'long' })}
-              </div>
-              <div className="flex items-center gap-2 text-sm text-gray-700 bg-gray-50 px-3 py-1.5 rounded-md border border-gray-200">
-                <span className="text-lg">⏰</span>
-                {new Date(meeting.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(meeting.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-              </div>
+      <div className="bg-white p-8 rounded-xl border border-gray-200 shadow-sm space-y-8">
+        <div className="space-y-4 border-b pb-8">
+          <h1 className="text-4xl font-bold text-gray-900">{meeting.meetingType} Session</h1>
+          <p className="text-lg text-gray-600">
+            With <span className="font-semibold text-gray-900">{meeting.host.user.firstName} {meeting.host.user.lastName}</span>
+          </p>
+          
+          <div className="flex flex-wrap items-center gap-3 mt-4">
+            <div className="flex items-center gap-2 text-sm text-gray-700 bg-gradient-to-br from-blue-50 to-white px-4 py-2 rounded-lg border border-blue-200">
+              <span className="text-lg">📅</span>
+              <span>{new Date(meeting.startTime).toLocaleDateString(undefined, { dateStyle: 'long' })}</span>
             </div>
-          </div>
-          <div className="text-right">
-            <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold uppercase ${
+            <div className="flex items-center gap-2 text-sm text-gray-700 bg-gradient-to-br from-amber-50 to-white px-4 py-2 rounded-lg border border-amber-200">
+              <span className="text-lg">⏰</span>
+              <span>{new Date(meeting.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(meeting.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+            </div>
+            <span className={`ml-auto px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wide ${
               meeting.status === 'Completed' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'
             }`}>
-              {meeting.status}
+              {meeting.status === 'Upcoming' ? '✅ Confirmed' : meeting.status}
             </span>
           </div>
         </div>

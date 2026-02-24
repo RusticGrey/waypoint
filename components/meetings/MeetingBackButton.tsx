@@ -1,16 +1,23 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
 
-export function MeetingBackButton() {
+interface MeetingBackButtonProps {
+  label?: string;
+  variant?: 'primary' | 'secondary' | 'outline';
+}
+
+export function MeetingBackButton({ label = 'Back to Meetings', variant = 'outline' }: MeetingBackButtonProps) {
   const router = useRouter();
 
   return (
-    <button 
-      onClick={() => router.back()} 
-      className="text-sm text-blue-600 hover:underline flex items-center gap-2"
+    <Button
+      onClick={() => router.back()}
+      variant={variant}
+      className="gap-2 text-gray-700 border-gray-300 hover:bg-gray-50"
     >
-       ← Back
-    </button>
+      ← {label}
+    </Button>
   );
 }

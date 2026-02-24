@@ -53,12 +53,15 @@ export function HostSelector({ onSelect }: { onSelect: (hostId: string) => void 
   return (
     <Card className="mb-6">
       <CardHeader>
-        <CardTitle className="text-lg">Select Counselor or Counselor</CardTitle>
+        <CardTitle className="text-lg">Select a Counselor</CardTitle>
+          <div className="text-xs text-gray-400 italic pb-3">
+            Selecting a person will show their real-time availability below.
+          </div>
       </CardHeader>
       <CardContent>
         <div className="flex flex-col sm:flex-row gap-4 items-end">
           <div className="flex-1 w-full">
-            <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">Counselor / Counselor</label>
+            {/* <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">Select a counselor to see their available time slots</label> */}
             <Select value={selectedHostId} onChange={handleHostChange}>
               {hosts.map((host) => (
                 <option key={host.id} value={host.id}>
@@ -66,9 +69,6 @@ export function HostSelector({ onSelect }: { onSelect: (hostId: string) => void 
                 </option>
               ))}
             </Select>
-          </div>
-          <div className="text-xs text-gray-400 italic pb-3">
-            Selecting a person will show their real-time availability below.
           </div>
         </div>
       </CardContent>

@@ -19,26 +19,48 @@ export default function StudentMeetingsClient({ studentId }: StudentMeetingsClie
   };
 
   return (
-    <div className="p-8 space-y-12 max-w-7xl mx-auto">
-      <section>
-        <h1 className="text-3xl font-bold mb-8 text-gray-900">Meetings & Progress</h1>
-        
-        <HostSelector onSelect={setSelectedHostId} />
+    <div className="p-8 space-y-8 max-w-7xl mx-auto">
+      <section className="space-y-6">
+        <div className="space-y-2">
+          <h1 className="text-4xl font-bold text-gray-900">Meetings & Schedule</h1>
+          <p className="text-gray-600">View your sessions, manage bookings, and connect with counselors</p>
+        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
-          <div className="lg:col-span-2">
-            <h2 className="text-xl font-semibold mb-4">Book a Session</h2>
-            {selectedHostId ? (
-              <SimpleSlotPicker hostId={selectedHostId} onSlotSelected={handleSlotSelected} />
-            ) : (
-              <div className="p-12 text-center border-2 border-dashed rounded-xl text-gray-400">
-                Please select a counselor above to see their availability.
-              </div>
-            )}
-          </div>
-          <div className="space-y-6">
-            <h2 className="text-xl font-semibold mb-4">My Dashboard</h2>
+        {/* Main Content: Meetings on Left, Booking on Right */}
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+          {/* Meetings List - Takes up more space */}
+          <div className="lg:col-span-3 space-y-6">
+            <div className="space-y-3">
+              <h2 className="text-2xl font-semibold text-gray-900 flex items-center gap-2">
+                📋 My Meetings
+              </h2>
+              <p className="text-sm text-gray-600">Your upcoming and past sessions</p>
+            </div>
             <StudentMeetingList studentId={studentId} />
+          </div>
+
+          {/* Booking Section - Compact on right */}
+          <div className="lg:col-span-2 space-y-4">
+            <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+              ➕ New Booking
+            </h2>
+
+            {/* Consolidated Booking Card */}
+            <div className="bg-white border border-gray-200 rounded-lg p-4 space-y-4">
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-gray-600 uppercase block">Available Counselors</label>
+                <HostSelector onSelect={setSelectedHostId} />
+              </div>
+
+              {selectedHostId ? (
+                <div className="space-y-2 border-t pt-4">
+                  <label className="text-xs font-bold text-gray-600 uppercase block">Available Times</label>
+                  <SimpleSlotPicker hostId={selectedHostId} onSlotSelected={handleSlotSelected} />
+                </div>
+              ) : (
+                <p className="text-xs text-gray-500 text-center py-4">Choose a counselor above</p>
+              )}
+            </div>
           </div>
         </div>
       </section>

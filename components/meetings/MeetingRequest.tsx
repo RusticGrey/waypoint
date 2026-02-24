@@ -1,8 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { useState } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { AvatarInitials } from '@/components/meetings/AvatarInitials';
+import { formatDate } from '@/lib/meetings/meetingUtils';
 
 interface MeetingRequestProps {
   requests: any[];
@@ -10,16 +12,22 @@ interface MeetingRequestProps {
 }
 
 export function MeetingRequest({ requests, onUpdate }: MeetingRequestProps) {
+  if (requests.length === 0) {
+    return (
+      <Card className="bg-gradient-to-br from-gray-50 to-gray-100 border-gray-200">
+        <CardContent className="p-6 text-center">
+          <p className="text-gray-600 font-medium">No pending requests</p>
+          <p className="text-sm text-gray-500 mt-1">All caught up! 🎉</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
-    <div className="space-y-4">
-      <h2 className="text-xl font-semibold text-black">Pending Requests</h2>
-      {requests.length === 0 ? (
-        <p className="text-gray-500 italic">No pending requests.</p>
-      ) : (
-        requests.map((request) => (
-          <MeetingRequestCard key={request.id} request={request} onUpdate={onUpdate} />
-        ))
-      )}
+    <div className="space-y-3">
+      {requests.map((request) => (
+        <MeetingRequestCard key={request.id} request={request} onUpdate={onUpdate} />
+      ))}
     </div>
   );
 }
@@ -29,92 +37,115 @@ function MeetingRequestCard({ request, onUpdate }: { request: any; onUpdate: () 
   const [showDeclineModal, setShowDeclineModal] = useState(false);
   const [hostNote, setHostNote] = useState('');
 
-  const handleAccept = async () => {
+  const handleAction = async (status: 'Accepted' | 'Declined') => {
     setLoading(true);
     try {
       const res = await fetch(`/api/meetings/requests/${request.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'Accepted' }),
+        body: JSON.stringify({
+          status,
+          ...(status === 'Declined' && { hostNote }),
+        }),
       });
+
       if (res.ok) {
         onUpdate();
+        setShowDeclineModal(false);
+        setHostNote('');
       } else {
         const data = await res.json();
-        alert(`Failed to accept request: ${data.error || 'Unknown error'}${data.details ? `\nDetails: ${data.details}` : ''}`);
+        alert(`Failed: ${data.error || 'Unknown error'}`);
       }
     } catch (error) {
-      console.error('Accept error:', error);
-      alert('An error occurred while accepting the request.');
+      console.error('Request action error:', error);
+      alert('An error occurred. Please try again.');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleDecline = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch(`/api/meetings/requests/${request.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'Declined', hostNote }),
-      });
-      if (res.ok) onUpdate();
-    } catch (error) {
-      console.error('Decline error:', error);
-    } finally {
-      setLoading(false);
-      setShowDeclineModal(false);
     }
   };
 
   return (
-    <Card>
-      <CardContent className="pt-6">
-        <div className="flex justify-between items-start">
-          <div className="space-y-1">
-            <h3 className="font-bold text-lg text-black">
-              {request.student.user.firstName} {request.student.user.lastName}
-            </h3>
-            <p className="text-sm text-gray-700">
-              {new Date(request.requestedStart).toLocaleString()} - {new Date(request.requestedEnd).toLocaleTimeString()}
-            </p>
-            <p className="text-sm font-medium text-blue-600 font-bold">{request.meetingType}</p>
-            {request.studentNote && (
-              <div className="mt-2 p-2 bg-gray-50 rounded text-sm text-gray-700 italic border-l-2 border-gray-300">
-                "{request.studentNote}"
-              </div>
-            )}
-          </div>
-          <div className="flex gap-2">
-            <Button onClick={handleAccept} disabled={loading}>
-              Accept
-            </Button>
-            <Button variant="outline" onClick={() => setShowDeclineModal(true)} disabled={loading}>
-              Decline
-            </Button>
-          </div>
-        </div>
-
-        {showDeclineModal && (
-          <div className="mt-4 p-4 border-t space-y-3">
-            <label className="text-sm font-medium">Reason for declining (optional)</label>
-            <textarea
-              className="w-full p-2 border rounded text-sm"
-              value={hostNote}
-              onChange={(e) => setHostNote(e.target.value)}
-              placeholder="Provide a reason or suggestion..."
+    <Card className="border-l-4 border-l-yellow-400 bg-white hover:shadow-md transition-shadow">
+      <CardContent className="p-4">
+        <div className="space-y-3">
+          {/* Header */}
+          <div className="flex items-start gap-3">
+            <AvatarInitials
+              firstName={request.student.user.firstName}
+              lastName={request.student.user.lastName}
+              size="md"
             />
-            <div className="flex gap-2">
-              <Button onClick={handleDecline} disabled={loading} className="bg-red-600 hover:bg-red-700 text-white border-none">
-                Confirm Decline
-              </Button>
-              <Button variant="secondary" onClick={() => setShowDeclineModal(false)} disabled={loading}>
-                Cancel
-              </Button>
+            <div className="flex-1 min-w-0">
+              <h3 className="font-bold text-gray-900">
+                {request.student.user.firstName} {request.student.user.lastName}
+              </h3>
+              <p className="text-sm text-gray-600">{request.meetingType}</p>
+              <p className="text-xs text-gray-500 mt-1">
+                📅 {formatDate(request.requestedStart)} • ⏰ {new Date(request.requestedStart).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </p>
             </div>
           </div>
-        )}
+
+          {/* Student Note */}
+          {request.studentNote && (
+            <div className="p-3 bg-blue-50 border-l-2 border-blue-300 rounded text-sm text-gray-700">
+              <p className="font-medium text-blue-900 mb-1">Student's Message:</p>
+              <p className="italic">"{request.studentNote}"</p>
+            </div>
+          )}
+
+          {/* Actions */}
+          {!showDeclineModal ? (
+            <div className="flex gap-2 pt-2">
+              <Button
+                onClick={() => handleAction('Accepted')}
+                disabled={loading}
+                className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+              >
+                ✅ Accept
+              </Button>
+              <Button
+                onClick={() => setShowDeclineModal(true)}
+                disabled={loading}
+                variant="outline"
+                className="flex-1 text-gray-700 border-gray-300 hover:bg-red-50"
+              >
+                ❌ Decline
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-3 pt-2 border-t">
+              <textarea
+                className="w-full p-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+                value={hostNote}
+                onChange={(e) => setHostNote(e.target.value)}
+                placeholder="Optional: Explain why or suggest an alternative time..."
+                rows={3}
+              />
+              <div className="flex gap-2">
+                <Button
+                  onClick={() => handleAction('Declined')}
+                  disabled={loading}
+                  className="flex-1 bg-red-600 hover:bg-red-700 text-white"
+                >
+                  Confirm Decline
+                </Button>
+                <Button
+                  onClick={() => {
+                    setShowDeclineModal(false);
+                    setHostNote('');
+                  }}
+                  disabled={loading}
+                  variant="outline"
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
       </CardContent>
     </Card>
   );
