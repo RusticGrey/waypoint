@@ -21,7 +21,6 @@ export async function GET(req: Request) {
       activities, 
       achievements, 
       projects,
-      openActionItems,
       nextMeeting
     ] = await Promise.all([
       prisma.student.findUnique({
@@ -53,13 +52,14 @@ export async function GET(req: Request) {
       prisma.projectExperience.count({
         where: { studentId: session.user.id },
       }),
-      prisma.meetingActionItem.count({
-        where: { studentId: session.user.id, status: { in: ['Open', 'InProgress'] } }
-      }),
-      prisma.scheduledMeeting.findFirst({
+      prisma.meeting.findFirst({
         where: { studentId: session.user.id, status: 'Upcoming', startTime: { gte: new Date() } },
         orderBy: { startTime: 'asc' },
-        include: { host: true }
+        include: { 
+          host: {
+            include: { user: true }
+          } 
+        }
       })
     ]);
     
@@ -102,12 +102,12 @@ export async function GET(req: Request) {
         projects,
       },
       meetingStats: {
-        openActionItems,
+        openActionItems: 0, // Model missing in schema
         nextMeeting: nextMeeting ? {
           id: nextMeeting.id,
           startTime: nextMeeting.startTime.toISOString(),
           meetingType: nextMeeting.meetingType,
-          hostName: `${nextMeeting.host.firstName} ${nextMeeting.host.lastName}`
+          hostName: `${nextMeeting.host.user.firstName} ${nextMeeting.host.user.lastName}`
         } : null
       }
     });

@@ -37,7 +37,7 @@ export function HostAvailabilityView() {
   const fetchAvailability = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/coordinator/availability?coordinatorId=me`);
+      const response = await fetch(`/api/counselor/availability?counselorId=me`);
       if (response.ok) {
         const data = await response.json();
         if (Array.isArray(data) && data.length > 0) {
@@ -74,7 +74,7 @@ export function HostAvailabilityView() {
     try {
       setSaving(true);
       setMessage('');
-      const response = await fetch('/api/coordinator/availability', {
+      const response = await fetch('/api/counselor/availability', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ availability }),

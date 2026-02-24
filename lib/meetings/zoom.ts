@@ -47,7 +47,7 @@ export async function exchangeZoomCode(code: string, userId: string) {
   });
   const zoomUser = await userResponse.json();
 
-  await prisma.userIntegrationConfig.upsert({
+  await prisma.counselorSettings.upsert({
     where: { userId },
     create: {
       userId,
@@ -68,7 +68,7 @@ export async function exchangeZoomCode(code: string, userId: string) {
 }
 
 async function getValidAccessToken(userId: string): Promise<string> {
-  const config = await prisma.userIntegrationConfig.findUnique({
+  const config = await prisma.counselorSettings.findUnique({
     where: { userId },
   });
 
@@ -96,7 +96,7 @@ async function getValidAccessToken(userId: string): Promise<string> {
     }
 
     const tokens = await response.json();
-    await prisma.userIntegrationConfig.update({
+    await prisma.counselorSettings.update({
       where: { userId },
       data: {
         zoomAccessToken: encrypt(tokens.access_token),

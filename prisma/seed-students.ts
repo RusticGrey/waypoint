@@ -45,7 +45,7 @@ async function main() {
           update: {
             graduationYear: gradYear,
             currentGrade: grade,
-            coordinatorId: coordId,
+            counselorId: coordId,
           }
         }
       }, 
@@ -60,7 +60,7 @@ async function main() {
           create: {
             graduationYear: gradYear,
             currentGrade: grade,
-            coordinatorId: coordId,
+            counselorId: coordId,
             personalProfile: {
               create: { currentSchool: school, schoolLocation: loc }
             },
@@ -78,16 +78,16 @@ async function main() {
     });
   };
 
-  // 1. Get Coordinator for relations
-  const coordinator = await prisma.user.findFirst({
-    where: { role: UserRole.coordinator }
+  // 1. Get Counselor for relations
+  const counselor = await prisma.user.findFirst({
+    where: { role: UserRole.counselor }
   });
 
   // 2. Create/Update the 5 Students
   const s1 = await upsertStudent('emma.wilson@waypoint.edu', 'Emma', 'Wilson', 2028, GradeLevel.ninth, CurriculumType.US_High_School, GradingSystemType.Percentage, '95.5', 'Lincoln High School', 'Boston, MA');
-  const s2 = await upsertStudent('raj.patel@waypoint.edu', 'Raj', 'Patel', 2028, GradeLevel.ninth, CurriculumType.IB, GradingSystemType.IB_Scale, '38', 'International Academy', 'Mumbai, India', coordinator?.id);
+  const s2 = await upsertStudent('raj.patel@waypoint.edu', 'Raj', 'Patel', 2028, GradeLevel.ninth, CurriculumType.IB, GradingSystemType.IB_Scale, '38', 'International Academy', 'Mumbai, India', counselor?.id);
   const s3 = await upsertStudent('priya.sharma@waypoint.edu', 'Priya', 'Sharma', 2028, GradeLevel.ninth, CurriculumType.CBSE, GradingSystemType.Percentage, '82.5', 'Delhi Public School', 'New Delhi, India');
-  const s4 = await upsertStudent('james.martinez@waypoint.edu', 'James', 'Martinez', 2028, GradeLevel.ninth, CurriculumType.CAIE, GradingSystemType.Letter_Grade, 'A', 'Westminster Academy', 'London, UK', coordinator?.id);
+  const s4 = await upsertStudent('james.martinez@waypoint.edu', 'James', 'Martinez', 2028, GradeLevel.ninth, CurriculumType.CAIE, GradingSystemType.Letter_Grade, 'A', 'Westminster Academy', 'London, UK', counselor?.id);
   const s5 = await upsertStudent('ananya.reddy@waypoint.edu', 'Ananya', 'Reddy', 2028, GradeLevel.ninth, CurriculumType.State_Board, GradingSystemType.Marks_Out_Of_100, '75', 'Karnataka State School', 'Bangalore, India');
 
   console.log('✅ Synchronized 5 Students');

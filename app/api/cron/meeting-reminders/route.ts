@@ -15,7 +15,7 @@ export async function GET(req: Request) {
   const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
 
   try {
-    const meetings = await prisma.scheduledMeeting.findMany({
+    const meetings = await prisma.meeting.findMany({
       where: {
         status: 'Upcoming',
         startTime: {
@@ -25,7 +25,7 @@ export async function GET(req: Request) {
       },
       include: {
         student: { include: { user: true } },
-        host: true,
+        host: { include: { user: true } },
       },
     });
 

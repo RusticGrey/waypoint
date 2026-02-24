@@ -9,7 +9,7 @@ export default async function CounselorMeetingDetailPage({ params }: { params: {
   const session = await getServerSession(authOptions);
   if (!session) return null;
 
-  const meeting = await prisma.scheduledMeeting.findUnique({
+  const meeting = await prisma.meeting.findUnique({
     where: { id: params.meetingId },
     include: {
       student: {

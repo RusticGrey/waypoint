@@ -1,5 +1,0 @@
-import { HostAvailabilityView } from '@/components/meetings/HostAvailabilityView';
-
-export default function CoordinatorAvailabilityPage() {
-  return <HostAvailabilityView />;
-}

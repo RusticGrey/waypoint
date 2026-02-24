@@ -22,7 +22,7 @@ export async function createConferenceMeeting(
     agenda?: string;
   }
 ): Promise<ConferenceResult> {
-  const config = await prisma.userIntegrationConfig.findUnique({
+  const config = await prisma.counselorSettings.findUnique({
     where: { userId: hostUserId },
   });
 

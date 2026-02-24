@@ -33,7 +33,7 @@ export async function exchangeCode(code: string, userId: string) {
 
   const { tokens } = await oauth2Client.getToken(code);
 
-  await prisma.userIntegrationConfig.upsert({
+  await prisma.counselorSettings.upsert({
     where: { userId },
     create: {
       userId,
@@ -52,7 +52,7 @@ export async function exchangeCode(code: string, userId: string) {
 }
 
 async function getAuthenticatedClient(userId: string) {
-  const config = await prisma.userIntegrationConfig.findUnique({
+  const config = await prisma.counselorSettings.findUnique({
     where: { userId },
   });
 
@@ -74,7 +74,7 @@ async function getAuthenticatedClient(userId: string) {
 
   oauth2Client.on('tokens', async (tokens) => {
     if (tokens.access_token) {
-      await prisma.userIntegrationConfig.update({
+      await prisma.counselorSettings.update({
         where: { userId },
         data: {
           googleAccessToken: encrypt(tokens.access_token),
@@ -92,7 +92,7 @@ export async function getFreeBusy(hostUserId: string, timeMin: string, timeMax: 
   const client = await getAuthenticatedClient(hostUserId);
   const calendar = google.calendar({ version: 'v3', auth: client });
 
-  const config = await prisma.userIntegrationConfig.findUnique({
+  const config = await prisma.counselorSettings.findUnique({
     where: { userId: hostUserId },
   });
 
@@ -125,7 +125,7 @@ export async function createEvent(
   const client = await getAuthenticatedClient(hostUserId);
   const calendar = google.calendar({ version: 'v3', auth: client });
 
-  const config = await prisma.userIntegrationConfig.findUnique({
+  const config = await prisma.counselorSettings.findUnique({
     where: { userId: hostUserId },
   });
 
@@ -190,7 +190,7 @@ export async function updateEvent(
   const client = await getAuthenticatedClient(hostUserId);
   const calendar = google.calendar({ version: 'v3', auth: client });
 
-  const config = await prisma.userIntegrationConfig.findUnique({
+  const config = await prisma.counselorSettings.findUnique({
     where: { userId: hostUserId },
   });
   const calendarId = config?.googleCalendarId || 'primary';
@@ -213,7 +213,7 @@ export async function deleteEvent(hostUserId: string, eventId: string) {
   const client = await getAuthenticatedClient(hostUserId);
   const calendar = google.calendar({ version: 'v3', auth: client });
 
-  const config = await prisma.userIntegrationConfig.findUnique({
+  const config = await prisma.counselorSettings.findUnique({
     where: { userId: hostUserId },
   });
 

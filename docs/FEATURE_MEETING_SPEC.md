@@ -16,7 +16,7 @@ This document serves as the final specification and implementation record for **
 # 2. Implemented Features (Phase 1)
 
 ## 2.1 Scheduling & Availability
-*   **Host Availability:** Coordinators and Counselors can define their weekly working hours (e.g., 9-5 Mon-Fri) via a unified `HostAvailabilityView`.
+*   **Host Availability:** Counselors and Counselors can define their weekly working hours (e.g., 9-5 Mon-Fri) via a unified `HostAvailabilityView`.
 *   **Google Calendar Sync:** Real-time availability is fetched from the host's primary Google Calendar using the **FreeBusy API**. Waypoint respects external events when presenting slots to students.
 *   **30-Minute Slots:** All scheduling is normalized to 30-minute increments.
 *   **Double-Booking Prevention:** Students are prevented from requesting overlapping meetings with different hosts or within their own confirmed schedule.
@@ -27,7 +27,7 @@ This document serves as the final specification and implementation record for **
 *   **Intelligent Fallback:** If a host prefers Zoom but hasn't connected their account, the system automatically falls back to Google Meet (if Google is connected) to ensure the meeting can proceed.
 
 ## 2.3 Management & Workflows
-*   **Request Queue:** Unified real-time queue for hosts (Coordinators see their own; Counselors see all organization-wide) with 30-second automatic polling.
+*   **Request Queue:** Unified real-time queue for hosts (Counselors see their own; Counselors see all organization-wide) with 30-second automatic polling.
 *   **Status Transparency:** Requests and meetings are clearly tagged for students: `Pending`, `Confirmed`, `Declined`, or `Cancelled`.
 *   **Cancellation Flow:** Full cleanup of database records and external calendar events (GCal/Zoom) upon cancellation by either party.
 *   **Rescheduling:** Both students and hosts can reschedule. Confirmed meetings revert to "Pending" status for the new time to ensure host approval and slot availability.
@@ -42,13 +42,13 @@ This document serves as the final specification and implementation record for **
 
 # 3. Database Schema Baseline (Phase 1)
 
-### ScheduledMeeting
+### Meeting
 | **Field**             | **Type**                                  | **Description**                               |
 |-----------------------|-------------------------------------------|-----------------------------------------------|
 | id                    | String (UUID)                             | PK                                            |
 | studentId             | String                                    | FK → Student                                  |
 | hostId                | String                                    | FK → User                                     |
-| status                | ScheduledMeetingStatus                    | Upcoming, InProgress, Completed, Cancelled    |
+| status                | MeetingStatus                    | Upcoming, InProgress, Completed, Cancelled    |
 | startTime / endTime   | DateTime                                  | Meeting duration                              |
 | conferencePlatform    | PreferredConference?                      | Zoom or GoogleMeet                            |
 | conferenceJoinUrl     | String?                                   | Participant URL                               |

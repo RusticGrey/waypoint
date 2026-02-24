@@ -40,7 +40,7 @@ export function SimpleSlotPicker({ hostId, onSlotSelected }: SimpleSlotPickerPro
     async function fetchData() {
       setLoading(true);
       try {
-        const availRes = await fetch(`/api/coordinator/availability?coordinatorId=${hostId}`);
+        const availRes = await fetch(`/api/counselor/availability?counselorId=${hostId}`);
         const availData = await availRes.json();
         setAvailability(Array.isArray(availData) ? availData : []);
 
@@ -142,7 +142,7 @@ export function SimpleSlotPicker({ hostId, onSlotSelected }: SimpleSlotPickerPro
     return (
       <Card className="bg-amber-50 border-amber-200">
         <CardContent className="p-6 text-center text-amber-800">
-          Coordinator has not set availability hours yet.
+          Counselor has not set availability hours yet.
         </CardContent>
       </Card>
     );

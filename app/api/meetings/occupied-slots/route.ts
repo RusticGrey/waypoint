@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     futureDate.setDate(now.getDate() + days);
 
     // Fetch scheduled meetings within the time range
-    const scheduledMeetings = await prisma.scheduledMeeting.findMany({
+    const meetings = await prisma.meeting.findMany({
       where: {
         hostId,
         status: 'Upcoming',
@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
 
     // Combine and return as occupied slots
     const occupiedSlots = [
-      ...scheduledMeetings.map((m) => ({
+      ...meetings.map((m) => ({
         id: m.id,
         startTime: m.startTime,
         endTime: m.endTime,

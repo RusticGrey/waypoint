@@ -15,22 +15,29 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(landingUrl);
   }
 
-  // student trying to access counselor or coordinator routes - redirect to student dashboard
-  if (token && token.role === 'student' && (pathname.startsWith('/coordinator') || pathname.startsWith('/counselor'))) {
-    const studentUrl = new URL('/student', request.url);
-    return NextResponse.redirect(studentUrl);
+  // 1. Redirect root to dashboard if authenticated
+  if (token && pathname === '/') {
+    const dashboardUrl = new URL(`/${token.role === 'student' ? 'student' : 'counselor'}`, request.url);
+    return NextResponse.redirect(dashboardUrl);
   }
 
-  // Coordinator trying to access student routes - redirect to coordinator dashboard
-  if (token && token.role === 'coordinator' && (pathname.startsWith('/student') || pathname.startsWith('/counselor'))) {
-    const coordinatorUrl = new URL('/coordinator', request.url);
-    return NextResponse.redirect(coordinatorUrl);
+  // 2. Student access control
+  if (token?.role === 'student') {
+    if (pathname.startsWith('/counselor')) {
+      return NextResponse.redirect(new URL('/student', request.url));
+    }
   }
 
-  // Counselor trying to access student routes - redirect to counselor dashboard
-  if (token && token.role === 'counselor' && (pathname.startsWith('/student') || pathname.startsWith('/coordinator'))) {
-    const counselorUrl = new URL('/counselor', request.url);
-    return NextResponse.redirect(counselorUrl);
+  // 3. Counselor access control
+  if (token?.role === 'counselor') {
+    if (pathname.startsWith('/student')) {
+      return NextResponse.redirect(new URL('/counselor', request.url));
+    }
+
+    // Restriction: Manage Users is only for Admins
+    if (pathname.startsWith('/counselor/manage-users') && !token.isAdmin) {
+      return NextResponse.redirect(new URL('/counselor', request.url));
+    }
   }
 
   // Feature Flag: Meeting Management

@@ -22,7 +22,7 @@ export default async function CounselorMeetingsPage() {
     orderBy: { createdAt: 'desc' },
   });
 
-  const upcomingMeetings = await prisma.scheduledMeeting.findMany({
+  const upcomingMeetings = await prisma.meeting.findMany({
     where: { status: 'Upcoming' },
     include: {
       student: {

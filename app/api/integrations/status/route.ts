@@ -18,7 +18,7 @@ export async function GET() {
     });
   }
 
-  const config = await prisma.userIntegrationConfig.findUnique({
+  const config = await prisma.counselorSettings.findUnique({
     where: { userId: session.user.id },
   });
 

@@ -8,7 +8,7 @@ export async function GET(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     
-    if (!session?.user?.id || session.user.role !== 'counselor') {
+    if (!session?.user?.id || session.user.role !== 'counselor' || !session.user.isAdmin) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
             
@@ -16,13 +16,18 @@ export async function GET(req: Request) {
       where: {
         organizationId: session.user.organizationId,
         role: {
-          in: ['student', 'coordinator'],
+          in: ['student', 'counselor'],
         },
       },
       include: {
         student: {
           select: {
-            coordinatorId: true,
+            counselorId: true,
+          },
+        },
+        counselor: {
+          select: {
+            isAdmin: true,
           },
         },
       },
@@ -45,7 +50,7 @@ export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     
-    if (!session?.user?.id || session.user.role !== 'counselor') {
+    if (!session?.user?.id || session.user.role !== 'counselor' || !session.user.isAdmin) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
@@ -60,7 +65,7 @@ export async function POST(req: Request) {
     console.log("MY USER = "+JSON.stringify(sessionUser));
         
     const body = await req.json();
-    const { email, password, firstName, lastName, role, currentGrade, graduationYear, coordinatorId } = body;
+    const { email, password, firstName, lastName, role, currentGrade, graduationYear, counselorId } = body;
     
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
@@ -85,6 +90,16 @@ export async function POST(req: Request) {
       },
     });
     
+    // If counselor, create counselor profile
+    if (role === 'counselor') {
+      await prisma.counselor.create({
+        data: {
+          userId: user.id,
+          isAdmin: false, // Default to false for new counselors created via this route
+        },
+      });
+    }
+
     // If student, create student record
     if (role === 'student') {
       await prisma.student.create({
@@ -92,7 +107,7 @@ export async function POST(req: Request) {
           userId: user.id,
           currentGrade: currentGrade || 'eleventh',
           graduationYear: graduationYear || new Date().getFullYear() + 2,
-          coordinatorId: coordinatorId || null,
+          counselorId: counselorId || null,
         },
       });
     }
@@ -111,7 +126,7 @@ export async function DELETE(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     
-    if (!session?.user?.id || session.user.role !== 'counselor') {
+    if (!session?.user?.id || session.user.role !== 'counselor' || !session.user.isAdmin) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     

@@ -23,7 +23,7 @@ export async function PATCH(req: Request) {
     const body = await req.json();
     const { preferredConference } = schema.parse(body);
 
-    const config = await prisma.userIntegrationConfig.upsert({
+    const config = await prisma.counselorSettings.upsert({
       where: { userId: session.user.id },
       create: {
         userId: session.user.id,

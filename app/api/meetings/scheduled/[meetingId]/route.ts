@@ -23,7 +23,7 @@ export async function GET(
   }
 
   try {
-    const meeting = await prisma.scheduledMeeting.findUnique({
+    const meeting = await prisma.meeting.findUnique({
       where: { id: meetingId },
       include: {
         student: {
@@ -67,7 +67,7 @@ export async function PATCH(
   }
 
   try {
-    const meeting = await prisma.scheduledMeeting.findUnique({
+    const meeting = await prisma.meeting.findUnique({
       where: { id: meetingId },
     });
 
@@ -82,7 +82,7 @@ export async function PATCH(
     const body = await req.json();
     const validated = patchSchema.parse(body);
 
-    const updatedMeeting = await prisma.scheduledMeeting.update({
+    const updatedMeeting = await prisma.meeting.update({
       where: { id: meetingId },
       data: validated,
     });
@@ -128,7 +128,7 @@ export async function DELETE(
   }
 
   try {
-    const meeting = await prisma.scheduledMeeting.findUnique({
+    const meeting = await prisma.meeting.findUnique({
       where: { id: meetingId },
     });
 
@@ -146,7 +146,7 @@ export async function DELETE(
       }
     }
 
-    await prisma.scheduledMeeting.delete({
+    await prisma.meeting.delete({
       where: { id: meetingId },
     });
 

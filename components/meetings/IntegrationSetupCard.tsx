@@ -11,10 +11,10 @@ interface IntegrationSetupCardProps {
     zoomConnected: boolean;
     preferredConference: 'Zoom' | 'GoogleMeet';
   };
-  role?: 'coordinator' | 'counselor';
+  role?: 'counselor' | 'counselor';
 }
 
-export function IntegrationSetupCard({ status: initialStatus, role = 'coordinator' }: IntegrationSetupCardProps) {
+export function IntegrationSetupCard({ status: initialStatus, role = 'counselor' }: IntegrationSetupCardProps) {
   const [status, setStatus] = useState(initialStatus);
   const [loading, setLoading] = useState(false);
   const router = useRouter();

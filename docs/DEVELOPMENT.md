@@ -198,7 +198,7 @@ app/
 ├── (auth)/login/              # Authentication pages
 ├── (dashboard)/               # Protected routes
 │   ├── student/              # Student portal
-│   ├── coordinator/          # Coordinator features
+│   ├── counselor/          # Counselor features
 │   └── counselor/            # Admin features
 └── api/                      # API routes
 
@@ -206,7 +206,7 @@ components/
 ├── ui/                       # Reusable UI components (Button, Card, Input, etc.)
 ├── forms/                    # Form components
 │   └── onboarding/           # 7-step onboarding forms
-└── coordinator/              # Coordinator-specific components
+└── counselor/              # Counselor-specific components
 
 lib/
 ├── auth.ts                   # NextAuth configuration
@@ -286,7 +286,7 @@ See [TESTING_CHECKLIST.md](TESTING_CHECKLIST.md) for comprehensive testing proce
 ### Key Test Scenarios
 
 1. **Authentication**
-   - Login with student/coordinator/counselor credentials
+   - Login with student/counselor/counselor credentials
    - Verify role-based access control
    - Test logout and session persistence
 
@@ -305,14 +305,14 @@ See [TESTING_CHECKLIST.md](TESTING_CHECKLIST.md) for comprehensive testing proce
    - Update application status
    - Verify deadline tracking
 
-5. **Coordinator Features**
+5. **Counselor Features**
    - View assigned students
    - Log meetings
    - Override profile scores
 
 6. **Admin Features**
    - Create new users
-   - Assign students to coordinators
+   - Assign students to counselors
    - Manage subject/curriculum
 
 ## Deployment

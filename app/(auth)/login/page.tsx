@@ -33,8 +33,8 @@ export default function LoginPage() {
       // Redirect based on role
       if (session?.user?.role === 'counselor') {
         router.push('/counselor');
-      } else if (session?.user?.role === 'coordinator') {
-        router.push('/coordinator');
+      } else if (session?.user?.role === 'counselor') {
+        router.push('/counselor');
       } else if (session?.user?.role === 'student') {
         router.push('/student');
       } else {
@@ -103,7 +103,7 @@ export default function LoginPage() {
         <div className="text-center text-xs text-gray-500 space-y-1">
           <p>Test Accounts:</p>
           <p>Counselor: counselor@waypoint.com / password123</p>
-          <p>Coordinator: coordinator@waypoint.com / coordinator123</p>
+          <p>Counselor: counselor@waypoint.com / counselor123</p>
           <p>Student: student@waypoint.com / student123</p>
         </div>
       </div>

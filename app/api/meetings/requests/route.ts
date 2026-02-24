@@ -41,7 +41,7 @@ export async function POST(req: Request) {
           ]
         }
       }),
-      prisma.scheduledMeeting.findMany({
+      prisma.meeting.findMany({
         where: {
           studentId: session.user.id,
           status: 'Upcoming',
@@ -77,7 +77,11 @@ export async function POST(req: Request) {
             user: true,
           },
         },
-        host: true,
+        host: {
+          include: {
+            user: true,
+          },
+        },
       },
     }) as any;
 
@@ -100,7 +104,7 @@ export async function POST(req: Request) {
           data: { googleCalendarEventId: eventId },
           include: {
             student: { include: { user: true } },
-            host: true
+            host: { include: { user: true } }
           }
         });
       }
@@ -134,8 +138,8 @@ export async function GET(req: Request) {
   const where: any = {};
   if (session.user.role === 'student') {
     where.studentId = session.user.id;
-  } else if (session.user.role === 'coordinator' || session.user.role === 'counselor') {
-    if (session.user.role === 'coordinator') {
+  } else if (session.user.role === 'counselor' || session.user.role === 'counselor') {
+    if (session.user.role === 'counselor') {
       where.hostId = session.user.id;
     } else {
       const hostId = searchParams.get('hostId');
@@ -159,7 +163,11 @@ export async function GET(req: Request) {
             personalProfile: true,
           },
         },
-        host: true,
+        host: {
+          include: {
+            user: true,
+          },
+        },
       },
       orderBy: { createdAt: 'desc' },
     });

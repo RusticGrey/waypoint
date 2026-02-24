@@ -14,14 +14,14 @@ export async function POST(
   const session = await getServerSession(authOptions);
   const { meetingId } = params;
 
-  if (!session?.user?.id || (session.user.role !== 'coordinator' && session.user.role !== 'counselor')) {
+  if (!session?.user?.id || (session.user.role !== 'counselor' && session.user.role !== 'counselor')) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
     const { startTime, endTime } = await req.json();
 
-    const meeting = await prisma.scheduledMeeting.findUnique({
+    const meeting = await prisma.meeting.findUnique({
       where: { id: meetingId },
       include: {
         student: { include: { user: true } },
@@ -60,7 +60,7 @@ export async function POST(
     });
 
     // 3. Update the meeting record
-    const updatedMeeting = await prisma.scheduledMeeting.update({
+    const updatedMeeting = await prisma.meeting.update({
       where: { id: meetingId },
       data: {
         startTime: new Date(startTime),

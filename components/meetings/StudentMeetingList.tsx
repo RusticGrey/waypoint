@@ -72,7 +72,7 @@ export function StudentMeetingList({ studentId }: StudentMeetingListProps) {
                     <div>
                       <div className="font-bold text-lg">{req.meetingType}</div>
                       <div className="text-sm text-gray-600">
-                        With {req.host.firstName} {req.host.lastName}
+                        With {req.host.user.firstName} {req.host.user.lastName}
                       </div>
                       <div className="text-xs text-gray-500 font-medium mt-1">
                         Proposed: {new Date(req.requestedStart).toLocaleString()}
@@ -105,7 +105,7 @@ export function StudentMeetingList({ studentId }: StudentMeetingListProps) {
                       <div>
                         <div className="font-bold">{meeting.meetingType}</div>
                         <div className="text-sm text-gray-600 mt-1">
-                          With {meeting.host.firstName} {meeting.host.lastName}
+                          With {meeting.host.user.firstName} {meeting.host.user.lastName}
                         </div>
                         <div className="text-sm font-medium text-blue-600 mt-2">
                           {meetingStart.toLocaleString()}
@@ -140,7 +140,7 @@ export function StudentMeetingList({ studentId }: StudentMeetingListProps) {
                     <div>
                       <div className="font-bold text-sm">{req.meetingType}</div>
                       <div className="text-[10px] uppercase font-medium">
-                        {req.status} with {req.host.firstName}
+                        {req.status} with {req.host.user.firstName}
                       </div>
                     </div>
                     <span className={`px-2 py-0.5 ${req.status === 'Declined' ? 'bg-red-50 text-red-700' : 'bg-gray-100 text-gray-600'} text-[9px] uppercase rounded-full font-bold`}>

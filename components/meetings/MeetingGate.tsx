@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-export function MeetingGate({ children, role }: { children: React.ReactNode, role: 'coordinator' | 'counselor' }) {
+export function MeetingGate({ children, role }: { children: React.ReactNode, role: 'counselor' | 'counselor' }) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 

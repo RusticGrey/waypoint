@@ -6,24 +6,35 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import Link from 'next/link';
 import { FeatureOverview } from '@/components/dashboard/FeatureOverview';
 
-export default async function CounselorDashboard() {
+export default async function StaffDashboard() {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) {
     redirect('/login');
   }
 
-  if (session.user.role !== 'counselor') {
+  const role = session.user.role;
+  const isAdmin = session.user.isAdmin;
+  if (role !== 'counselor') {
     redirect('/');
   }
 
-  // Get all students in the organization
-  const students = await prisma.student.findMany({
-    where: {
-      user: {
-        organizationId: session.user.organizationId,
-      },
+  const roleTitle = isAdmin ? 'Admin Counselor' : 'Counselor';
+
+  // Get students based on role
+  const where: any = {
+    user: {
+      organizationId: session.user.organizationId,
     },
+  };
+
+  // Admins see all students in the organization, standard counselors see their caseload
+  if (!isAdmin) {
+    where.counselorId = session.user.id;
+  }
+
+  const students = await prisma.student.findMany({
+    where,
     include: {
       user: {
         select: {
@@ -123,14 +134,14 @@ export default async function CounselorDashboard() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">
-          Counselor Dashboard
+          {roleTitle} Dashboard
         </h1>
         <p className="mt-2 text-gray-600">
           Welcome back, {session.user.name}!
         </p>
       </div>
 
-      <FeatureOverview role="counselor" />
+      <FeatureOverview role={role as any} isAdmin={isAdmin} />
 
       {/* Meeting Management Quick Links */}
       {showMeetings && (
@@ -165,7 +176,7 @@ export default async function CounselorDashboard() {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Students</p>
+                <p className="text-sm font-medium text-gray-600">{!isAdmin ? 'My Students' : 'Total Students'}</p>
                 <p className="text-3xl font-bold text-gray-900">{students.length}</p>
               </div>
               <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
@@ -220,6 +231,15 @@ export default async function CounselorDashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
+              {isAdmin && (
+                <Link
+                  href="/counselor/manage-users"
+                  className="block px-4 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg border border-blue-600 transition-colors text-white"
+                >
+                  <p className="font-medium">Manage Users</p>
+                  <p className="text-sm text-blue-100">Set up students and counselors</p>
+                </Link>
+              )}
               <Link
                 href="/admin/subjects"
                 className="block px-4 py-3 bg-blue-50 hover:bg-blue-100 rounded-lg border border-blue-200 transition-colors"

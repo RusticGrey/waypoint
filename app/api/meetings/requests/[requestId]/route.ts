@@ -37,7 +37,11 @@ export async function PATCH(
             user: true,
           },
         },
-        host: true,
+        host: {
+          include: {
+            user: true,
+          },
+        },
       },
     }) as any;
 
@@ -84,7 +88,7 @@ export async function PATCH(
       });
 
       // 4. Create Scheduled Meeting
-      const scheduledMeeting = await prisma.scheduledMeeting.create({
+      const meeting = await prisma.meeting.create({
         data: {
           studentId: request.studentId,
           hostId: request.hostId,
@@ -105,21 +109,21 @@ export async function PATCH(
         where: { id: requestId },
         data: {
           status: 'Accepted',
-          scheduledMeeting: { connect: { id: scheduledMeeting.id } },
+          meeting: { connect: { id: meeting.id } },
         },
       });
 
-      const meetingWithDetails = await prisma.scheduledMeeting.findUnique({
-        where: { id: scheduledMeeting.id },
+      const meetingWithDetails = await prisma.meeting.findUnique({
+        where: { id: meeting.id },
         include: {
           student: { include: { user: true } },
-          host: true,
+          host: { include: { user: true } },
         },
       });
 
       await sendMeetingConfirmation(meetingWithDetails);
 
-      return NextResponse.json(scheduledMeeting);
+      return NextResponse.json(meeting);
     } else {
       // Declined, ChangeSuggested, Cancelled
       
@@ -152,7 +156,7 @@ export async function PATCH(
         },
         include: {
           student: { include: { user: true } },
-          host: true,
+          host: { include: { user: true } },
         },
       });
 
@@ -194,7 +198,7 @@ export async function GET(
           },
         },
         host: true,
-        scheduledMeeting: true,
+        meeting: true,
       },
     });
 

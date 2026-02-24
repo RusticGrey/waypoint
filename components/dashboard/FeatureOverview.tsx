@@ -4,10 +4,11 @@ import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 
 interface FeatureOverviewProps {
-  role: 'student' | 'coordinator' | 'counselor';
+  role: 'student' | 'counselor';
+  isAdmin?: boolean;
 }
 
-export function FeatureOverview({ role }: FeatureOverviewProps) {
+export function FeatureOverview({ role, isAdmin }: FeatureOverviewProps) {
   const [isOpen, setIsOpen] = useState(true);
 
   // Check local storage on mount
@@ -47,7 +48,7 @@ export function FeatureOverview({ role }: FeatureOverviewProps) {
         description: 'Create and track personal improvement goals.'
       }
     ],
-    coordinator: [
+    counselor: [
       {
         icon: '👥',
         title: 'Manage Students',
@@ -59,37 +60,23 @@ export function FeatureOverview({ role }: FeatureOverviewProps) {
         description: 'Record meeting notes, action items, and student mood.'
       }] : []),
       {
-        icon: '⚙️',
-        title: 'Profile Override',
-        description: 'Adjust profile strength scores based on your assessment.'
-      },
-      {
         icon: '⏱️',
         title: 'Track Deadlines',
         description: 'Monitor upcoming application deadlines for all students.'
-      }
-    ],
-    counselor: [
-      {
-        icon: '👥',
-        title: 'User Management',
-        description: 'Create and manage student and coordinator accounts.'
       },
-      {
-        icon: '🔗',
-        title: 'Assignments',
-        description: 'Assign students to coordinators for personalized guidance.'
-      },
-      {
-        icon: '🏛️',
-        title: 'College Database',
-        description: 'Manage the central database of colleges and statistics.'
-      },
-      {
-        icon: '📖',
-        title: 'Course Management',
-        description: 'Update available subjects and curriculums.'
-      }
+      // Admin only features
+      ...(isAdmin ? [
+        {
+          icon: '⚙️',
+          title: 'User Management',
+          description: 'Create and manage student and counselor accounts.'
+        },
+        {
+          icon: '🏛️',
+          title: 'College Database',
+          description: 'Manage the central database of colleges and statistics.'
+        }
+      ] : [])
     ]
   };
 

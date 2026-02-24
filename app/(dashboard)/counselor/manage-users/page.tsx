@@ -13,11 +13,11 @@ interface User {
   role: string;
   createdAt: string;
   student?: {
-    coordinatorId: string | null;
+    counselorId: string | null;
   };
 }
 
-interface Coordinator {
+interface Counselor {
   id: string;
   firstName: string;
   lastName: string;
@@ -26,9 +26,9 @@ interface Coordinator {
 
 export default function ManageUsersPage() {
   const [users, setUsers] = useState<User[]>([]);
-  const [coordinators, setCoordinators] = useState<Coordinator[]>([]);
+  const [counselors, setCounselors] = useState<Counselor[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const [modalType, setModalType] = useState<'coordinator' | 'student'>('student');
+  const [modalType, setModalType] = useState<'counselor' | 'student'>('student');
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -37,12 +37,12 @@ export default function ManageUsersPage() {
     role: 'student',
     currentGrade: 'eleventh',
     graduationYear: new Date().getFullYear() + 2,
-    coordinatorId: '',
+    counselorId: '',
   });
 
   useEffect(() => {
     fetchUsers();
-    fetchCoordinators();
+    fetchCounselors();
   }, []);
 
   const fetchUsers = async () => {
@@ -51,10 +51,10 @@ export default function ManageUsersPage() {
     setUsers(data.users || []);
   };
 
-  const fetchCoordinators = async () => {
-    const res = await fetch('/api/counselor/coordinators');
+  const fetchCounselors = async () => {
+    const res = await fetch('/api/counselor/counselors');
     const data = await res.json();
-    setCoordinators(data.coordinators || []);
+    setCounselors(data.counselors || []);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -76,21 +76,21 @@ export default function ManageUsersPage() {
         role: 'student',
         currentGrade: 'eleventh',
         graduationYear: new Date().getFullYear() + 2,
-        coordinatorId: '',
+        counselorId: '',
       });
       fetchUsers();
-      fetchCoordinators();
+      fetchCounselors();
     } else {
       const data = await res.json();
       alert(data.error || 'Failed to create user');
     }
   };
 
-  const assignCoordinator = async (studentId: string, coordinatorId: string) => {
-    await fetch('/api/counselor/assign-coordinator', {
+  const assignCounselor = async (studentId: string, counselorId: string) => {
+    await fetch('/api/counselor/assign-counselor', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ studentId: studentId, coordinatorId: coordinatorId }),
+      body: JSON.stringify({ studentId: studentId, counselorId: counselorId }),
     });
     fetchUsers();
   };
@@ -102,17 +102,17 @@ export default function ManageUsersPage() {
       method: 'DELETE',
     });
     fetchUsers();
-    fetchCoordinators();
+    fetchCounselors();
   };
 
   const students = users.filter(u => u.role === 'student');
-  const coordinatorUsers = users.filter(u => u.role === 'coordinator');
+  const counselorUsers = users.filter(u => u.role === 'counselor');
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900">Manage Users</h1>
-        <p className="text-gray-600 mt-1">Create and manage coordinators and students</p>
+        <p className="text-gray-600 mt-1">Create and manage counselors and students</p>
       </div>
 
       {/* Stats */}
@@ -125,15 +125,15 @@ export default function ManageUsersPage() {
         </Card>
         <Card>
           <CardContent className="pt-6">
-            <p className="text-sm text-gray-600">Coordinators</p>
-            <p className="text-3xl font-bold text-gray-900">{coordinatorUsers.length}</p>
+            <p className="text-sm text-gray-600">Counselors</p>
+            <p className="text-3xl font-bold text-gray-900">{counselorUsers.length}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6">
             <p className="text-sm text-gray-600">Unassigned Students</p>
             <p className="text-3xl font-bold text-yellow-600">
-              {students.filter(s => !s.student?.coordinatorId).length}
+              {students.filter(s => !s.student?.counselorId).length}
             </p>
           </CardContent>
         </Card>
@@ -143,12 +143,12 @@ export default function ManageUsersPage() {
       <div className="flex gap-3 mb-6">
         <Button
           onClick={() => {
-            setModalType('coordinator');
-            setFormData({ ...formData, role: 'coordinator' });
+            setModalType('counselor');
+            setFormData({ ...formData, role: 'counselor' });
             setShowModal(true);
           }}
         >
-          + Add Coordinator
+          + Add Counselor
         </Button>
         <Button
           onClick={() => {
@@ -162,13 +162,13 @@ export default function ManageUsersPage() {
         </Button>
       </div>
 
-      {/* Coordinators Table */}
+      {/* Counselors Table */}
       <Card className="mb-6">
         <CardHeader>
-          <CardTitle>Coordinators ({coordinatorUsers.length})</CardTitle>
+          <CardTitle>Counselors ({counselorUsers.length})</CardTitle>
         </CardHeader>
         <CardContent>
-          {coordinatorUsers.length > 0 ? (
+          {counselorUsers.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead>
@@ -181,14 +181,14 @@ export default function ManageUsersPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {coordinatorUsers.map((user) => (
+                  {counselorUsers.map((user) => (
                     <tr key={user.id}>
                       <td className="px-4 py-3 text-sm font-medium text-gray-900">
                         {user.firstName} {user.lastName}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-600">{user.email}</td>
                       <td className="px-4 py-3 text-sm text-gray-600">
-                        {students.filter(s => s.student?.coordinatorId === user.id).length}
+                        {students.filter(s => s.student?.counselorId === user.id).length}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-600">
                         {new Date(user.createdAt).toLocaleDateString()}
@@ -207,7 +207,7 @@ export default function ManageUsersPage() {
               </table>
             </div>
           ) : (
-            <p className="text-gray-500 text-center py-8">No coordinators yet</p>
+            <p className="text-gray-500 text-center py-8">No counselors yet</p>
           )}
         </CardContent>
       </Card>
@@ -225,7 +225,7 @@ export default function ManageUsersPage() {
                   <tr>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Coordinator</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Counselor</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Created</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
                   </tr>
@@ -239,14 +239,14 @@ export default function ManageUsersPage() {
                       <td className="px-4 py-3 text-sm text-gray-600">{user.email}</td>
                       <td className="px-4 py-3 text-sm">
                         <select
-                          value={user.student?.coordinatorId || ''}
-                          onChange={(e) => assignCoordinator(user.id, e.target.value)}
+                          value={user.student?.counselorId || ''}
+                          onChange={(e) => assignCounselor(user.id, e.target.value)}
                           className="text-sm px-2 py-1 border rounded text-gray-900"
                         >
                           <option value="">Unassigned</option>
-                          {coordinators.map((coord) => (
-                            <option key={coord.id} value={coord.id}>
-                              {coord.firstName} {coord.lastName}
+                          {counselors.map((assoc) => (
+                            <option key={assoc.id} value={assoc.id}>
+                              {assoc.firstName} {assoc.lastName}
                             </option>
                           ))}
                         </select>
@@ -278,7 +278,7 @@ export default function ManageUsersPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Create {modalType === 'coordinator' ? 'Coordinator' : 'Student'}
+              Create {modalType === 'counselor' ? 'Counselor' : 'Student'}
             </h2>
 
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -343,17 +343,17 @@ export default function ManageUsersPage() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-900 mb-1">
-                      Assign to Coordinator (optional)
+                      Assign to Counselor (optional)
                     </label>
                     <select
-                      value={formData.coordinatorId}
-                      onChange={(e) => setFormData({ ...formData, coordinatorId: e.target.value })}
+                      value={formData.counselorId}
+                      onChange={(e) => setFormData({ ...formData, counselorId: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
                     >
                       <option value="">Assign later</option>
-                      {coordinators.map((coord) => (
-                        <option key={coord.id} value={coord.id}>
-                          {coord.firstName} {coord.lastName}
+                      {counselors.map((assoc) => (
+                        <option key={assoc.id} value={assoc.id}>
+                          {assoc.firstName} {assoc.lastName}
                         </option>
                       ))}
                     </select>
@@ -363,7 +363,7 @@ export default function ManageUsersPage() {
 
               <div className="flex gap-2 pt-4">
                 <Button type="submit" className="flex-1">
-                  Create {modalType === 'coordinator' ? 'Coordinator' : 'Student'}
+                  Create {modalType === 'counselor' ? 'Counselor' : 'Student'}
                 </Button>
                 <Button
                   type="button"

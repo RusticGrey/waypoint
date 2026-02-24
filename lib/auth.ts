@@ -33,13 +33,25 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        return {
+        const sessionUser = {
           id: user.id,
           email: user.email,
           role: user.role,
           name: `${user.firstName} ${user.lastName}`,
           organizationId: user.organizationId,
+          isAdmin: false,
         };
+
+        if (user.role === 'counselor') {
+          const counselor = await prisma.counselor.findUnique({
+            where: { userId: user.id }
+          });
+          if (counselor) {
+            sessionUser.isAdmin = counselor.isAdmin;
+          }
+        }
+
+        return sessionUser;
       }
     })
   ],
@@ -48,6 +60,7 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
         token.role = user.role;
+        token.isAdmin = (user as any).isAdmin;
       }
       return token;
     },
@@ -55,6 +68,7 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         session.user.id = token.id as string;
         session.user.role = token.role as string;
+        session.user.isAdmin = token.isAdmin as boolean;
       }
       return session;
     }

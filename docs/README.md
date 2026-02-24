@@ -1,6 +1,6 @@
 # Waypoint College Counseling Platform
 
-A comprehensive web platform for high school students to manage college applications, track academic achievements, and receive personalized college counseling from coordinators and counselors.
+A comprehensive web platform for high school students to manage college applications, track academic achievements, and receive personalized college counseling from counselors and counselors.
 
 ## Quick Facts
 
@@ -21,7 +21,7 @@ A comprehensive web platform for high school students to manage college applicat
 - Goals tracking and progress monitoring
 - Complete change history and audit trail
 
-### For Coordinators
+### For Counselors
 - Student dashboard and progress tracking
 - Meeting logging and history
 - Student profile viewing with full details
@@ -29,7 +29,7 @@ A comprehensive web platform for high school students to manage college applicat
 - Application deadline tracking across assigned students
 
 ### For Counselors (Admin)
-- User management (create coordinators and students)
+- User management (create counselors and students)
 - System administration and organization oversight
 - Access to all student data
 - Profile override authority
@@ -80,7 +80,7 @@ app/
 ├── (auth)/login/              # Authentication routes
 ├── (dashboard)/
 │   ├── student/               # Student portal (profile, applications, etc.)
-│   ├── coordinator/           # Coordinator dashboard
+│   ├── counselor/           # Counselor dashboard
 │   └── counselor/             # Admin/counselor features
 └── api/                       # API routes for all features
 
@@ -209,7 +209,7 @@ git push origin main
 See [TESTING_CHECKLIST.md](TESTING_CHECKLIST.md) for comprehensive testing procedures covering:
 - Authentication and authorization
 - Student features (onboarding, profile, applications)
-- Coordinator features (student management, meetings)
+- Counselor features (student management, meetings)
 - Counselor features (user management, admin functions)
 - Data integrity and security
 

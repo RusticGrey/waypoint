@@ -87,25 +87,6 @@ export default async function DashboardLayout({
                 </nav>
               )}
 
-              {session.user.role === 'coordinator' && (
-                <nav className="hidden md:flex gap-6">
-                  <Link href="/coordinator" className="text-gray-700 hover:text-blue-600 font-medium">
-                    Dashboard
-                  </Link>
-                  {showMeetings && (
-                    <Link href="/coordinator/meetings" className="text-gray-700 hover:text-blue-600 font-medium">
-                      Manage Meetings
-                    </Link>
-                  )}
-                  <Link href="/admin/subjects" className="text-gray-700 hover:text-blue-600 font-medium">
-                    Manage Courses
-                  </Link>
-                  <Link href="/admin/colleges" className="text-gray-700 hover:text-blue-600 font-medium">
-                    Manage Colleges
-                  </Link>
-                </nav>
-              )}
-
               {session.user.role === 'counselor' && (
                 <nav className="hidden md:flex gap-6">
                   <Link href="/counselor" className="text-gray-700 hover:text-blue-600 font-medium">
@@ -116,9 +97,11 @@ export default async function DashboardLayout({
                       Manage Meetings
                     </Link>
                   )}
-                  <Link href="/counselor/manage-users" className="text-gray-700 hover:text-blue-600 font-medium">
-                    Manage Users
-                  </Link>
+                  {session.user.isAdmin && (
+                    <Link href="/counselor/manage-users" className="text-gray-700 hover:text-blue-600 font-medium">
+                      Manage Users
+                    </Link>
+                  )}
                   <Link href="/admin/subjects" className="text-gray-700 hover:text-blue-600 font-medium">
                     Manage Courses
                   </Link>
@@ -152,7 +135,7 @@ export default async function DashboardLayout({
         {children}
       </main>
 
-      {(session.user.role === 'counselor' || session.user.role === 'coordinator' || !newStudentCheck) && (
+      {(session.user.role === 'counselor' || session.user.role === 'counselor' || !newStudentCheck) && (
         <footer className="bg-white border-t mt-auto">
           <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
             <p className="text-center text-sm text-gray-500">

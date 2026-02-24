@@ -17,33 +17,46 @@ export async function GET() {
   try {
     const student = await prisma.student.findUnique({
       where: { userId: session.user.id },
-      include: { coordinator: true },
+      include: { 
+        counselor: {
+          include: { user: true }
+        } 
+      },
     });
 
     if (!student) {
       return NextResponse.json({ error: 'Student not found' }, { status: 404 });
     }
 
-    // Get the assigned coordinator
+    // Get the assigned counselor
     const hosts = [];
-    if (student.coordinator) {
+    if (student.counselor) {
       hosts.push({
-        id: student.coordinator.id,
-        firstName: student.coordinator.firstName,
-        lastName: student.coordinator.lastName,
-        role: student.coordinator.role,
+        id: student.counselor.userId,
+        firstName: student.counselor.user.firstName,
+        lastName: student.counselor.user.lastName,
+        isAdmin: student.counselor.isAdmin,
+        role: student.counselor.user.role,
       });
     }
 
-    // Also get all Counselors (admin level) as they are usually available to all
-    const counselors = await prisma.user.findMany({
-      where: { role: 'counselor' },
-      select: { id: true, firstName: true, lastName: true, role: true },
+    // Also get all Admin Counselors as they are usually available to all
+    const adminCounselors = await prisma.counselor.findMany({
+      where: { isAdmin: true },
+      include: { user: true },
     });
+
+    const formattedAdmins = adminCounselors.map(c => ({
+      id: c.userId,
+      firstName: c.user.firstName,
+      lastName: c.user.lastName,
+      isAdmin: c.isAdmin,
+      role: c.user.role,
+    }));
 
     // Merge and deduplicate
     const hostIds = new Set(hosts.map(h => h.id));
-    counselors.forEach(c => {
+    formattedAdmins.forEach(c => {
       if (!hostIds.has(c.id)) {
         hosts.push(c);
       }

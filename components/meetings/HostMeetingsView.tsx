@@ -6,15 +6,15 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { MeetingGate } from '@/components/meetings/MeetingGate';
-import { MeetingRequestQueue } from '@/components/meetings/MeetingRequestQueue';
-import { ScheduledMeetingCard } from '@/components/meetings/ScheduledMeetingCard';
+import { MeetingRequest } from '@/components/meetings/MeetingRequest';
+import { MeetingCard } from '@/components/meetings/MeetingCard';
 import { CalendarView } from '@/components/meetings/CalendarView';
 
 interface HostMeetingsViewProps {
   initialRequests: any[];
   initialMeetings: any[];
   userId: string;
-  role: 'coordinator' | 'counselor';
+  role: 'counselor' | 'counselor';
 }
 
 export function HostMeetingsView({
@@ -47,7 +47,7 @@ export function HostMeetingsView({
       const reqData = await reqRes.json();
       const meetData = await meetRes.json();
       
-      // Counselors see everything globally, Coordinators only see their own
+      // Counselors see everything globally, Counselors only see their own
       if (role === 'counselor') {
         setRequests(reqData);
         setMeetings(meetData);
@@ -111,7 +111,7 @@ export function HostMeetingsView({
                   <h2 className="text-xl font-semibold mb-4 text-black">Upcoming Meetings</h2>
                   <div className="space-y-4">
                     {meetings.filter((m: any) => new Date(m.startTime) > new Date() && m.status !== 'Cancelled').map((meeting: any) => (
-                      <ScheduledMeetingCard key={meeting.id} meeting={meeting} />
+                      <MeetingCard key={meeting.id} meeting={meeting} />
                     ))}
                     {meetings.filter((m: any) => new Date(m.startTime) > new Date() && m.status !== 'Cancelled').length === 0 && (
                       <p className="text-gray-500 italic py-4 bg-white rounded-lg border border-dashed text-center">No upcoming meetings scheduled.</p>
@@ -123,7 +123,7 @@ export function HostMeetingsView({
                   <h2 className="text-xl font-semibold mb-4 text-gray-700">Past & Cancelled Meetings</h2>
                   <div className="space-y-4">
                     {meetings.filter((m: any) => new Date(m.startTime) <= new Date() || m.status === 'Cancelled').map((meeting: any) => (
-                      <ScheduledMeetingCard key={meeting.id} meeting={meeting} />
+                      <MeetingCard key={meeting.id} meeting={meeting} />
                     ))}
                   </div>
                 </section>
@@ -134,7 +134,7 @@ export function HostMeetingsView({
 
           <div className="space-y-8">
             <section>
-              <MeetingRequestQueue requests={requests} onUpdate={refreshData} />
+              <MeetingRequest requests={requests} onUpdate={refreshData} />
             </section>
           </div>
         </div>

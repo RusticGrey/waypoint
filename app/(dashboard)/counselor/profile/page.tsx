@@ -4,13 +4,13 @@ import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { IntegrationSetupCard } from '@/components/meetings/IntegrationSetupCard';
-import { ProfileBackButton } from '../../coordinator/profile/ProfileBackButton';
+import { ProfileBackButton } from './ProfileBackButton';
 
 export default async function CounselorProfilePage({ searchParams }: { searchParams: { reason?: string } }) {
   const session = await getServerSession(authOptions);
   if (!session) return null;
 
-  const config = await prisma.userIntegrationConfig.findUnique({
+  const config = await prisma.counselorSettings.findUnique({
     where: { userId: session.user.id },
   });
 

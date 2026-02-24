@@ -16,7 +16,7 @@ export async function GET(req: Request) {
   const where: any = {};
   if (session.user.role === 'student') {
     where.studentId = session.user.id;
-  } else if (session.user.role === 'coordinator') {
+  } else if (session.user.role === 'counselor') {
     where.hostId = session.user.id;
   }
 
@@ -25,7 +25,7 @@ export async function GET(req: Request) {
   }
 
   try {
-    const meetings = await prisma.scheduledMeeting.findMany({
+    const meetings = await prisma.meeting.findMany({
       where,
       include: {
         student: {
@@ -34,7 +34,11 @@ export async function GET(req: Request) {
             personalProfile: true,
           },
         },
-        host: true,
+        host: {
+          include: {
+            user: true,
+          },
+        },
       },
       orderBy: { startTime: 'asc' },
     });

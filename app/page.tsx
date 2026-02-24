@@ -14,8 +14,8 @@ export default function Home() {
       // Redirect based on role
       if (session.user.role === 'student') {
         router.push('/student');
-      } else if (session.user.role === 'coordinator') {
-        router.push('/coordinator');
+      } else if (session.user.role === 'counselor') {
+        router.push('/counselor');
       } else if (session.user.role === 'counselor') {
         router.push('/counselor');
       }
@@ -187,7 +187,7 @@ export default function Home() {
 }
 
 function FeatureTabs() {
-  const [activeTab, setActiveTab] = useState<'features' | 'counselors' | 'coordinators' | 'students' | 'roadmap'>('features');
+  const [activeTab, setActiveTab] = useState<'features' | 'counselors' | 'counselors' | 'students' | 'roadmap'>('features');
 
   return (
     <div id="features" className="scroll-mt-24">
@@ -214,14 +214,14 @@ function FeatureTabs() {
           For Counselors
         </button>
         <button
-          onClick={() => setActiveTab('coordinators')}
+          onClick={() => setActiveTab('counselors')}
           className={`px-6 py-2 rounded-full font-medium transition-colors ${
-            activeTab === 'coordinators'
+            activeTab === 'counselors'
               ? 'bg-blue-600 text-white shadow-md'
               : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
           }`}
         >
-          For Coordinators
+          For Counselors
         </button>
         <button
           onClick={() => setActiveTab('students')}
@@ -292,7 +292,7 @@ function FeatureTabs() {
                   </div>
                   <div>
                     <h3 className="text-xl font-bold text-gray-900 mb-2">Enhanced Coordination</h3>
-                    <p className="text-gray-600">Bridge the gap between counselors, students, and coordinators with centralized communication and oversight.</p>
+                    <p className="text-gray-600">Bridge the gap between counselors, students, and counselors with centralized communication and oversight.</p>
                   </div>
                 </div>
               </div>
@@ -337,7 +337,7 @@ function FeatureTabs() {
                       </li>
                       <li className="flex items-center text-gray-700">
                         <svg className="w-5 h-5 text-blue-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                        Coordinator performance oversight
+                        Counselor performance oversight
                       </li>
                     </ul>
                 </div>
@@ -373,11 +373,11 @@ function FeatureTabs() {
           </div>
         )}
 
-        {activeTab === 'coordinators' && (
+        {activeTab === 'counselors' && (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
              <div className="flex flex-col lg:flex-row gap-8 items-center">
                 <div className="lg:w-1/2 space-y-6">
-                    <h2 className="text-3xl font-bold text-gray-900">Efficiency for Coordinators</h2>
+                    <h2 className="text-3xl font-bold text-gray-900">Efficiency for Counselors</h2>
                     <p className="text-lg text-gray-600">
                        Streamline your daily workflow. Manage appointments, track student progress notes, and ensure no student falls through the cracks.
                     </p>
@@ -397,7 +397,7 @@ function FeatureTabs() {
                     </ul>
                 </div>
                 <div className="lg:w-1/2 w-full">
-                     {/* Simplified Coordinator Dashboard Mockup */}
+                     {/* Simplified Counselor Dashboard Mockup */}
                     <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
                         <div className="flex gap-3 mb-4">
                             <div className="bg-white px-4 py-2 rounded-full text-xs font-bold text-indigo-600 border border-indigo-100">4 Meetings Today</div>

@@ -8,15 +8,14 @@ import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🌱 Seeding Core Infrastructure (Org & Counselor)...');
+  console.log('🌱 Seeding Core Infrastructure (Org & Counselors)...');
 
   // 1. Seed Organization
-  // Using upsert to ensure the ID 'waypoint' is maintained and values are current
   const org = await prisma.organization.upsert({
     where: { id: "waypoint" },
     update: {
       name: "Waypoint Counseling Organization",
-      primaryColor: "#3B82F6", // Mapped field from primary_color
+      primaryColor: "#3B82F6",
     },
     create: {
       id: "waypoint",
@@ -26,25 +25,40 @@ async function main() {
   });
   console.log(`✓ Organization: ${org.name}`);
 
-  // 2. Seed One Counselor
-  const counselorPassword = await bcrypt.hash('password123', 10);
-  const counselor = await prisma.user.upsert({
-    where: { email: 'counselor@waypoint.edu' },
-    update: {
-      firstName: 'Sarah', // Mapped field from first_name
-      lastName: 'Johnson', // Mapped field from last_name
-      passwordHash: counselorPassword, // Mapped field from password_hash
-    },
-    create: {
-      email: 'counselor@waypoint.edu',
-      passwordHash: counselorPassword,
-      firstName: 'Sarah',
-      lastName: 'Johnson',
-      role: UserRole.counselor,
-      organizationId: "waypoint", // Mapped field from organization_id
-    },
-  });
-  console.log(`✅ Counselor Created: ${counselor.firstName} ${counselor.lastName}`);
+  const commonPassword = await bcrypt.hash('password123', 10);
+
+  // 2. Helper to seed counselors
+  const seedCounselor = async (email: string, firstName: string, lastName: string, isAdmin: boolean) => {
+    return await prisma.user.upsert({
+      where: { email },
+      update: {
+        firstName,
+        lastName,
+        role: UserRole.counselor,
+        isAdmin,
+        passwordHash: commonPassword,
+      },
+      create: {
+        email,
+        passwordHash: commonPassword,
+        firstName,
+        lastName,
+        role: UserRole.counselor,
+        isAdmin,
+        organizationId: "waypoint",
+      },
+    });
+  };
+
+  // Seed Counselors
+  const admin = await seedCounselor('counselor@waypoint.edu', 'Sarah', 'Johnson', true);
+  console.log(`✅ Admin Counselor Created: ${admin.firstName} ${admin.lastName}`);
+
+  const c1 = await seedCounselor('indu.karthik@waypoint.edu', 'Indu', 'Karthik', false);
+  console.log(`✅ Counselor Created: ${c1.firstName} ${c1.lastName}`);
+
+  const c2 = await seedCounselor('lavanya.rajesh@waypoint.edu', 'Lavanya', 'Rajesh', false);
+  console.log(`✅ Counselor Created: ${c2.firstName} ${c2.lastName}`);
 
   console.log('🎉 Core seeding complete.');
 }

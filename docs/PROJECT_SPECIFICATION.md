@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-Waypoint is a production-ready web application for comprehensive college counseling. It serves three user roles: students managing their college applications and academic profiles, coordinators overseeing student progress, and counselors administering the system.
+Waypoint is a production-ready web application for comprehensive college counseling. It serves three user roles: students managing their college applications and academic profiles, counselors overseeing student progress, and counselors administering the system.
 
 **Status**: ✅ Live on Vercel | **Database**: PostgreSQL (Supabase) | **Hosting**: Vercel (auto-deploy)
 
@@ -28,7 +28,7 @@ Waypoint is a production-ready web application for comprehensive college counsel
 | Role | Purpose | Key Features |
 |------|---------|--------------|
 | **Student** | Manage college prep profile and applications | Onboarding wizard, profile management, application tracking, goal setting |
-| **Coordinator** | Oversee assigned students | Student dashboard, meeting logs, profile overrides, deadline tracking |
+| **Counselor** | Oversee assigned students | Student dashboard, meeting logs, profile overrides, deadline tracking |
 | **Counselor** | System administration | User management, global view, admin overrides |
 
 #### Authentication System
@@ -190,7 +190,7 @@ Waypoint is a production-ready web application for comprehensive college counsel
 
 ---
 
-### Coordinator Features
+### Counselor Features
 
 #### 1. Student Management Dashboard
 - List of assigned students with:
@@ -233,7 +233,7 @@ Waypoint is a production-ready web application for comprehensive college counsel
 - Change history
 - Recommendations based on profile analysis
 
-#### 5. Coordinator Dashboard
+#### 5. Counselor Dashboard
 - Total assigned students count
 - Upcoming meetings (next 5)
 - Upcoming student deadlines (across all assigned students, sorted by date)
@@ -248,13 +248,13 @@ Waypoint is a production-ready web application for comprehensive college counsel
 
 #### 1. User Management
 - **Create Users**:
-  - Create new coordinator accounts with email and password
+  - Create new counselor accounts with email and password
   - Create new student accounts with email and password
   - Automatic account activation and login capability
   
 - **Assign Students**:
-  - Assign students to specific coordinators
-  - View coordinator-student relationships
+  - Assign students to specific counselors
+  - View counselor-student relationships
   - Reassign students as needed
   
 - **User Directory**:
@@ -268,11 +268,11 @@ Waypoint is a production-ready web application for comprehensive college counsel
 - **Search & Filter**: Find students by name, email, graduation year
 - **Organization Statistics**:
   - Total students count
-  - Total coordinators count
+  - Total counselors count
   - Profile completion average
   - Application submission rate
   - Acceptance rate statistics
-- **Profile Override Authority**: Same capabilities as coordinators plus system-wide override visibility
+- **Profile Override Authority**: Same capabilities as counselors plus system-wide override visibility
 
 #### 3. Subject/Curriculum Management
 - **Manage Subjects**: Add/remove subjects per curriculum type
@@ -291,7 +291,7 @@ Waypoint is a production-ready web application for comprehensive college counsel
   - Students in onboarding
   - Average profile strength score
   - Application submission rate
-  - Students with active coordinators
+  - Students with active counselors
 - Quick access to user management
 - System health indicators
 
@@ -364,7 +364,7 @@ waypoint/
 │   │   │   ├── analysis/               # Profile strength analysis
 │   │   │   ├── history/                # Change history
 │   │   │   └── edit/                   # Edit individual sections
-│   │   ├── coordinator/                # Coordinator portal
+│   │   ├── counselor/                # Counselor portal
 │   │   │   ├── page.tsx                # Dashboard
 │   │   │   ├── meetings/               # Meeting management
 │   │   │   └── students/               # Student management
@@ -379,7 +379,7 @@ waypoint/
 │       ├── subjects/                   # Subject management
 │       ├── onboarding/                 # Onboarding endpoints
 │       ├── student/                    # Student data endpoints
-│       ├── coordinator/                # Coordinator endpoints
+│       ├── counselor/                # Counselor endpoints
 │       └── counselor/                  # Admin endpoints
 ├── components/
 │   ├── ui/                             # Reusable UI components
@@ -495,17 +495,17 @@ UserRole, StudentPhase, GradeLevel, CurriculumType, GradingSystemType, Semester,
 - `POST /api/onboarding/test-scores/` - Save test scores
 - `POST /api/onboarding/complete/` - Complete onboarding
 
-### Coordinator Endpoints
-- `GET /api/coordinator/students/` - List assigned students
-- `GET /api/coordinator/students/[studentId]` - Student details
-- `POST /api/coordinator/meetings/` - Log meeting
-- `GET /api/coordinator/dashboard-stats/` - Coordinator dashboard stats
-- `POST /api/coordinator/profile-override/[studentId]` - Override profile score
+### Counselor Endpoints
+- `GET /api/counselor/students/` - List assigned students
+- `GET /api/counselor/students/[studentId]` - Student details
+- `POST /api/counselor/meetings/` - Log meeting
+- `GET /api/counselor/dashboard-stats/` - Counselor dashboard stats
+- `POST /api/counselor/profile-override/[studentId]` - Override profile score
 
 ### Counselor Endpoints
 - `GET/POST /api/counselor/users/` - User management
-- `POST /api/counselor/assign-coordinator/[studentId]` - Assign student
-- `GET /api/counselor/coordinators/` - List coordinators
+- `POST /api/counselor/assign-counselor/[studentId]` - Assign student
+- `GET /api/counselor/counselors/` - List counselors
 
 ---
 

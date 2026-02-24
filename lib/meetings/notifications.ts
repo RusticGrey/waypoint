@@ -62,7 +62,7 @@ export async function sendMeetingConfirmation(meeting: any) {
       
       <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
         <p style="margin: 5px 0;"><strong>Time:</strong> ${dateStr}</p>
-        <p style="margin: 5px 0;"><strong>Host:</strong> ${host.firstName} ${host.lastName}</p>
+        <p style="margin: 5px 0;"><strong>Host:</strong> ${host.user.firstName} ${host.user.lastName}</p>
         <p style="margin: 5px 0;"><strong>Student:</strong> ${student.user.firstName} ${student.user.lastName}</p>
       </div>
 
@@ -86,13 +86,13 @@ export async function sendMeetingConfirmation(meeting: any) {
     transporter.sendMail({
       from,
       to: student.user.email,
-      subject: `Confirmed: ${meetingType} with ${host.firstName}`,
+      subject: `Confirmed: ${meetingType} with ${host.user.firstName}`,
       html,
       attachments: [icalEvent],
     }),
     transporter.sendMail({
       from,
-      to: host.email,
+      to: host.user.email,
       subject: `Confirmed: ${meetingType} with ${student.user.firstName}`,
       html,
       attachments: [icalEvent],
@@ -111,12 +111,12 @@ export async function sendMeetingRequest(request: any) {
     <p><strong>Type:</strong> ${meetingType}</p>
     <p><strong>Requested Time:</strong> ${dateStr}</p>
     <p><strong>Student Note:</strong> ${studentNote || 'None'}</p>
-    <p><a href="${process.env.NEXTAUTH_URL}/coordinator/meetings">View Request</a></p>
+    <p><a href="${process.env.NEXTAUTH_URL}/counselor/meetings">View Request</a></p>
   `;
 
   await transporter.sendMail({
     from,
-    to: host.email,
+    to: host.user.email,
     subject: `New Meeting Request from ${student.user.firstName}`,
     html,
   });
@@ -165,7 +165,7 @@ export async function sendMeetingReminder(meeting: any) {
     }),
     transporter.sendMail({
       from,
-      to: host.email,
+      to: host.user.email,
       subject: `Reminder: Meeting in 24 hours`,
       html,
     }),

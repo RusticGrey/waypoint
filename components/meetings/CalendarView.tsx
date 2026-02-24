@@ -13,7 +13,7 @@ interface CalendarViewProps {
 
 export function CalendarView({ hostId, isHostView = false, refreshKey = 0, onSlotSelected }: CalendarViewProps) {
   const [busy, setBusy] = useState<any[]>([]);
-  const [scheduledMeetings, setScheduledMeetings] = useState<any[]>([]);
+  const [meetings, setMeetings] = useState<any[]>([]);
   const [pendingRequests, setPendingRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentWeek, setCurrentWeek] = useState(new Date());
@@ -51,7 +51,7 @@ export function CalendarView({ hostId, isHostView = false, refreshKey = 0, onSlo
         const meetRes = await fetch(`/api/meetings/scheduled?status=Upcoming`);
         const meetData = await meetRes.json();
         const appMeetings = Array.isArray(meetData) ? meetData.filter((m: any) => String(m.hostId) === String(hostId)) : [];
-        setScheduledMeetings(appMeetings);
+        setMeetings(appMeetings);
 
         // 3. Fetch Pending Requests for the host (to show as tentative)
         if (isHostView) {
@@ -94,7 +94,7 @@ export function CalendarView({ hostId, isHostView = false, refreshKey = 0, onSlo
     const time = date.getTime();
     
     // 1. Check Confirmed Meetings
-    const meeting = scheduledMeetings.find((m: any) => {
+    const meeting = meetings.find((m: any) => {
       const mStart = new Date(m.startTime).getTime();
       const mEnd = new Date(m.endTime).getTime();
       return time >= mStart && time < mEnd;

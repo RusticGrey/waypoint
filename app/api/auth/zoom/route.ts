@@ -10,7 +10,7 @@ export async function GET() {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  // Only counselors and coordinators can connect Zoom
+  // Only counselors and counselors can connect Zoom
   if (session.user.role === 'student') {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }

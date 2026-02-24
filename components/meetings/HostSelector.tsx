@@ -11,6 +11,7 @@ interface Host {
   firstName: string;
   lastName: string;
   role: string;
+  isAdmin: boolean;
 }
 
 export function HostSelector({ onSelect }: { onSelect: (hostId: string) => void }) {
@@ -21,10 +22,10 @@ export function HostSelector({ onSelect }: { onSelect: (hostId: string) => void 
   useEffect(() => {
     async function fetchHosts() {
       try {
-        // Fetch all coordinators and counselors available to this student
+        // Fetch all counselors and counselors available to this student
         const res = await fetch('/api/student/hosts');
         const data = await res.json();
-        // Filter to get unique hosts (coordinators and counselors)
+        // Filter to get unique hosts (counselors and counselors)
         const hostList = Array.isArray(data) ? data : [];
         setHosts(hostList);
         if (hostList.length > 0) {
@@ -52,16 +53,16 @@ export function HostSelector({ onSelect }: { onSelect: (hostId: string) => void 
   return (
     <Card className="mb-6">
       <CardHeader>
-        <CardTitle className="text-lg">Select Counselor or Coordinator</CardTitle>
+        <CardTitle className="text-lg">Select Counselor or Counselor</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="flex flex-col sm:flex-row gap-4 items-end">
           <div className="flex-1 w-full">
-            <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">Counselor / Coordinator</label>
+            <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">Counselor / Counselor</label>
             <Select value={selectedHostId} onChange={handleHostChange}>
               {hosts.map((host) => (
                 <option key={host.id} value={host.id}>
-                  {host.firstName} {host.lastName} ({host.role === 'counselor' ? 'Lead Counselor' : 'Coordinator'})
+                  {host.firstName} {host.lastName} ({host.isAdmin ? 'Lead Counselor' : 'Counselor'})
                 </option>
               ))}
             </Select>

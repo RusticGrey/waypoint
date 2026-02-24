@@ -10,7 +10,7 @@ export default async function StudentMeetingDetailPage({ params }: { params: { m
   const session = await getServerSession(authOptions);
   if (!session) return null;
 
-  const meeting = await prisma.scheduledMeeting.findUnique({
+  const meeting = await prisma.meeting.findUnique({
     where: { id: params.meetingId },
     include: {
       student: {
@@ -18,7 +18,11 @@ export default async function StudentMeetingDetailPage({ params }: { params: { m
           user: true,
         },
       },
-      host: true,
+      host: {
+        include: {
+          user: true,
+        },
+      },
     },
   });
 
@@ -36,7 +40,7 @@ export default async function StudentMeetingDetailPage({ params }: { params: { m
           <div>
             <h1 className="text-3xl font-bold text-black">{meeting.meetingType} Session</h1>
             <p className="text-gray-600 mt-2">
-              With <span className="font-semibold text-black">{meeting.host.firstName} {meeting.host.lastName}</span>
+              With <span className="font-semibold text-black">{meeting.host.user.firstName} {meeting.host.user.lastName}</span>
             </p>
             <div className="flex items-center gap-4 mt-4">
               <div className="flex items-center gap-2 text-sm text-gray-700 bg-gray-50 px-3 py-1.5 rounded-md border border-gray-200">
