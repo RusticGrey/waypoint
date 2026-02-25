@@ -61,8 +61,27 @@ export function HostMeetingsView({
   };
 
   useEffect(() => {
-    const interval = setInterval(refreshData, 30000);
-    return () => clearInterval(interval);
+    let interval: NodeJS.Timeout;
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        clearInterval(interval);
+      } else {
+        // Refresh immediately when tab becomes visible
+        refreshData();
+        // Resume polling
+        interval = setInterval(refreshData, 60000); // 1 minute interval
+      }
+    };
+
+    // Initial setup
+    interval = setInterval(refreshData, 60000); // 1 minute interval
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, [userId, role]);
 
   const filtered = filterMeetingsAndRequests(meetings, requests);

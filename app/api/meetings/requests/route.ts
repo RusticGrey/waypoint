@@ -138,15 +138,16 @@ export async function GET(req: Request) {
   const where: any = {};
   if (session.user.role === 'student') {
     where.studentId = session.user.id;
-  } else if (session.user.role === 'counselor' || session.user.role === 'counselor') {
-    if (session.user.role === 'counselor') {
+  } else if (session.user.role === 'counselor') {
+    // Both 'associate' and 'counselor' (admin) have 'counselor' role in NextAuth session
+    // but they should only see requests where they are the host, unless specifically filtering.
+    // However, for the dashboard, we want to default to the current user's hostId.
+    // const hostIdFilter = searchParams.get('hostId');
+    // if (hostIdFilter) {
+    //   where.hostId = hostIdFilter;
+    // } else {
       where.hostId = session.user.id;
-    } else {
-      const hostId = searchParams.get('hostId');
-      if (hostId) {
-        where.hostId = hostId;
-      }
-    }
+    // }
   }
 
   if (statusFilter) {

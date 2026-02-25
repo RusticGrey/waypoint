@@ -7,9 +7,13 @@ export default async function CounselorMeetingsPage() {
   const session = await getServerSession(authOptions);
   if (!session) return null;
 
-  // Global view for counselor
+  // Default to showing only requests and meetings for the logged-in counselor.
+  // We can add an 'admin' toggle in the future if they need to see everything.
   const requests = await prisma.meetingRequest.findMany({
-    where: { status: 'Pending' },
+    where: { 
+      status: 'Pending',
+      hostId: session.user.id
+    },
     include: {
       student: {
         include: {
@@ -23,7 +27,10 @@ export default async function CounselorMeetingsPage() {
   });
 
   const upcomingMeetings = await prisma.meeting.findMany({
-    where: { status: 'Upcoming' },
+    where: { 
+      status: 'Upcoming',
+      hostId: session.user.id
+    },
     include: {
       student: {
         include: {
