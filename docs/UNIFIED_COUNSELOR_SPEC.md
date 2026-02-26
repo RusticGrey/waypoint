@@ -1,72 +1,57 @@
 # Unified Counselor Role Spec (Single Role + Admin Flag)
 
 ## 1. Overview
-This specification outlines the architectural pivot to a **Single Role Model**. Instead of distinct `Counselor` and `Counselor` roles, all staff members will be defined as `Counselor`. Administrative capabilities (managing users, viewing organization-wide data) will be controlled by an `isAdmin` flag on the user record.
+The project has successfully pivoted to a **Single Role Model** for staff members. Instead of distinct roles for coordinators and associates, all counseling staff are defined as **Counselor**. Administrative capabilities (managing users, viewing organization-wide data) are controlled by an `isAdmin` flag on the user record.
 
 ## 2. Terminology
-- **Role:** Everyone is a **Counselor**.
+- **Role:** Everyone is a **Counselor** (staff side).
 - **Admin:** A Counselor with `isAdmin = true`.
 - **Caseload:** The students assigned to a specific Counselor.
 
-## 3. Database Changes (Prisma Schema)
-### 3.1. User Model
-- **Add Field:** `isAdmin Boolean @default(false) @map("is_admin")`
-- **Update Enum:** `UserRole` will only contain `counselor` and `student`. (Remove `counselor` and `counselor`).
+## 3. Database Implementation
+### 3.1. User & Counselor Model
+- **`isAdmin` Field:** Added to the `Counselor` model to toggle administrative access.
+- **Unified Role:** `UserRole` enum now only contains `counselor` and `student`.
 
 ### 3.2. Student Model
-- **Rename Field:** `counselorId` (formerly `counselorId`) -> `counselorId`.
-- **Rename Field:** `primaryCounselorId` -> `primaryCounselorId`.
-- **Relation:** Update `counselor` relation to `counselor`.
+- **Unified FK:** `counselorId` serves as the primary link between a student and their assigned staff member.
+- **Standardized Relation:** `counselor` relation points to the unified `Counselor` model.
 
-### 3.3. Availability Model
-- **Rename Model:** `CounselorAvailability` -> `CounselorAvailability`.
-- **Rename Field:** `counselorId` -> `counselorId`.
+### 3.3. Availability & Meetings
+- **Consolidated Models:** All meeting and availability logic is now strictly bound to the `Counselor` entity.
+- **Renaming:** Legacy `coordinator` or `associate` references have been standardized to `counselor` across the schema.
 
-### 3.4. Other Models (Meeting, ProfileOverride)
-- **Rename Field:** `counselorId` -> `counselorId`.
+## 4. API & Security
+- **Namespace:** All counselor-side APIs are located under `app/api/counselor/*`.
+- **Authorization:** 
+    - `if (session.user.role !== 'counselor')` -> Unauthorized.
+- **Admin Visibility:**
+    - Admins see organization-wide student lists and global meeting queues.
+    - Non-admins see their own caseload and personalized meeting queues.
+- **Manage Users:** Restricted to `if (!session.user.isAdmin) return 403`.
 
-## 4. Migration Logic
-1.  **Add `isAdmin` column.**
-2.  **Migrate Roles:**
-    - If `role` == 'counselor': Set `isAdmin = true`.
-    - If `role` == 'counselor' (or 'counselor'): Set `role = 'counselor'`, `isAdmin = false`.
-3.  **Rename Columns:** `counselor_id` -> `counselor_id`.
+## 5. Frontend Architecture
+### 5.1. Auth Integration
+- NextAuth session object includes `isAdmin` and `id` for immediate permission checking.
+- Middleware handles route-level protection for the `/counselor/*` path.
 
-## 5. API Restructuring
-- **Unified Route Namespace:** `app/api/counselor/*` (already done, but needs variable renaming).
-- **Logic Update:**
-    - Remove role checks for `'counselor'`.
-    - Replace with: `if (session.user.role !== 'counselor') return 401`.
-    - **Visibility Check:**
-        - If `session.user.isAdmin`: Return ALL students.
-        - If `!session.user.isAdmin`: Return students where `counselorId == session.user.id`.
-- **Manage Users (`api/counselor/users`)**:
-    - Strict check: `if (!session.user.isAdmin) return 403`.
+### 5.2. Unified Dashboard
+- **Location:** `app/(dashboard)/counselor/page.tsx`.
+- **Context-Aware UI:** 
+    - Admins see "All Students" vs "My Students" toggles.
+    - Non-admins land directly on their personal caseload view.
+    - Sensitive administrative buttons (Manage Users) are hidden for non-admins.
 
-## 6. Frontend Integration
-### 6.1. Auth & Middleware
-- Update types to include `isAdmin` in Session.
-- Middleware: Allow `counselor` role to access `/counselor/*`.
+## 6. Global Refactoring
+- All variable names (e.g. `assignedCounselorId`), folder paths, and UI labels have been verified and standardized to use "Counselor."
 
-### 6.2. Dashboard (`app/(dashboard)/counselor/page.tsx`)
-- **Title:** "Counselor Dashboard" (for everyone).
-- **Data Fetching:**
-    - If `!isAdmin`: Filter by `counselorId`.
-- **UI Elements:**
-    - Hide "Manage Users" button if `!isAdmin`.
-    - Show "My Students" vs "All Students" label based on `isAdmin`.
+## 7. Implementation Checklist
+- [x] Update Prisma Schema (Add `isAdmin`, consolidate models).
+- [x] Create and run Migration (SQL to map roles to flags).
+- [x] Update NextAuth Types (`types/next-auth.d.ts`).
+- [x] Refactor API Logic (Use `isAdmin` for global vs local data fetching).
+- [x] Refactor UI Components (Contextual display based on `isAdmin`).
+- [x] Standardize global naming conventions.
 
-### 6.3. Student Detail
-- Permission Check: If `!isAdmin`, ensure `student.counselorId === user.id`.
-
-## 7. Global Renaming
-- Codebase refactor to replace `counselor` variables with `counselor` where appropriate (e.g. `counselorId`, `assignedCounselor`).
-- UI labels: "Assigned Counselor" -> "Assigned Counselor".
-
-## 8. Implementation Checklist
-- [ ] Update Prisma Schema (Add `isAdmin`, rename fields).
-- [ ] Create and run Migration (SQL to map roles to flags).
-- [ ] Update NextAuth Types (`types/next-auth.d.ts`).
-- [ ] Refactor API Logic (Use `isAdmin` for permissions).
-- [ ] Refactor UI Components (Hide Admin features).
-- [ ] Rename variables and fields in code (`counselor` -> `counselor`).
+---
+*Status: Implemented & Verified*
