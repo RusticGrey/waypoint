@@ -128,14 +128,6 @@ export async function PATCH(
       // Declined, ChangeSuggested, Cancelled
       
       // Delete tentative GCal event if exists (free up the slot)
-      // Only for Declined or Cancelled. ChangeSuggested keeps it tentative?
-      // Spec says: "When a student has requested a slot, until its accepted or denied, others cannot book that slot."
-      // If ChangeSuggested, the original slot might still be blocked? 
-      // Usually ChangeSuggested implies the original time is not good. So we should probably clear it.
-      // Or maybe update it? For simplicity, let's delete it. The student will have to accept the new time or re-book.
-      // Actually, if status is 'ChangeSuggested', the request is still active but with new proposed time.
-      // But the original slot should be freed.
-      
       if (request.googleCalendarEventId && (validated.status === 'Declined' || validated.status === 'Cancelled' || validated.status === 'ChangeSuggested')) {
         try {
           console.log('Attempting to delete tentative GCal event:', request.googleCalendarEventId);
@@ -218,5 +210,57 @@ export async function GET(
   } catch (error) {
     console.error('Fetch Meeting Request Detail Error:', error);
     return NextResponse.json({ error: 'Failed to fetch request' }, { status: 500 });
+  }
+}
+
+export async function DELETE(
+  req: Request,
+  { params }: { params: { requestId: string } }
+) {
+  const session = await getServerSession(authOptions);
+  const { requestId } = params;
+
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  try {
+    const request = await prisma.meetingRequest.findUnique({
+      where: { id: requestId },
+    });
+
+    if (!request) {
+      return NextResponse.json({ error: 'Request not found' }, { status: 404 });
+    }
+
+    // Permission check: Counselor can delete anything, Student can only delete their own declined/cancelled requests
+    const isHost = session.user.id === request.hostId;
+    const isStudent = session.user.id === request.studentId;
+    const isCounselorRole = session.user.role === 'counselor';
+
+    if (!isCounselorRole && !isHost && !isStudent) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    // Students can only delete if it's already Declined or Cancelled
+    if (isStudent && !isCounselorRole && request.status !== 'Declined' && request.status !== 'Cancelled') {
+      return NextResponse.json({ error: 'Students can only delete declined or cancelled requests from their view.' }, { status: 400 });
+    }
+
+    // Cleanup tentative GCal event if deleting an active request (for counselors)
+    if (request.status === 'Pending' || request.status === 'ChangeSuggested') {
+      if (request.googleCalendarEventId) {
+        try { await deleteEvent(request.hostId, request.googleCalendarEventId); } catch (e) {}
+      }
+    }
+
+    await prisma.meetingRequest.delete({
+      where: { id: requestId },
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Delete Meeting Request Error:', error);
+    return NextResponse.json({ error: 'Failed to delete request' }, { status: 500 });
   }
 }

@@ -26,10 +26,11 @@ export default async function CounselorMeetingsPage() {
     orderBy: { createdAt: 'desc' },
   });
 
-  const upcomingMeetings = await prisma.meeting.findMany({
+  const meetings = await prisma.meeting.findMany({
     where: { 
-      status: 'Upcoming',
-      hostId: session.user.id
+      hostId: session.user.id,
+      // Include all relevant statuses; the client will handle timeline categorization
+      status: { in: ['Upcoming', 'InProgress', 'Completed', 'Cancelled'] }
     },
     include: {
       student: {
@@ -41,13 +42,13 @@ export default async function CounselorMeetingsPage() {
       host: true,
     },
     orderBy: { startTime: 'asc' },
-    take: 20,
+    take: 50, // Increase limit slightly to accommodate past sessions
   });
 
   return (
     <CounselorMeetingsClient 
       initialRequests={JSON.parse(JSON.stringify(requests || []))} 
-      initialMeetings={JSON.parse(JSON.stringify(upcomingMeetings || []))} 
+      initialMeetings={JSON.parse(JSON.stringify(meetings || []))} 
       userId={session.user.id} 
     />
   );

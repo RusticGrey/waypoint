@@ -90,7 +90,7 @@ export async function PATCH(
     if (validated.status === 'Cancelled') {
       if (updatedMeeting.conferencePlatform === 'Zoom' && updatedMeeting.conferenceId) {
         try {
-          await deleteZoomMeeting(meeting.hostId, meeting.conferenceId);
+          await deleteZoomMeeting(meeting.hostId, updatedMeeting.conferenceId);
         } catch (e) {
           console.error('Failed to delete Zoom meeting:', e);
         }
@@ -98,7 +98,7 @@ export async function PATCH(
       if (updatedMeeting.googleCalendarEventId) {
         try {
           console.log('Attempting to delete GCal event:', updatedMeeting.googleCalendarEventId);
-          await deleteEvent(updatedMeeting.hostId, updatedMeeting.googleCalendarEventId!);
+          await deleteEvent(updatedMeeting.hostId, updatedMeeting.googleCalendarEventId);
           console.log('GCal event deleted successfully');
         } catch (e) {
           console.error('Failed to delete Google Calendar event:', e);
@@ -123,7 +123,7 @@ export async function DELETE(
   const session = await getServerSession(authOptions);
   const { meetingId } = params;
 
-  if (!session?.user?.id || session.user.role !== 'counselor') {
+  if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -136,8 +136,23 @@ export async function DELETE(
       return NextResponse.json({ error: 'Meeting not found' }, { status: 404 });
     }
 
-    // Attempt cleanup if not already cancelled
-    if (meeting.status !== 'Cancelled') {
+    // Permission check
+    const isHost = session.user.id === meeting.hostId;
+    const isStudent = session.user.id === meeting.studentId;
+    const isCounselorRole = session.user.role === 'counselor';
+
+    if (!isCounselorRole && !isHost && !isStudent) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    // STRICT RULE: Students can ONLY delete if status is 'Cancelled'.
+    // They cannot delete 'Completed' meetings or active ones.
+    if (isStudent && !isCounselorRole && meeting.status !== 'Cancelled') {
+      return NextResponse.json({ error: 'Students can only delete cancelled meetings from their view.' }, { status: 400 });
+    }
+
+    // Attempt cleanup if not already cancelled (for counselors)
+    if (meeting.status === 'Upcoming' || meeting.status === 'InProgress') {
       if (meeting.conferencePlatform === 'Zoom' && meeting.conferenceId) {
         try { await deleteZoomMeeting(meeting.hostId, meeting.conferenceId); } catch (e) {}
       }

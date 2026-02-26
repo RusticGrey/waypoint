@@ -12,12 +12,13 @@ export interface FilteredMeetings {
 /**
  * Check if a meeting time slot is currently joinable (within 10 min before to end time)
  */
-export function isJoinableNow(startTime: Date, endTime: Date): boolean {
+export function isJoinableNow(startTime: Date | string, endTime: Date | string): boolean {
   const now = new Date();
   const start = new Date(startTime);
   const end = new Date(endTime);
   const tenMinutesBeforeStart = start.getTime() - 10 * 60000;
   
+  // Meeting is joinable 10 mins before start until it ends
   return now.getTime() >= tenMinutesBeforeStart && now.getTime() <= end.getTime();
 }
 
@@ -30,17 +31,33 @@ export function filterMeetingsAndRequests(
 ): FilteredMeetings {
   const now = new Date();
 
+  const pendingRequests = requests
+    .filter(r => r.status === 'Pending')
+    .sort((a, b) => new Date(a.requestedStart).getTime() - new Date(b.requestedStart).getTime());
+
+  const upcomingMeetings = meetings
+    .filter(m => {
+      const endTime = new Date(m.endTime);
+      return endTime.getTime() >= now.getTime() && m.status === 'Upcoming';
+    })
+    .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
+
+  const resolvedRequests = requests
+    .filter(r => r.status === 'Declined' || r.status === 'Cancelled')
+    .sort((a, b) => new Date(b.requestedStart).getTime() - new Date(a.requestedStart).getTime());
+
+  const pastMeetings = meetings
+    .filter(m => {
+      const endTime = new Date(m.endTime);
+      return endTime.getTime() < now.getTime() || m.status === 'Cancelled' || m.status === 'Completed';
+    })
+    .sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime());
+
   return {
-    pendingRequests: requests.filter(r => r.status === 'Pending'),
-    upcomingMeetings: meetings.filter(
-      m => new Date(m.startTime) > now && m.status !== 'Cancelled'
-    ),
-    resolvedRequests: requests.filter(
-      r => r.status === 'Declined' || r.status === 'Cancelled'
-    ),
-    pastMeetings: meetings.filter(
-      m => new Date(m.startTime) <= now || m.status === 'Cancelled'
-    ),
+    pendingRequests,
+    upcomingMeetings,
+    resolvedRequests,
+    pastMeetings,
   };
 }
 

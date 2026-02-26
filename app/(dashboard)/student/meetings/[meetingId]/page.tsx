@@ -3,8 +3,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import { MeetingBackButton } from '@/components/meetings/MeetingBackButton';
-import { Button } from '@/components/ui/button';
-import { MeetingManagementClient } from './MeetingManagementClient';
+import StudentMeetingDetailClient from './StudentMeetingDetailClient';
 
 export default async function StudentMeetingDetailPage({ params }: { params: { meetingId: string } }) {
   const session = await getServerSession(authOptions);
@@ -23,6 +22,7 @@ export default async function StudentMeetingDetailPage({ params }: { params: { m
           user: true,
         },
       },
+      note: true,
     },
   });
 
@@ -45,25 +45,55 @@ export default async function StudentMeetingDetailPage({ params }: { params: { m
           <div className="flex flex-wrap items-center gap-3 mt-4">
             <div className="flex items-center gap-2 text-sm text-gray-700 bg-gradient-to-br from-blue-50 to-white px-4 py-2 rounded-lg border border-blue-200">
               <span className="text-lg">📅</span>
-              <span>{new Date(meeting.startTime).toLocaleDateString(undefined, { dateStyle: 'long' })}</span>
+              <span>{new Date(meeting.startTime).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
             </div>
             <div className="flex items-center gap-2 text-sm text-gray-700 bg-gradient-to-br from-amber-50 to-white px-4 py-2 rounded-lg border border-amber-200">
               <span className="text-lg">⏰</span>
               <span>{new Date(meeting.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(meeting.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
             </div>
-            <span className={`ml-auto px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wide ${
-              meeting.status === 'Completed' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'
-            }`}>
-              {meeting.status === 'Upcoming' ? '✅ Confirmed' : meeting.status}
-            </span>
+            {(() => {
+                const now = new Date();
+                const start = new Date(meeting.startTime);
+                const end = new Date(meeting.endTime);
+                const isCancelled = meeting.status === 'Cancelled';
+                const isCompleted = meeting.status === 'Completed';
+                const isOngoing = start <= now && end >= now && !isCancelled && !isCompleted;
+                const isPast = end < now;
+                
+                let label = meeting.status === 'Upcoming' ? '✅ Confirmed' : meeting.status;
+                let colorClass = 'bg-blue-100 text-blue-700';
+
+                if (isCancelled) {
+                  label = 'Cancelled';
+                  colorClass = 'bg-red-100 text-red-700';
+                } else if (isCompleted) {
+                  label = 'Completed';
+                  colorClass = 'bg-green-100 text-green-700';
+                } else if (isOngoing) {
+                  label = 'Ongoing';
+                  colorClass = 'bg-amber-100 text-amber-700';
+                } else if (isPast) {
+                  label = 'Past';
+                  colorClass = 'bg-gray-100 text-gray-700';
+                }
+
+                return (
+                  <span className={`ml-auto px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wide ${colorClass}`}>
+                    {label}
+                  </span>
+                );
+              })()}
           </div>
         </div>
+
+        {/* Client side component for notes and editing */}
+        <StudentMeetingDetailClient initialMeeting={JSON.parse(JSON.stringify(meeting))} />
 
         <div className="space-y-4">
            <h2 className="text-lg font-bold text-black">Meeting Details</h2>
            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-3">
-                {meeting.conferenceJoinUrl && meeting.status === 'Upcoming' && (
+                {meeting.conferenceJoinUrl && (meeting.status === 'Upcoming' || (new Date(meeting.startTime) <= new Date() && new Date(meeting.endTime) >= new Date())) && (
                   <div>
                     <p className="text-xs font-bold text-gray-500 uppercase">Meeting Link</p>
                     <a href={meeting.conferenceJoinUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline break-all">
@@ -76,16 +106,6 @@ export default async function StudentMeetingDetailPage({ params }: { params: { m
                    <p className="text-sm text-gray-700 mt-1">{meeting.agenda || 'No agenda provided.'}</p>
                 </div>
               </div>
-           </div>
-        </div>
-
-        <MeetingManagementClient meeting={JSON.parse(JSON.stringify(meeting))} />
-
-        <div className="pt-8 border-t">
-           <div className="bg-blue-50 border border-blue-100 p-4 rounded-lg">
-              <p className="text-sm text-blue-800">
-                💡 Intelligence and automated notes for this session will be available in Phase 2.
-              </p>
            </div>
         </div>
       </div>

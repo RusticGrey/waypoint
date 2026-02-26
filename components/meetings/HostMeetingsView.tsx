@@ -40,21 +40,25 @@ export function HostMeetingsView({
 
   const refreshData = async () => {
     try {
+      // Use no-store to avoid race conditions with Vercel/Next.js data caching
       const [reqRes, meetRes] = await Promise.all([
-        fetch('/api/meetings/requests?status=Pending'),
-        fetch('/api/meetings/scheduled')
+        fetch('/api/meetings/requests?status=Pending', { cache: 'no-store' }),
+        fetch('/api/meetings/scheduled', { cache: 'no-store' })
       ]);
+      
+      if (!reqRes.ok || !meetRes.ok) {
+        throw new Error('Failed to fetch data');
+      }
+
       const reqData = await reqRes.json();
       const meetData = await meetRes.json();
       
-      if (role === 'counselor') {
+      // Ensure we only update state if data is valid arrays
+      if (Array.isArray(reqData) && Array.isArray(meetData)) {
         setRequests(reqData);
         setMeetings(meetData);
-      } else {
-        setRequests(reqData.filter((r: any) => String(r.hostId) === String(userId)));
-        setMeetings(meetData.filter((m: any) => String(m.hostId) === String(userId)));
+        setRefreshKey(prev => prev + 1);
       }
-      setRefreshKey(prev => prev + 1);
     } catch (error) {
       console.error('Refresh error:', error);
     }
@@ -119,7 +123,7 @@ export function HostMeetingsView({
             </Card>
             <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
               <CardContent className="p-4">
-                <p className="text-xs text-blue-700 font-semibold uppercase">Upcoming Meetings</p>
+                <p className="text-xs text-blue-700 font-semibold uppercase">Upcoming & Ongoing</p>
                 <p className="text-3xl font-bold text-blue-900 mt-1">{totalStats.upcoming}</p>
               </CardContent>
             </Card>
@@ -163,7 +167,7 @@ export function HostMeetingsView({
               <div className="space-y-8">
                 {/* Upcoming Meetings */}
                 <section className="space-y-4">
-                  <h2 className="text-2xl font-semibold text-gray-900">📅 Upcoming Meetings</h2>
+                  <h2 className="text-2xl font-semibold text-gray-900">📅 Upcoming & Ongoing Meetings</h2>
                   <div className="space-y-4">
                     {filtered.upcomingMeetings.length > 0 ? (
                       filtered.upcomingMeetings.map((meeting: any) => (

@@ -36,7 +36,6 @@ model User {
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   student      Student?     @relation("UserToStudent")
   counselor    Counselor?   @relation("UserToCounselor")
-  meetingLogs  MeetingLog[]
 
   @@map("User")
 }
@@ -79,7 +78,6 @@ model Student {
   testScores          TestScore[]
   projectExperiences  ProjectExperience[]
   applications        CollegeApplication[]
-  meetingLogs         MeetingLog[]
   goals               ProfileGoal[]
   changeLogs          ChangeLog[]
   profileOverride     ProfileOverride?
@@ -318,14 +316,21 @@ model MeetingNote {
   meetingId       String      @unique @map("meeting_id")
   studentId       String      @map("student_id")
   counselorId     String      @map("counselor_id")
-  meetingDate     DateTime    @map("meeting_date")
-  durationMinutes Int?        @map("duration_minutes")
-  meetingType     MeetingType @default(Regular) @map("meeting_type")
-  topicsDiscussed String[]    @map("topics_discussed")
-  notes           String?
+  
+  // Note Fields
+  counselorNotes  String?     @map("counselor_notes")
+  studentNotes    String?     @map("student_notes")
   actionItems     String[]    @map("action_items")
-  nextMeetingDate DateTime?   @map("next_meeting_date")
+  
+  // Additional Tracking
   studentMood     String?     @map("student_mood")
+  nextMeetingDate DateTime?   @map("next_meeting_date")
+  
+  // Future state placeholders
+  transcriptUrl   String?     @map("transcript_url")
+  recordingUrl    String?     @map("recording_url")
+  summaryAi       String?     @map("summary_ai")
+  
   createdAt       DateTime    @default(now()) @map("created_at")
   updatedAt       DateTime    @updatedAt @map("updated_at")
 
@@ -336,19 +341,6 @@ model MeetingNote {
   @@map("MeetingNote")
 }
 
-model MeetingLog {
-  id        String   @id @default(cuid())
-  meetingId String?  @map("meeting_id")
-  userId    String   @map("user_id")
-  studentId String   @map("student_id")
-  logEntry  String   @map("log_entry")
-  createdAt DateTime @default(now()) @map("created_at")
-
-  user    User    @relation(fields: [userId], references: [id])
-  student Student @relation(fields: [studentId], references: [userId])
-
-  @@map("MeetingLog")
-}
 
 model ChangeLog {
   id          String       @id @default(cuid())

@@ -2,12 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 import { Card, CardContent } from '@/components/ui/card';
 import { StatusBadge } from '@/components/meetings/StatusBadge';
 import { AvatarInitials } from '@/components/meetings/AvatarInitials';
+import { MeetingCard } from '@/components/meetings/MeetingCard';
 import {
   filterMeetingsAndRequests,
   formatDate,
+  formatTimeRange,
   isJoinableNow,
 } from '@/lib/meetings/meetingUtils';
 
@@ -59,14 +62,14 @@ function PendingRequestCard({ request }: { request: any }) {
                     {request.meetingType}
                   </div>
                   <div className="text-xs text-gray-600 truncate">
-                    {request.host.user.firstName} {request.host.user.lastName}
+                    Meeting with {request.host.user.firstName} {request.host.user.lastName}
                   </div>
                 </div>
               </div>
               <div className="space-y-1 pl-11">
                 <div className="text-sm font-medium text-yellow-700">⏳ Awaiting Response</div>
-                <div className="text-xs text-gray-600">
-                  📅 {formatDate(request.requestedStart)} • {new Date(request.requestedStart).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                <div className="text-xs text-gray-600 font-medium">
+                  📅 {formatDate(request.requestedStart)} • ⏰ {formatTimeRange(request.requestedStart, request.requestedEnd)}
                 </div>
               </div>
             </div>
@@ -78,104 +81,53 @@ function PendingRequestCard({ request }: { request: any }) {
   );
 }
 
-function UpcomingMeetingCard({ meeting }: { meeting: any }) {
-  const isJoinable = isJoinableNow(meeting.startTime, meeting.endTime);
+function ResolvedRequestCard({ request, onDelete }: { request: any, onDelete: () => void }) {
+  const { data: session } = useSession();
+  const [isDeleting, setIsDeleting] = useState(false);
+  
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!confirm('Remove this request from your view?')) return;
+    
+    setIsDeleting(true);
+    try {
+      const res = await fetch(`/api/meetings/requests/${request.id}`, { method: 'DELETE' });
+      if (res.ok) onDelete();
+      else alert('Failed to delete request');
+    } catch (err) {
+      alert('Error deleting request');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   return (
-    <Link key={meeting.id} href={`/student/meetings/${meeting.id}`} className="block group">
-      <Card className="border-l-4 border-l-blue-500 bg-gradient-to-br from-blue-50 to-white hover:from-blue-100 shadow-sm hover:shadow-lg transition-all hover:border-l-blue-600 group-hover:scale-[1.01]">
-        <CardContent className="p-4">
-          <div className="flex justify-between items-start gap-3">
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-3 mb-3">
-                <AvatarInitials
-                  firstName={meeting.host.user.firstName}
-                  lastName={meeting.host.user.lastName}
-                  size="sm"
-                />
-                <div className="flex-1 min-w-0">
-                  <div className="font-bold text-sm text-gray-900 truncate">
-                    {meeting.meetingType}
-                  </div>
-                  <div className="text-xs text-gray-600 truncate">
-                    {meeting.host.user.firstName} {meeting.host.user.lastName}
-                  </div>
-                </div>
-              </div>
-              <div className="space-y-1 pl-11">
-                <div className="text-xs text-gray-600 font-medium">
-                  📅 {formatDate(meeting.startTime)} • ⏰ {new Date(meeting.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                </div>
-                {meeting.conferenceJoinUrl && (
-                  <div className="text-xs">
-                    <span className="inline-block px-2 py-1 rounded bg-blue-100 text-blue-700 font-medium">
-                      {meeting.conferencePlatform === 'Zoom' ? '🎥 Zoom' : '📹 Google Meet'}
-                    </span>
-                  </div>
-                )}
-              </div>
-            </div>
-            <div className="flex flex-col items-end gap-2">
-              <StatusBadge status="Confirmed" />
-              {isJoinable && meeting.conferenceJoinUrl && (
-                <button 
-                  onClick={(e) => {
-                    e.preventDefault();
-                    window.open(meeting.conferenceJoinUrl, '_blank');
-                  }}
-                  className="text-[10px] font-bold text-white bg-green-600 hover:bg-green-700 animate-pulse px-2 py-1 rounded"
-                >
-                  🎥 Join Now
-                </button>
-              )}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </Link>
-  );
-}
-
-function ResolvedRequestCard({ request }: { request: any }) {
-  return (
-    <Link key={request.id} href={`/student/meetings/requests/${request.id}`} className="block opacity-70 hover:opacity-100 transition-opacity">
+    <Link key={request.id} href={`/student/meetings/requests/${request.id}`} className={`block opacity-70 hover:opacity-100 transition-opacity ${isDeleting ? 'pointer-events-none' : ''}`}>
       <Card className="border-l-4 border-l-gray-300 bg-gray-50 shadow-sm">
         <CardContent className="p-3">
-          <div className="flex justify-between items-center gap-3">
+          <div className="flex justify-between items-start gap-3">
             <div className="flex-1 min-w-0">
               <div className="font-bold text-sm text-gray-700 truncate">{request.meetingType}</div>
               <div className="text-xs text-gray-600 truncate">
-                {request.host.user.firstName} {request.host.user.lastName}
+                Meeting with {request.host.user.firstName} {request.host.user.lastName}
+              </div>
+              <div className="text-[10px] text-gray-500 mt-1">
+                 📅 {formatDate(request.requestedStart)} • {formatTimeRange(request.requestedStart, request.requestedEnd)}
               </div>
             </div>
-            <StatusBadge status={request.status} />
-          </div>
-        </CardContent>
-      </Card>
-    </Link>
-  );
-}
-
-function PastMeetingCard({ meeting }: { meeting: any }) {
-  const isCancelled = meeting.status === 'Cancelled';
-
-  return (
-    <Link key={meeting.id} href={`/student/meetings/${meeting.id}`} className="block">
-      <Card className={`bg-gray-50 border-l-4 transition-all hover:shadow-md ${
-        isCancelled ? 'border-l-red-300' : 'border-l-gray-300'
-      } opacity-80 hover:opacity-100`}>
-        <CardContent className="p-4">
-          <div className="flex justify-between items-start gap-3">
-            <div className="flex-1 min-w-0">
-              <div className="font-medium text-sm text-gray-700 truncate">{meeting.meetingType}</div>
-              <div className="text-xs text-gray-600 truncate">
-                {meeting.host.user.firstName} {meeting.host.user.lastName}
-              </div>
-              <div className="text-xs text-gray-500 mt-1">
-                {formatDate(meeting.startTime)}
-              </div>
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={handleDelete}
+                className="p-1 text-gray-400 hover:text-red-500 transition-colors rounded-full hover:bg-red-50"
+                title="Remove from view"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
+              <StatusBadge status={request.status} />
             </div>
-            <StatusBadge status={meeting.status} />
           </div>
         </CardContent>
       </Card>
@@ -192,9 +144,10 @@ export function StudentMeetingList({ studentId }: StudentMeetingListProps) {
 
   const fetchData = async () => {
     try {
+      // Use no-cache to ensure we get fresh data after a delete
       const [meetRes, reqRes] = await Promise.all([
-        fetch('/api/meetings/scheduled'),
-        fetch('/api/meetings/requests'),
+        fetch('/api/meetings/scheduled', { cache: 'no-store' }),
+        fetch('/api/meetings/requests', { cache: 'no-store' }),
       ]);
 
       const meetData = await meetRes.json();
@@ -237,6 +190,10 @@ export function StudentMeetingList({ studentId }: StudentMeetingListProps) {
     );
   }
 
+  const handleRefresh = () => {
+    fetchData();
+  };
+
   return (
     <div className="space-y-6">
       <MeetingSection
@@ -247,10 +204,10 @@ export function StudentMeetingList({ studentId }: StudentMeetingListProps) {
       />
 
       <MeetingSection
-        title="Upcoming Meetings"
+        title="Upcoming & Ongoing Meetings"
         color="text-blue-600"
         items={filtered.upcomingMeetings}
-        renderItem={(meeting) => <UpcomingMeetingCard key={meeting.id} meeting={meeting} />}
+        renderItem={(meeting) => <MeetingCard key={meeting.id} meeting={meeting} onDelete={handleRefresh} />}
       />
 
       {filtered.resolvedRequests.length > 0 && (
@@ -258,7 +215,7 @@ export function StudentMeetingList({ studentId }: StudentMeetingListProps) {
           title="Closed Requests"
           color="text-gray-400"
           items={filtered.resolvedRequests.slice(0, 3)}
-          renderItem={(req) => <ResolvedRequestCard key={req.id} request={req} />}
+          renderItem={(req) => <ResolvedRequestCard key={req.id} request={req} onDelete={handleRefresh} />}
         />
       )}
 
@@ -267,7 +224,7 @@ export function StudentMeetingList({ studentId }: StudentMeetingListProps) {
           title="Past & Cancelled Sessions"
           color="text-gray-500"
           items={filtered.pastMeetings.slice(0, 10)}
-          renderItem={(meeting) => <PastMeetingCard key={meeting.id} meeting={meeting} />}
+          renderItem={(meeting) => <MeetingCard key={meeting.id} meeting={meeting} onDelete={handleRefresh} />}
         />
       )}
     </div>
