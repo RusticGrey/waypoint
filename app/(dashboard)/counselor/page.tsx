@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import Link from 'next/link';
+import { featureFlags } from '@/lib/feature-flags';
 
 export default async function StaffDashboard() {
   const session = await getServerSession(authOptions);
@@ -21,38 +22,40 @@ export default async function StaffDashboard() {
   const roleTitle = isAdmin ? 'Admin Counselor' : 'Counselor';
 
   // Get students based on role
-  const where: any = {
-    user: {
-      organizationId: session.user.organizationId,
-    },
-  };
-
-  // Admins see all students in the organization, standard counselors see their caseload
-  if (!isAdmin) {
-    where.counselorId = session.user.id;
-  }
-
-  const students = await prisma.student.findMany({
-    where,
-    include: {
+  let students: any[] = [];
+  if (featureFlags.counselorDashboard.studentsList) {
+    const where: any = {
       user: {
-        select: {
-          firstName: true,
-          lastName: true,
-          email: true,
+        organizationId: session.user.organizationId,
+      },
+    };
+
+    if (!isAdmin) {
+      where.counselorId = session.user.id;
+    }
+
+    students = await prisma.student.findMany({
+      where,
+      include: {
+        user: {
+          select: {
+            firstName: true,
+            lastName: true,
+            email: true,
+          },
+        },
+        personalProfile: true,
+        academicProfile: true,
+        transcripts: true,
+        activities: true,
+      },
+      orderBy: {
+        user: {
+          lastName: 'asc',
         },
       },
-      personalProfile: true,
-      academicProfile: true,
-      transcripts: true,
-      activities: true,
-    },
-    orderBy: {
-      user: {
-        lastName: 'asc',
-      },
-    },
-  });
+    });
+  }
 
   const studentsByPhase = {
     Onboarding: students.filter((s) => s.phase === 'Onboarding'),
@@ -141,8 +144,17 @@ export default async function StaffDashboard() {
       </div>
 
       {/* Meeting Management Quick Links */}
-      {showMeetings && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        {featureFlags.counselorDashboard.eventManagement && (
+          <Link href="/counselor/events" className="group p-4 bg-white rounded-lg border-2 border-blue-100 hover:border-blue-500 hover:shadow-md transition-all flex items-center gap-3">
+            <span className="text-2xl group-hover:scale-110 transition-transform">🤝</span>
+            <div>
+              <span className="font-bold text-black block">Event Management</span>
+              <span className="text-xs text-gray-500">Public events & consultations</span>
+            </div>
+          </Link>
+        )}
+        {showMeetings && featureFlags.counselorDashboard.quickLinks.meetings && (
           <Link href="/counselor/meetings" className="group p-4 bg-white rounded-lg border border-gray-200 hover:border-blue-500 hover:shadow-md transition-all flex items-center gap-3">
             <span className="text-2xl group-hover:scale-110 transition-transform">🗓️</span>
             <div>
@@ -150,6 +162,8 @@ export default async function StaffDashboard() {
               <span className="text-xs text-gray-500">View calendar and requests</span>
             </div>
           </Link>
+        )}
+        {showMeetings && featureFlags.counselorDashboard.quickLinks.availability && (
           <Link href="/counselor/meetings/availability" className="group p-4 bg-white rounded-lg border border-gray-200 hover:border-blue-500 hover:shadow-md transition-all flex items-center gap-3">
             <span className="text-2xl group-hover:scale-110 transition-transform">⏰</span>
             <div>
@@ -157,6 +171,8 @@ export default async function StaffDashboard() {
               <span className="text-xs text-gray-500">Define your working hours</span>
             </div>
           </Link>
+        )}
+        {showMeetings && featureFlags.counselorDashboard.quickLinks.profile && (
           <Link href="/counselor/profile" className="group p-4 bg-white rounded-lg border border-gray-200 hover:border-blue-500 hover:shadow-md transition-all flex items-center gap-3">
             <span className="text-2xl group-hover:scale-110 transition-transform">⚙️</span>
             <div>
@@ -164,61 +180,74 @@ export default async function StaffDashboard() {
               <span className="text-xs text-gray-500">Manage integrations</span>
             </div>
           </Link>
+        )}
+      </div>
+
+      {/* Stats */}
+      {featureFlags.counselorDashboard.stats && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">{!isAdmin ? 'My Students' : 'Total Students'}</p>
+                  <p className="text-3xl font-bold text-gray-900">{students.length}</p>
+                </div>
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                  <span className="text-2xl">👥</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Profiles Complete</p>
+                  <p className="text-3xl font-bold text-gray-900">
+                    {students.filter(s => s.profileCompletionPct >= 80).length}
+                  </p>
+                </div>
+                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                  <span className="text-2xl">✓</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Needs Attention</p>
+                  <p className="text-3xl font-bold text-gray-900">{students.filter((s) => s.profileCompletionPct < 50).length}</p>
+                </div>
+                <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
+                  <span className="text-2xl">⚠️</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       )}
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">{!isAdmin ? 'My Students' : 'Total Students'}</p>
-                <p className="text-3xl font-bold text-gray-900">{students.length}</p>
-              </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                <span className="text-2xl">👥</span>
-              </div>
-            </div>
+      {featureFlags.counselorDashboard.studentsList && (
+        <>
+          {renderStudentTable('Onboarding Phase', studentsByPhase.Onboarding)}
+          {renderStudentTable('Profile Building Phase', studentsByPhase.Profile_Building)}
+          {renderStudentTable('College Applications Phase', studentsByPhase.College_Applications)}
+        </>
+      )}
+
+      {!featureFlags.counselorDashboard.studentsList && !featureFlags.counselorDashboard.stats && (
+        <Card className="bg-slate-50 border-dashed border-2">
+          <CardContent className="py-20 text-center text-slate-500">
+            <span className="text-4xl block mb-4">🏠</span>
+            Welcome to your Dashboard. Access features from the quick links above.
           </CardContent>
         </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Profiles Complete</p>
-                <p className="text-3xl font-bold text-gray-900">
-                  {students.filter(s => s.profileCompletionPct >= 80).length}
-                </p>
-              </div>
-              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                <span className="text-2xl">✓</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Needs Attention</p>
-                <p className="text-3xl font-bold text-gray-900">
-                  {students.filter(s => s.profileCompletionPct < 50).length}
-                </p>
-              </div>
-              <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
-                <span className="text-2xl">⚠️</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {renderStudentTable('Onboarding Phase', studentsByPhase.Onboarding)}
-      {renderStudentTable('Profile Building Phase', studentsByPhase.Profile_Building)}
-      {renderStudentTable('College Applications Phase', studentsByPhase.College_Applications)}
+      )}
     </div>
   );
 }

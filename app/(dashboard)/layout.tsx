@@ -5,8 +5,8 @@ import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import { isNewStudent } from '@/lib/api-helpers/profile';
-import { boolean } from 'zod';
 import { NavClientComponent } from '@/components/dashboard/NavClientComponent';
+import { featureFlags } from '@/lib/feature-flags';
 
 export default async function DashboardLayout({
   children,
@@ -36,82 +36,14 @@ export default async function DashboardLayout({
   }  
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white text-slate-900">
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center">
-            <div className="flex items-center gap-8">
-              <Link href={`/${session.user.role}`} className="text-2xl font-bold text-blue-600 hover:text-blue-700">
-                WayPoint
-              </Link>
-              
-              { (session.user.role === 'student') && (studentPhase !== 'Onboarding') && (
-                <nav className="hidden md:flex gap-6">
-                  <Link href="/student" className="text-gray-700 hover:text-blue-600 font-medium">
-                    Dashboard
-                  </Link>
-                  <Link href="/student/profile" className="text-gray-700 hover:text-blue-600 font-medium">
-                    Profile
-                  </Link>
-                  
-                  {studentPhase !== 'Onboarding' && (
-                    <>
-                      <Link href="/student/goals" className="text-gray-700 hover:text-blue-600 font-medium">
-                        Goals
-                      </Link>
-                      <Link href="/student/test-scores" className="text-gray-700 hover:text-blue-600 font-medium">
-                        Test Scores
-                      </Link>
-                      <Link href="/student/history" className="text-gray-700 hover:text-blue-600 font-medium">
-                        History
-                      </Link>
-                      {showMeetings && (
-                        <Link href="/student/meetings" className="text-gray-700 hover:text-blue-600 font-medium">
-                          Meetings
-                        </Link>
-                      )}
-                    </>
-                  )}
-
-                  {studentPhase === 'College_Applications' && (
-                    <>
-                      <Link href="/student/colleges" className="text-gray-700 hover:text-blue-600 font-medium">
-                        Colleges
-                      </Link>
-                      <Link href="/student/applications" className="text-gray-700 hover:text-blue-600 font-medium">
-                        Applications
-                      </Link>
-                      <Link href="/student/analysis" className="text-gray-700 hover:text-blue-600 font-medium">
-                        Analysis
-                      </Link>
-                    </>
-                  )}
-                </nav>
-              )}
-
-              {session.user.role === 'counselor' && (
-                <nav className="hidden md:flex gap-6">
-                  <Link href="/counselor" className="text-gray-700 hover:text-blue-600 font-medium">
-                    Dashboard
-                  </Link>
-                  {showMeetings && (
-                    <Link href="/counselor/meetings" className="text-gray-700 hover:text-blue-600 font-medium">
-                      Manage Meetings
-                    </Link>
-                  )}
-                  {session.user.isAdmin && (
-                    <Link href="/counselor/manage-users" className="text-gray-700 hover:text-blue-600 font-medium">
-                      Manage Users
-                    </Link>
-                  )}
-                  <Link href="/admin/subjects" className="text-gray-700 hover:text-blue-600 font-medium">
-                    Manage Courses
-                  </Link>
-                  <Link href="/admin/colleges" className="text-gray-700 hover:text-blue-600 font-medium">
-                    Manage Colleges
-                  </Link>
-                </nav>
-              )}
+          <div className="flex items-center gap-8">
+            <Link href={`/${session.user.role}`} className="text-2xl font-bold text-blue-600 hover:text-blue-700">
+              {featureFlags.branding.logoText}
+            </Link>
             </div>
 
             <div className="flex items-center gap-4">
@@ -124,7 +56,7 @@ export default async function DashboardLayout({
 
               <div className="w-px h-6 bg-gray-300"></div>
               
-              <NavClientComponent role={session.user.role} isAdmin={session.user.isAdmin} />
+              <NavClientComponent role={session.user.role} isAdmin={session.user.isAdmin} studentPhase={studentPhase} />
               
               <Link
                 href="/api/auth/signout"
@@ -145,7 +77,7 @@ export default async function DashboardLayout({
         <footer className="bg-white border-t mt-auto">
           <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
             <p className="text-center text-sm text-gray-500">
-              © 2026 WayPoint. College Counseling Platform.
+              © 2026 {featureFlags.branding.name}. {featureFlags.branding.fullTitle}.
             </p>
           </div>
         </footer>

@@ -6,6 +6,7 @@ import { transcriptSchema, TranscriptInput } from '@/lib/validations/student';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useState, useMemo, useEffect } from 'react';
+import { cn } from '@/lib/utils';
 
 interface Props {
   onNext: (data: any[], completionPercentage?: number) => void;
@@ -46,7 +47,7 @@ export default function TranscriptForm({ onNext, onSave, onBack, initialData = [
     reset,
     watch,
     setValue,
-  } = useForm<TranscriptInput>({
+  } = useForm<any>({
     resolver: zodResolver(transcriptSchema),
     defaultValues: {
       honorsLevel: 'Standard',
@@ -231,16 +232,16 @@ export default function TranscriptForm({ onNext, onSave, onBack, initialData = [
         )}
 
         {showForm && (
-          <form onSubmit={handleSubmit(onSubmitCourse)} className="space-y-4 p-4 border rounded-lg bg-gray-50">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Course Name *
+          <form onSubmit={handleSubmit(onSubmitCourse)} className="space-y-6 p-6 border border-slate-200 rounded-lg bg-slate-50/50 animate-in fade-in zoom-in-95 duration-200">
+            <div className="space-y-1.5">
+              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+                Course Name <span className="text-red-500">*</span>
               </label>
               {!useCustomCourse ? (
                 <div>
                   <select
                     {...register('courseName')}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
+                    className="w-full h-10 px-3 py-2 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                   >
                     <option value="">Select a course</option>
                     {availableCourses.map((course) => (
@@ -255,7 +256,7 @@ export default function TranscriptForm({ onNext, onSave, onBack, initialData = [
                       setUseCustomCourse(true);
                       setValue('courseName', '');
                     }}
-                    className="mt-2 text-sm text-blue-600 hover:text-blue-700"
+                    className="mt-2 text-[10px] uppercase font-bold text-blue-600 hover:text-blue-700 tracking-wider"
                   >
                     + Add custom course name
                   </button>
@@ -265,7 +266,7 @@ export default function TranscriptForm({ onNext, onSave, onBack, initialData = [
                   <Input
                     placeholder="Enter course name"
                     {...register('courseName')}
-                    error={errors.courseName?.message}
+                    className="bg-white border-slate-200 focus:ring-2 focus:ring-blue-500/20"
                   />
                   <button
                     type="button"
@@ -273,25 +274,25 @@ export default function TranscriptForm({ onNext, onSave, onBack, initialData = [
                       setUseCustomCourse(false);
                       setValue('courseName', '');
                     }}
-                    className="mt-2 text-sm text-blue-600 hover:text-blue-700"
+                    className="mt-2 text-[10px] uppercase font-bold text-blue-600 hover:text-blue-700 tracking-wider"
                   >
                     ← Choose from standard courses
                   </button>
                 </div>
               )}
               {errors.courseName && (
-                <p className="mt-1 text-sm text-red-600">{errors.courseName.message}</p>
+                <p className="mt-1 text-xs text-red-500 font-bold">{(errors.courseName as any).message}</p>
               )}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Grade Level *
+              <div className="space-y-1.5">
+                <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+                  Grade Level <span className="text-red-500">*</span>
                 </label>
                 <select
                   {...register('gradeLevel')}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
+                  className="w-full h-10 px-3 py-2 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                 >
                   <option value="">Select grade</option>
                   {availableGrades.map((grade) => (
@@ -299,17 +300,17 @@ export default function TranscriptForm({ onNext, onSave, onBack, initialData = [
                   ))}
                 </select>
                 {errors.gradeLevel && (
-                  <p className="mt-1 text-sm text-red-600">{errors.gradeLevel.message}</p>
+                  <p className="mt-1 text-xs text-red-500 font-bold">{(errors.gradeLevel as any).message}</p>
                 )}
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Semester *
+              <div className="space-y-1.5">
+                <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+                  Semester <span className="text-red-500">*</span>
                 </label>
                 <select
                   {...register('semester')}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
+                  className="w-full h-10 px-3 py-2 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                 >
                   <option value="Full_Year">Full Year</option>
                   <option value="Fall">Fall Semester</option>
@@ -318,21 +319,26 @@ export default function TranscriptForm({ onNext, onSave, onBack, initialData = [
               </div>
             </div>
 
-            <Input
-              label={getGradeLabel() + ' *'}
-              placeholder={curriculum === 'CBSE' ? 'e.g., 95' : 'Your grade'}
-              {...register('gradeValue')}
-              error={errors.gradeValue?.message}
-            />
+            <div className="space-y-1.5">
+              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+                {getGradeLabel()} <span className="text-red-500">*</span>
+              </label>
+              <Input
+                placeholder={curriculum === 'CBSE' ? 'e.g., 95' : 'Your grade'}
+                {...register('gradeValue')}
+                className="bg-white border-slate-200 focus:ring-2 focus:ring-blue-500/20"
+              />
+              {errors.gradeValue && <p className="text-xs text-red-500 font-bold">{(errors.gradeValue as any).message}</p>}
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+              <div className="space-y-1.5">
+                <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
                   Honors Level
                 </label>
                 <select
                   {...register('honorsLevel')}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
+                  className="w-full h-10 px-3 py-2 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                 >
                   <option value="Standard">Standard</option>
                   <option value="Honors">Honors</option>
@@ -346,10 +352,11 @@ export default function TranscriptForm({ onNext, onSave, onBack, initialData = [
                 <div className="flex items-center pt-6">
                   <input
                     type="checkbox"
+                    id="isBoardExam"
                     {...register('isBoardExam')}
-                    className="h-4 w-4 text-blue-600 rounded"
+                    className="h-4 w-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500"
                   />
-                  <label className="ml-2 text-sm text-gray-700">
+                  <label htmlFor="isBoardExam" className="ml-2 text-xs uppercase font-bold text-slate-500 tracking-wide">
                     Board Exam (10th/12th)
                   </label>
                 </div>

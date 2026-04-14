@@ -6,6 +6,7 @@ import { testScoreSchema, TestScoreInput } from '@/lib/validations/student';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
+import { cn } from '@/lib/utils';
 
 interface Props {
   onNext: (data: any[], completionPercentage?: number) => void;
@@ -181,16 +182,16 @@ export default function TestScoreForm({ onNext, onSave, onBack, initialData = []
         {showForm && (
           <form 
             onSubmit={handleSubmit(onSubmitScore, (e) => console.error(e))} 
-            className="space-y-4 p-4 border rounded-lg bg-gray-50"
+            className="space-y-6 p-6 border border-slate-200 rounded-lg bg-slate-50/50 animate-in fade-in zoom-in-95 duration-200"
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Test Type *
+              <div className="space-y-1.5">
+                <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+                  Test Type <span className="text-red-500">*</span>
                 </label>
                 <select
                   {...register('testType')}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
+                  className="w-full h-10 px-3 py-2 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                 >
                   <option value="">Select test</option>
                   {TEST_TYPES.map((t) => (
@@ -198,25 +199,35 @@ export default function TestScoreForm({ onNext, onSave, onBack, initialData = []
                   ))}
                 </select>
                 {errors.testType && (
-                  <p className="mt-1 text-sm text-red-600">{errors.testType.message}</p>
+                  <p className="mt-1 text-xs text-red-500 font-bold">{(errors.testType as any).message}</p>
                 )}
               </div>
 
-              <Input
-                label="Test Date *"
-                type="date"
-                {...register('testDate')}
-                error={errors.testDate?.message}
-              />
+              <div className="space-y-1.5">
+                <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+                  Test Date <span className="text-red-500">*</span>
+                </label>
+                <Input
+                  type="date"
+                  {...register('testDate')}
+                  className="bg-white border-slate-200 focus:ring-2 focus:ring-blue-500/20"
+                />
+                {errors.testDate && <p className="text-xs text-red-500 font-bold">{(errors.testDate as any).message}</p>}
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input
-                label="Composite / Total Score *"
-                type="number"
-                {...register('compositeScore', { valueAsNumber: true })}
-                error={errors.compositeScore?.message}
-              />
+              <div className="space-y-1.5">
+                <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+                  Composite / Total Score <span className="text-red-500">*</span>
+                </label>
+                <Input
+                  type="number"
+                  {...register('compositeScore', { valueAsNumber: true })}
+                  className="bg-white border-slate-200 focus:ring-2 focus:ring-blue-500/20"
+                />
+                {errors.compositeScore && <p className="text-xs text-red-500 font-bold">{(errors.compositeScore as any).message}</p>}
+              </div>
             </div>
 
             {/* Optional section scores based on test type could go here, keeping it simple for now */}

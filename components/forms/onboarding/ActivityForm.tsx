@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useState, useMemo } from 'react';
 import { useEnums } from '@/lib/hooks/useEnums';
+import { cn } from '@/lib/utils';
 
 interface Props {
   onNext: (data: any[], completionPercentage?: number) => void;
@@ -200,22 +201,27 @@ export default function ActivityForm({ onNext, onSave, onBack, initialData = [] 
 
         {/* Add activity form */}
         {showForm && (
-          <form onSubmit={handleSubmit(onSubmitActivity)} className="space-y-4 p-4 border rounded-lg bg-gray-50">
-            <Input
-              label="Activity Name *"
-              placeholder="e.g., Varsity Basketball, Robotics Club"
-              {...register('activityName')}
-              error={errors.activityName?.message}
-            />
+          <form onSubmit={handleSubmit(onSubmitActivity)} className="space-y-6 p-6 border border-slate-200 rounded-lg bg-slate-50/50 animate-in fade-in zoom-in-95 duration-200">
+            <div className="space-y-1.5">
+              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+                Activity Name <span className="text-red-500">*</span>
+              </label>
+              <Input
+                placeholder="e.g., Varsity Basketball, Robotics Club"
+                {...register('activityName')}
+                className="bg-white border-slate-200 focus:ring-2 focus:ring-blue-500/20"
+              />
+              {errors.activityName && <p className="text-xs text-red-500 font-bold">{(errors.activityName as any).message}</p>}
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Category *
+              <div className="space-y-1.5">
+                <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+                  Category <span className="text-red-500">*</span>
                 </label>
                 <select
                   {...register('category')}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
+                  className="w-full h-10 px-3 py-2 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                   disabled={enumsLoading}
                 >
                   <option value="">Select category</option>
@@ -226,76 +232,91 @@ export default function ActivityForm({ onNext, onSave, onBack, initialData = [] 
                   ))}
                 </select>
                 {errors.category && (
-                  <p className="mt-1 text-sm text-red-600">{errors.category.message}</p>
+                  <p className="mt-1 text-xs text-red-500 font-bold">{(errors.category as any).message}</p>
                 )}
               </div>
 
-              <Input
-                label="Your Role (optional)"
-                placeholder="e.g., Team Captain, President"
-                {...register('role')}
-                error={errors.role?.message}
-              />
+              <div className="space-y-1.5">
+                <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+                  Your Role <span className="text-slate-400 font-normal">(optional)</span>
+                </label>
+                <Input
+                  placeholder="e.g., Team Captain, President"
+                  {...register('role')}
+                  className="bg-white border-slate-200 focus:ring-2 focus:ring-blue-500/20"
+                />
+                {errors.role && <p className="text-xs text-red-500 font-bold">{(errors.role as any).message}</p>}
+              </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Grade Levels Participated *
+              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500 mb-3">
+                Grade Levels Participated <span className="text-red-500">*</span>
               </label>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {['ninth', 'tenth', 'eleventh', 'twelfth'].map((grade) => (
-                  <label key={grade} className="flex items-center space-x-2">
+                  <label key={grade} className="flex items-center space-x-2 p-2 rounded border border-slate-100 bg-white hover:border-blue-200 transition-colors cursor-pointer">
                     <input
                       type="checkbox"
                       value={grade}
                       {...register('gradeLevels')}
-                      className="h-4 w-4 text-blue-600 rounded"
+                      className="h-4 w-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500"
                     />
-                    <span className="text-sm text-gray-700 capitalize">{grade} Grade</span>
+                    <span className="text-xs uppercase font-bold text-slate-500 tracking-wide capitalize">{grade}</span>
                   </label>
                 ))}
               </div>
               {errors.gradeLevels && (
-                <p className="mt-1 text-sm text-red-600">{errors.gradeLevels.message}</p>
+                <p className="mt-1 text-xs text-red-500 font-bold">{(errors.gradeLevels as any).message}</p>
               )}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input
-                label="Hours per Week *"
-                type="number"
-                placeholder="e.g., 5"
-                {...register('hoursPerWeek', { valueAsNumber: true })}
-                error={errors.hoursPerWeek?.message}
-              />
+              <div className="space-y-1.5">
+                <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+                  Hours per Week <span className="text-red-500">*</span>
+                </label>
+                <Input
+                  type="number"
+                  placeholder="e.g., 5"
+                  {...register('hoursPerWeek', { valueAsNumber: true })}
+                  className="bg-white border-slate-200 focus:ring-2 focus:ring-blue-500/20"
+                />
+                {errors.hoursPerWeek && <p className="text-xs text-red-500 font-bold">{(errors.hoursPerWeek as any).message}</p>}
+              </div>
 
-              <Input
-                label="Weeks per Year *"
-                type="number"
-                placeholder="e.g., 30"
-                {...register('weeksPerYear', { valueAsNumber: true })}
-                error={errors.weeksPerYear?.message}
-              />
+              <div className="space-y-1.5">
+                <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+                  Weeks per Year <span className="text-red-500">*</span>
+                </label>
+                <Input
+                  type="number"
+                  placeholder="e.g., 30"
+                  {...register('weeksPerYear', { valueAsNumber: true })}
+                  className="bg-white border-slate-200 focus:ring-2 focus:ring-blue-500/20"
+                />
+                {errors.weeksPerYear && <p className="text-xs text-red-500 font-bold">{(errors.weeksPerYear as any).message}</p>}
+              </div>
             </div>
 
             {totalHours > 0 && (
-              <p className="text-sm text-gray-600">
-                Total time commitment: <strong>{totalHours} hours</strong>
+              <p className="text-[10px] uppercase font-bold text-blue-600 tracking-wider">
+                Total time commitment: {totalHours} hours
               </p>
             )}
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Description *
+            <div className="space-y-1.5">
+              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+                Description <span className="text-red-500">*</span>
               </label>
               <textarea
                 {...register('description')}
                 rows={3}
                 placeholder="Describe your involvement, responsibilities, and achievements..."
-                className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
+                className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
               />
               {errors.description && (
-                <p className="mt-1 text-sm text-red-600">{errors.description.message}</p>
+                <p className="mt-1 text-xs text-red-500 font-bold">{(errors.description as any).message}</p>
               )}
             </div>
 

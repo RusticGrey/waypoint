@@ -85,6 +85,28 @@ async function getAuthenticatedClient(userId: string) {
     }
   });
 
+  // Test the client to ensure tokens are still valid
+  try {
+    // We don't want to actually refresh here, but getRequestMetadata will trigger a refresh if needed
+    // If the refresh token is invalid, it will throw 'invalid_grant'
+    await (oauth2Client as any).getRequestMetadataAsync();
+  } catch (error: any) {
+    if (error.message.includes('invalid_grant')) {
+      console.error(`GCal: Invalid grant for user ${userId}. Disconnecting...`);
+      await prisma.counselorSettings.update({
+        where: { userId },
+        data: {
+          googleConnected: false,
+          googleAccessToken: null,
+          googleRefreshToken: null,
+          googleTokenExpiry: null,
+        },
+      });
+      throw new Error('Google Calendar connection expired. Please reconnect your account.');
+    }
+    throw error;
+  }
+
   return oauth2Client;
 }
 

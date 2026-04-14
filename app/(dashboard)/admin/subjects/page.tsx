@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 
 const CURRICULUMS = ['CBSE', 'ICSE', 'IB', 'CAIE', 'State_Board', 'US_High_School', 'Other'];
 
@@ -85,8 +86,8 @@ export default function SubjectsManagementPage() {
         <CardContent>
           <div className="space-y-6">
             {/* Curriculum Selector */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+            <div className="space-y-1.5">
+              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
                 Select Curriculum
               </label>
               <select
@@ -95,7 +96,7 @@ export default function SubjectsManagementPage() {
                     setSelectedCurriculum(e.target.value);
                     cancelEditing(); // Cancel editing when changing curriculum
                 }}
-                className="w-full max-w-xs px-3 py-2 border border-gray-300 rounded-md text-gray-900"
+                className="w-full max-w-xs h-10 px-3 py-2 bg-slate-50 border border-slate-200 rounded-md text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
               >
                 {CURRICULUMS.map((curr) => (
                   <option key={curr} value={curr}>{curr}</option>
@@ -104,21 +105,26 @@ export default function SubjectsManagementPage() {
             </div>
 
             {/* Add New Subject */}
-            <div className="flex gap-2">
-              <Input
-                placeholder={editingId ? "Update course name" : "Enter new course name"}
-                value={newSubjectName}
-                onChange={(e) => setNewSubjectName(e.target.value)}
-                className="flex-1 max-w-md"
-              />
-              {editingId && (
-                <Button variant="outline" onClick={cancelEditing} disabled={loading}>
-                  Cancel
+            <div className="space-y-1.5">
+              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+                {editingId ? "Edit Course Name" : "Course Name"}
+              </label>
+              <div className="flex gap-2">
+                <Input
+                  placeholder={editingId ? "Update course name" : "Enter new course name"}
+                  value={newSubjectName}
+                  onChange={(e) => setNewSubjectName(e.target.value)}
+                  className="flex-1 max-w-md bg-slate-50 border-slate-200 focus:bg-white transition-colors"
+                />
+                {editingId && (
+                  <Button variant="outline" onClick={cancelEditing} disabled={loading}>
+                    Cancel
+                  </Button>
+                )}
+                <Button onClick={handleAddOrUpdateSubject} disabled={loading || !newSubjectName.trim()}>
+                  {editingId ? 'Update Course' : 'Add Course'}
                 </Button>
-              )}
-              <Button onClick={handleAddOrUpdateSubject} disabled={loading || !newSubjectName.trim()}>
-                {editingId ? 'Update Course' : 'Add Course'}
-              </Button>
+              </div>
             </div>
 
             {/* Subject List */}

@@ -136,6 +136,24 @@ export async function DELETE(req: Request) {
     if (!id) {
       return NextResponse.json({ error: 'ID required' }, { status: 400 });
     }
+
+    // To ensure cascade deletion works correctly from Student model down to Meetings etc,
+    // we need to make sure we are deleting the student record if it exists.
+    // User -> Student has onDelete: Cascade on the Student side, but we should be careful.
+    
+    // First, check if the user is a student
+    const userToDelete = await prisma.user.findUnique({
+      where: { id, organizationId: session.user.organizationId },
+      include: { student: true }
+    });
+
+    if (!userToDelete) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    // If it's a student, Prisma onDelete: Cascade on Student model will handle 
+    // meetings, academicProfile, etc. when the user is deleted because
+    // Student.userId references User.id with onDelete: Cascade.
     
     await prisma.user.delete({
       where: {

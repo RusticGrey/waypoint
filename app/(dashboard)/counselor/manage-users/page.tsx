@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { ux } from '@/lib/ux';
+import { cn } from '@/lib/utils';
 
 interface User {
   id: string;
@@ -281,49 +283,69 @@ export default function ManageUsersPage() {
               Create {modalType === 'counselor' ? 'Counselor' : 'Student'}
             </h2>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className={cn("block text-xs uppercase tracking-wider font-bold text-slate-500")}>
+                    First Name <span className="text-red-500">*</span>
+                  </label>
+                  <Input
+                    value={formData.firstName}
+                    onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                    required
+                    className="bg-slate-50 border-slate-200 focus:bg-white transition-colors"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className={cn("block text-xs uppercase tracking-wider font-bold text-slate-500")}>
+                    Last Name <span className="text-red-500">*</span>
+                  </label>
+                  <Input
+                    value={formData.lastName}
+                    onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                    required
+                    className="bg-slate-50 border-slate-200 focus:bg-white transition-colors"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className={cn("block text-xs uppercase tracking-wider font-bold text-slate-500")}>
+                  Email Address <span className="text-red-500">*</span>
+                </label>
                 <Input
-                  label="First Name *"
-                  value={formData.firstName}
-                  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   required
-                />
-                <Input
-                  label="Last Name *"
-                  value={formData.lastName}
-                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                  required
+                  className="bg-slate-50 border-slate-200 focus:bg-white transition-colors"
                 />
               </div>
 
-              <Input
-                label="Email *"
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                required
-              />
-
-              <Input
-                label="Password *"
-                type="password"
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                required
-              />
+              <div className="space-y-1.5">
+                <label className={cn("block text-xs uppercase tracking-wider font-bold text-slate-500")}>
+                  Password <span className="text-red-500">*</span>
+                </label>
+                <Input
+                  type="password"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  required
+                  className="bg-slate-50 border-slate-200 focus:bg-white transition-colors"
+                />
+              </div>
 
               {modalType === 'student' && (
                 <>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-900 mb-1">
-                        Current Grade *
+                    <div className="space-y-1.5">
+                      <label className={cn("block text-xs uppercase tracking-wider font-bold text-slate-500")}>
+                        Current Grade <span className="text-red-500">*</span>
                       </label>
                       <select
                         value={formData.currentGrade}
                         onChange={(e) => setFormData({ ...formData, currentGrade: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
+                        className="w-full h-10 px-3 py-2 bg-slate-50 border border-slate-200 rounded-md text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                       >
                         <option value="ninth">9th Grade</option>
                         <option value="tenth">10th Grade</option>
@@ -332,23 +354,28 @@ export default function ManageUsersPage() {
                       </select>
                     </div>
 
-                    <Input
-                      label="Graduation Year *"
-                      type="number"
-                      value={formData.graduationYear}
-                      onChange={(e) => setFormData({ ...formData, graduationYear: parseInt(e.target.value) })}
-                      required
-                    />
+                    <div className="space-y-1.5">
+                      <label className={cn("block text-xs uppercase tracking-wider font-bold text-slate-500")}>
+                        Graduation Year <span className="text-red-500">*</span>
+                      </label>
+                      <Input
+                        type="number"
+                        value={formData.graduationYear}
+                        onChange={(e) => setFormData({ ...formData, graduationYear: parseInt(e.target.value) })}
+                        required
+                        className="bg-slate-50 border-slate-200 focus:bg-white transition-colors"
+                      />
+                    </div>
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-900 mb-1">
-                      Assign to Counselor (optional)
+                  <div className="space-y-1.5">
+                    <label className={cn("block text-xs uppercase tracking-wider font-bold text-slate-500")}>
+                      Assign to Counselor
                     </label>
                     <select
                       value={formData.counselorId}
                       onChange={(e) => setFormData({ ...formData, counselorId: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
+                      className="w-full h-10 px-3 py-2 bg-slate-50 border border-slate-200 rounded-md text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                     >
                       <option value="">Assign later</option>
                       {counselors.map((assoc) => (

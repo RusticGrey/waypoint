@@ -61,6 +61,7 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.role = user.role;
         token.isAdmin = (user as any).isAdmin;
+        token.organizationId = (user as any).organizationId;
       }
       return token;
     },
@@ -69,6 +70,7 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.id as string;
         session.user.role = token.role as string;
         session.user.isAdmin = token.isAdmin as boolean;
+        session.user.organizationId = token.organizationId as string;
       }
       return session;
     }

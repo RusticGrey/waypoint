@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 
 interface College {
   id: string;
@@ -128,20 +129,21 @@ export default function CollegesManagementPage() {
           <CardTitle>{editingId ? 'Edit College' : 'Add New College'}</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                College Name *
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+            <div className="space-y-1.5">
+              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+                College Name <span className="text-red-500">*</span>
               </label>
               <Input
                 name="name"
                 placeholder="e.g. Stanford University"
                 value={formData.name}
                 onChange={handleInputChange}
+                className="bg-slate-50 border-slate-200 focus:bg-white transition-colors"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            <div className="space-y-1.5">
+              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
                 Country
               </label>
               <Input
@@ -149,10 +151,11 @@ export default function CollegesManagementPage() {
                 placeholder="United States"
                 value={formData.country}
                 onChange={handleInputChange}
+                className="bg-slate-50 border-slate-200 focus:bg-white transition-colors"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            <div className="space-y-1.5">
+              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
                 Acceptance Rate (%)
               </label>
               <Input
@@ -161,10 +164,11 @@ export default function CollegesManagementPage() {
                 placeholder="e.g. 5.2"
                 value={formData.acceptanceRate}
                 onChange={handleInputChange}
+                className="bg-slate-50 border-slate-200 focus:bg-white transition-colors"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            <div className="space-y-1.5">
+              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
                 US News Ranking
               </label>
               <Input
@@ -173,10 +177,11 @@ export default function CollegesManagementPage() {
                 placeholder="e.g. 3"
                 value={formData.rankingUsNews}
                 onChange={handleInputChange}
+                className="bg-slate-50 border-slate-200 focus:bg-white transition-colors"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            <div className="space-y-1.5">
+              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
                 Avg GPA
               </label>
               <Input
@@ -186,10 +191,11 @@ export default function CollegesManagementPage() {
                 placeholder="e.g. 3.9"
                 value={formData.avgGpa}
                 onChange={handleInputChange}
+                className="bg-slate-50 border-slate-200 focus:bg-white transition-colors"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            <div className="space-y-1.5">
+              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
                 Avg SAT
               </label>
               <Input
@@ -198,10 +204,11 @@ export default function CollegesManagementPage() {
                 placeholder="e.g. 1500"
                 value={formData.avgSat}
                 onChange={handleInputChange}
+                className="bg-slate-50 border-slate-200 focus:bg-white transition-colors"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            <div className="space-y-1.5">
+              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
                 Avg ACT
               </label>
               <Input
@@ -210,6 +217,7 @@ export default function CollegesManagementPage() {
                 placeholder="e.g. 34"
                 value={formData.avgAct}
                 onChange={handleInputChange}
+                className="bg-slate-50 border-slate-200 focus:bg-white transition-colors"
               />
             </div>
           </div>

@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { cn } from '@/lib/utils';
 
 interface Props {
   onNext: (data: any[], completionPercentage?: number) => void;
@@ -68,7 +69,7 @@ export default function ProjectForm({ onNext, onSave, onBack, initialData = [] }
     formState: { errors },
     reset,
     watch,
-  } = useForm<ProjectInput>({
+  } = useForm<any>({
     resolver: zodResolver(projectSchema),
     defaultValues: {
       isOngoing: false,
@@ -349,15 +350,15 @@ export default function ProjectForm({ onNext, onSave, onBack, initialData = [] }
         {showForm && (
           <form 
             onSubmit={handleSubmit(onSubmitProject, (errors) => console.error("Project form errors:", errors))} 
-            className="space-y-4 p-4 border rounded-lg bg-gray-50"
+            className="space-y-6 p-6 border border-slate-200 rounded-lg bg-slate-50/50 animate-in fade-in zoom-in-95 duration-200"
           >
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Experience Type *
+            <div className="space-y-1.5">
+              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+                Experience Type <span className="text-red-500">*</span>
               </label>
               <select
                 {...register('experienceType')}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
+                className="w-full h-10 px-3 py-2 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
               >
                 <option value="">Select type</option>
                 <option value="Academic_Project">Academic Project</option>
@@ -368,45 +369,60 @@ export default function ProjectForm({ onNext, onSave, onBack, initialData = [] }
                 <option value="Work_Experience">Work Experience</option>
               </select>
               {errors.experienceType && (
-                <p className="mt-1 text-sm text-red-600">{errors.experienceType.message}</p>
+                <p className="mt-1 text-xs text-red-500 font-bold">{(errors.experienceType as any).message}</p>
               )}
               {experienceType && (
-                <p className="mt-1 text-xs text-gray-500">{getTypeDescription(experienceType)}</p>
+                <p className="mt-2 text-[10px] uppercase font-bold text-blue-600 tracking-wider">{getTypeDescription(experienceType)}</p>
               )}
             </div>
 
-            <Input
-              label="Project / Experience Title *"
-              placeholder="e.g., Machine Learning Internship, IB Extended Essay"
-              {...register('title')}
-              error={errors.title?.message}
-            />
+            <div className="space-y-1.5">
+              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+                Project / Experience Title <span className="text-red-500">*</span>
+              </label>
+              <Input
+                placeholder="e.g., Machine Learning Internship, IB Extended Essay"
+                {...register('title')}
+                className="bg-white border-slate-200 focus:ring-2 focus:ring-blue-500/20"
+              />
+              {errors.title && <p className="text-xs text-red-500 font-bold">{(errors.title as any).message}</p>}
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input
-                label="Organization (optional)"
-                placeholder="e.g., XYZ Company, IIT Delhi"
-                {...register('organization')}
-                error={errors.organization?.message}
-              />
+              <div className="space-y-1.5">
+                <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+                  Organization <span className="text-slate-400 font-normal">(optional)</span>
+                </label>
+                <Input
+                  placeholder="e.g., XYZ Company, IIT Delhi"
+                  {...register('organization')}
+                  className="bg-white border-slate-200 focus:ring-2 focus:ring-blue-500/20"
+                />
+                {errors.organization && <p className="text-xs text-red-500 font-bold">{(errors.organization as any).message}</p>}
+              </div>
 
-              <Input
-                label="Location (optional)"
-                placeholder="e.g., Bangalore, India or Remote"
-                {...register('location')}
-                error={errors.location?.message}
-              />
+              <div className="space-y-1.5">
+                <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+                  Location <span className="text-slate-400 font-normal">(optional)</span>
+                </label>
+                <Input
+                  placeholder="e.g., Bangalore, India or Remote"
+                  {...register('location')}
+                  className="bg-white border-slate-200 focus:ring-2 focus:ring-blue-500/20"
+                />
+                {errors.location && <p className="text-xs text-red-500 font-bold">{(errors.location as any).message}</p>}
+              </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Start Date *
+              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500 mb-3">
+                Start Date <span className="text-red-500">*</span>
               </label>
               <div className="grid grid-cols-2 gap-4">
                 <select
                   value={startMonth}
                   onChange={(e) => setStartMonth(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
+                  className="w-full h-10 px-3 py-2 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                 >
                   <option value="">Month</option>
                   {MONTHS.map((month) => (
@@ -418,7 +434,7 @@ export default function ProjectForm({ onNext, onSave, onBack, initialData = [] }
                 <select
                   value={startYear}
                   onChange={(e) => setStartYear(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
+                  className="w-full h-10 px-3 py-2 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                 >
                   <option value="">Year</option>
                   {years.map((year) => (
@@ -431,25 +447,26 @@ export default function ProjectForm({ onNext, onSave, onBack, initialData = [] }
             </div>
 
             <div>
-              <label className="flex items-center mb-2">
+              <label className="flex items-center space-x-2 mb-4 p-2 rounded bg-white border border-slate-100 w-fit cursor-pointer">
                 <input
                   type="checkbox"
+                  id="isOngoing"
                   {...register('isOngoing')}
-                  className="h-4 w-4 text-blue-600 rounded"
+                  className="h-4 w-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500"
                 />
-                <span className="ml-2 text-sm font-medium text-gray-700">Currently ongoing</span>
+                <label htmlFor="isOngoing" className="text-xs uppercase font-bold text-slate-500 tracking-wide cursor-pointer">Currently ongoing</label>
               </label>
 
               {!isOngoing && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    End Date (optional)
+                <div className="animate-in fade-in slide-in-from-top-1 duration-200">
+                  <label className="block text-xs uppercase tracking-wider font-bold text-slate-500 mb-3">
+                    End Date <span className="text-slate-400 font-normal">(optional)</span>
                   </label>
                   <div className="grid grid-cols-2 gap-4">
                     <select
                       value={endMonth}
                       onChange={(e) => setEndMonth(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
+                      className="w-full h-10 px-3 py-2 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                     >
                       <option value="">Month</option>
                       {MONTHS.map((month) => (
@@ -461,7 +478,7 @@ export default function ProjectForm({ onNext, onSave, onBack, initialData = [] }
                     <select
                       value={endYear}
                       onChange={(e) => setEndYear(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
+                      className="w-full h-10 px-3 py-2 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                     >
                       <option value="">Year</option>
                       {years.map((year) => (
@@ -476,72 +493,93 @@ export default function ProjectForm({ onNext, onSave, onBack, initialData = [] }
             </div>
 
             {(experienceType === 'Internship' || experienceType === 'Work_Experience') && (
-              <Input
-                label="Your Role / Title (optional)"
-                placeholder="e.g., Software Development Intern"
-                {...register('roleTitle')}
-                error={errors.roleTitle?.message}
-              />
+              <div className="space-y-1.5 animate-in fade-in slide-in-from-top-1 duration-200">
+                <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+                  Your Role / Title <span className="text-slate-400 font-normal">(optional)</span>
+                </label>
+                <Input
+                  placeholder="e.g., Software Development Intern"
+                  {...register('roleTitle')}
+                  className="bg-white border-slate-200 focus:ring-2 focus:ring-blue-500/20"
+                />
+                {errors.roleTitle && <p className="text-xs text-red-500 font-bold">{(errors.roleTitle as any).message}</p>}
+              </div>
             )}
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Description *
+            <div className="space-y-1.5">
+              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+                Description <span className="text-red-500">*</span>
               </label>
               <textarea
                 {...register('description')}
                 rows={4}
                 placeholder="What did you do? What did you learn? What were your responsibilities?"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
+                className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
               />
               {errors.description && (
-                <p className="mt-1 text-sm text-red-600">{errors.description.message}</p>
+                <p className="mt-1 text-xs text-red-500 font-bold">{(errors.description as any).message}</p>
               )}
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Outcomes / Achievements (optional)
+            <div className="space-y-1.5">
+              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+                Outcomes / Achievements <span className="text-slate-400 font-normal">(optional)</span>
               </label>
               <textarea
                 {...register('outcomes')}
                 rows={2}
                 placeholder="What did you produce or achieve?"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
+                className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
               />
             </div>
 
-            <Input
-              label="Skills Learned (optional)"
-              placeholder="e.g., Python, Leadership, Research Methods"
-              {...register('skillsLearned')}
-              error={errors.skillsLearned?.message}
-            />
+            <div className="space-y-1.5">
+              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+                Skills Learned <span className="text-slate-400 font-normal">(optional)</span>
+              </label>
+              <Input
+                placeholder="e.g., Python, Leadership, Research Methods"
+                {...register('skillsLearned')}
+                className="bg-white border-slate-200 focus:ring-2 focus:ring-blue-500/20"
+              />
+              {errors.skillsLearned && <p className="text-xs text-red-500 font-bold">{(errors.skillsLearned as any).message}</p>}
+            </div>
 
-            <Input
-              label="Project Link (optional)"
-              placeholder="https://..."
-              {...register('projectLink')}
-              error={errors.projectLink?.message}
-            />
+            <div className="space-y-1.5">
+              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+                Project Link <span className="text-slate-400 font-normal">(optional)</span>
+              </label>
+              <Input
+                placeholder="https://..."
+                {...register('projectLink')}
+                className="bg-white border-slate-200 focus:ring-2 focus:ring-blue-500/20"
+              />
+              {errors.projectLink && <p className="text-xs text-red-500 font-bold">{(errors.projectLink as any).message}</p>}
+            </div>
 
             {(experienceType === 'Research' || experienceType === 'Internship') && (
-              <div className="border-t pt-4">
-                <h4 className="text-sm font-medium text-gray-700 mb-3">Mentor Information (optional)</h4>
+              <div className="border-t border-slate-100 pt-6 animate-in fade-in slide-in-from-top-1 duration-200">
+                <h4 className="text-[10px] uppercase font-black text-slate-400 tracking-widest mb-4">Mentor Information (optional)</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Input
-                    label="Mentor Name"
-                    placeholder="e.g., Dr. Anjali Sharma"
-                    {...register('mentorName')}
-                    error={errors.mentorName?.message}
-                  />
+                  <div className="space-y-1.5">
+                    <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">Mentor Name</label>
+                    <Input
+                      placeholder="e.g., Dr. Anjali Sharma"
+                      {...register('mentorName')}
+                      className="bg-white border-slate-200 focus:ring-2 focus:ring-blue-500/20"
+                    />
+                    {errors.mentorName && <p className="text-xs text-red-500 font-bold">{(errors.mentorName as any).message}</p>}
+                  </div>
 
-                  <Input
-                    label="Mentor Email"
-                    placeholder="for potential recommendation letters"
-                    {...register('mentorEmail')}
-                    error={errors.mentorEmail?.message}
-                  />
+                  <div className="space-y-1.5">
+                    <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">Mentor Email</label>
+                    <Input
+                      placeholder="for potential recommendation letters"
+                      {...register('mentorEmail')}
+                      className="bg-white border-slate-200 focus:ring-2 focus:ring-blue-500/20"
+                    />
+                    {errors.mentorEmail && <p className="text-xs text-red-500 font-bold">{(errors.mentorEmail as any).message}</p>}
+                  </div>
                 </div>
               </div>
             )}

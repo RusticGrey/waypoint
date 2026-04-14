@@ -18,6 +18,7 @@ model Organization {
   primaryColor String   @default("#3B82F6") @map("primary_color")
   createdAt    DateTime @default(now()) @map("created_at")
   users        User[]
+  publicEvents PublicEvent[]
 
   @@map("Organization")
 }
@@ -54,7 +55,9 @@ model Counselor {
   comments       ProfileComment[]
   overrides      ProfileOverride[]
 
-  hostMeetingRequests MeetingRequest[] @relation("HostMeetingRequests")
+  hostMeetingRequests MeetingRequest[]  @relation("HostMeetingRequests")
+  eventAssignments    EventAssignment[]
+  completedSignups    EventSignup[]
 
   @@map("Counselor")
 }
@@ -471,6 +474,90 @@ model CounselorAvailability {
   @@map("CounselorAvailability")
 }
 
+// -------------------------------------------------
+// --- EVENT MANAGEMENT MODELS ---
+// -------------------------------------------------
+
+model PublicEvent {
+  id              String   @id @default(uuid())
+  organizationId  String   @map("organization_id")
+  title           String
+  description     String?  @db.Text
+  location        String
+  startDate       DateTime @map("start_date")
+  endDate         DateTime @map("end_date")
+
+  // Custom Branding
+  headerText    String? @map("header_text") @default("YOUR GLOBAL FUTURE STARTS HERE")
+  subheaderText String? @map("subheader_text") @default("Schedule your FREE 30-minute consultation")
+  slotDuration  Int     @default(30) @map("slot_duration")
+  successMessage String? @map("success_message") @db.Text
+  footerContent  Json?   @map("footer_content")
+
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  organization Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  slots        EventSlot[]
+  assignments  EventAssignment[]
+
+  @@map("PublicEvent")
+}
+
+model EventAssignment {
+  id          String @id @default(uuid())
+  eventId     String @map("event_id")
+  counselorId String @map("counselor_id")
+
+  event     PublicEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  counselor Counselor   @relation(fields: [counselorId], references: [userId], onDelete: Cascade)
+
+  @@unique([eventId, counselorId])
+  @@map("EventAssignment")
+}
+
+model EventSlot {
+  id          String   @id @default(uuid())
+  eventId     String   @map("event_id")
+  startTime   DateTime @map("start_time")
+  duration    Int      @default(30)
+  capacity    Int      @default(1)
+  bookedCount Int      @default(0) @map("booked_count")
+  isActive    Boolean  @default(true) @map("is_active")
+
+  event   PublicEvent   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  signups EventSignup[]
+
+  @@index([eventId, startTime])
+  @@map("EventSlot")
+}
+
+model EventSignup {
+  id            String @id @default(uuid())
+  slotId        String @map("slot_id")
+  duration      Int
+  prospectName  String @map("prospect_name")
+  prospectEmail String? @map("prospect_email")
+  prospectPhone String @map("prospect_phone")
+  studentGrade  String? @map("student_grade")
+  status        BookingStatus @default(Confirmed)
+
+  // Management Fields
+  completedAt    DateTime? @map("completed_at")
+  completedBy    String?   @map("completed_by")
+  counselorNotes String?   @map("counselor_notes") @db.Text
+  didAttend      Boolean?  @map("did_attend")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  slot                 EventSlot  @relation(fields: [slotId], references: [id], onDelete: Cascade)
+  completedByCounselor Counselor? @relation(fields: [completedBy], references: [userId])
+
+  @@index([slotId])
+  @@map("EventSignup")
+}
+
 //===============================================================
 // --- Enums ---
 //===============================================================
@@ -645,4 +732,11 @@ enum ScheduledMeetingStatus {
 enum PreferredConference {
   Zoom
   GoogleMeet
+}
+
+enum BookingStatus {
+  Confirmed
+  Cancelled
+  NoShow
+  Completed
 }

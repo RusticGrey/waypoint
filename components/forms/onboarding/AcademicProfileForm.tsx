@@ -6,6 +6,7 @@ import { academicProfileSchema, AcademicProfileInput } from '@/lib/validations/s
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
+import { cn } from '@/lib/utils';
 
 interface Props {
   onNext: (data: AcademicProfileInput, completionPercentage?: number) => void;
@@ -57,15 +58,15 @@ export default function AcademicProfileForm({ onNext, onBack, initialData }: Pro
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          What curriculum do you follow? *
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+      <div className="space-y-1.5">
+        <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+          What curriculum do you follow? <span className="text-red-500">*</span>
         </label>
         <select
           {...register('curriculumType')}
           onChange={(e) => setSelectedCurriculum(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          className="w-full h-10 px-3 py-2 bg-slate-50 border border-slate-200 rounded-md text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
         >
           <option value="">Select curriculum</option>
           <option value="CBSE">CBSE (Central Board of Secondary Education)</option>
@@ -77,18 +78,18 @@ export default function AcademicProfileForm({ onNext, onBack, initialData }: Pro
           <option value="Other">Other</option>
         </select>
         {errors.curriculumType && (
-          <p className="mt-1 text-sm text-red-600">{errors.curriculumType.message}</p>
+          <p className="mt-1 text-xs text-red-500 font-bold">{errors.curriculumType.message}</p>
         )}
       </div>
 
       {selectedCurriculum && (
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            How are your grades recorded? *
+        <div className="space-y-1.5 animate-in fade-in slide-in-from-top-1 duration-200">
+          <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+            How are your grades recorded? <span className="text-red-500">*</span>
           </label>
           <select
             {...register('gradingSystemType')}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="w-full h-10 px-3 py-2 bg-slate-50 border border-slate-200 rounded-md text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
           >
             <option value="">Select grading system</option>
             <option value="Marks_Out_Of_100">Marks out of 100 (e.g., 95/100)</option>
@@ -98,21 +99,26 @@ export default function AcademicProfileForm({ onNext, onBack, initialData }: Pro
             <option value="Other">Other</option>
           </select>
           {errors.gradingSystemType && (
-            <p className="mt-1 text-sm text-red-600">{errors.gradingSystemType.message}</p>
+            <p className="mt-1 text-xs text-red-500 font-bold">{errors.gradingSystemType.message}</p>
           )}
           
-          <p className="mt-2 text-sm text-gray-500">
-            Suggested: {getSuggestedGradingSystem(selectedCurriculum)}
+          <p className="mt-2 text-[10px] uppercase font-bold text-blue-600 tracking-wider">
+            Suggested: {getSuggestedGradingSystem(selectedCurriculum).replace(/_/g, ' ')}
           </p>
         </div>
       )}
 
-      <Input
-        label="Current GPA/CGPA (optional)"
-        placeholder="e.g., 3.8/4.0 or 9.5/10"
-        {...register('currentGpa')}
-        error={errors.currentGpa?.message}
-      />
+      <div className="space-y-1.5">
+        <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+          Current GPA/CGPA <span className="text-slate-400 font-normal">(optional)</span>
+        </label>
+        <Input
+          placeholder="e.g., 3.8/4.0 or 9.5/10"
+          {...register('currentGpa')}
+          className="bg-slate-50 border-slate-200 focus:bg-white transition-colors"
+        />
+        {errors.currentGpa && <p className="text-xs text-red-500 font-bold">{errors.currentGpa.message}</p>}
+      </div>
       <p className="text-sm text-gray-500">
         If your school provides a GPA or CGPA, enter it here. Otherwise, leave blank.
       </p>

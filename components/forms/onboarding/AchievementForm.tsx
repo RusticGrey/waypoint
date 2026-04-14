@@ -6,6 +6,7 @@ import { achievementSchema, AchievementInput } from '@/lib/validations/activity'
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
+import { cn } from '@/lib/utils';
 
 interface Props {
   onNext: (data: any[], completionPercentage?: number) => void;
@@ -277,15 +278,15 @@ export default function AchievementForm({ onNext, onSave, onBack, initialData = 
         {showForm && (
           <form 
             onSubmit={handleSubmit(onSubmitAchievement, (errors) => console.error("Form errors:", errors))} 
-            className="space-y-4 p-4 border rounded-lg bg-gray-50"
+            className="space-y-6 p-6 border border-slate-200 rounded-lg bg-slate-50/50 animate-in fade-in zoom-in-95 duration-200"
           >
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Achievement Type *
+            <div className="space-y-1.5">
+              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+                Achievement Type <span className="text-red-500">*</span>
               </label>
               <select
                 {...register('achievementType')}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
+                className="w-full h-10 px-3 py-2 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
               >
                 <option value="">Select type</option>
                 <option value="Award_Honor">Award / Honor</option>
@@ -295,35 +296,45 @@ export default function AchievementForm({ onNext, onSave, onBack, initialData = 
                 <option value="Extracurricular">Extracurricular</option>
               </select>
               {errors.achievementType && (
-                <p className="mt-1 text-sm text-red-600">{errors.achievementType.message}</p>
+                <p className="mt-1 text-xs text-red-500 font-bold">{(errors.achievementType as any).message}</p>
               )}
               {achievementType && (
-                <p className="mt-1 text-xs text-gray-500">{getTypeDescription(achievementType)}</p>
+                <p className="mt-2 text-[10px] uppercase font-bold text-blue-600 tracking-wider">{getTypeDescription(achievementType)}</p>
               )}
             </div>
 
-            <Input
-              label="Achievement Title *"
-              placeholder="e.g., National Merit Scholar, State Science Fair 1st Place"
-              {...register('title')}
-              error={errors.title?.message}
-            />
+            <div className="space-y-1.5">
+              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+                Achievement Title <span className="text-red-500">*</span>
+              </label>
+              <Input
+                placeholder="e.g., National Merit Scholar, State Science Fair 1st Place"
+                {...register('title')}
+                className="bg-white border-slate-200 focus:ring-2 focus:ring-blue-500/20"
+              />
+              {errors.title && <p className="text-xs text-red-500 font-bold">{(errors.title as any).message}</p>}
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input
-                label="Organization (optional)"
-                placeholder="e.g., National Merit Corporation"
-                {...register('organization')}
-                error={errors.organization?.message}
-              />
+              <div className="space-y-1.5">
+                <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+                  Organization <span className="text-slate-400 font-normal">(optional)</span>
+                </label>
+                <Input
+                  placeholder="e.g., National Merit Corporation"
+                  {...register('organization')}
+                  className="bg-white border-slate-200 focus:ring-2 focus:ring-blue-500/20"
+                />
+                {errors.organization && <p className="text-xs text-red-500 font-bold">{(errors.organization as any).message}</p>}
+              </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Grade Level *
+              <div className="space-y-1.5">
+                <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+                  Grade Level <span className="text-red-500">*</span>
                 </label>
                 <select
                   {...register('gradeLevel')}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
+                  className="w-full h-10 px-3 py-2 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                 >
                   <option value="">Select grade</option>
                   <option value="ninth">9th Grade</option>
@@ -332,20 +343,20 @@ export default function AchievementForm({ onNext, onSave, onBack, initialData = 
                   <option value="twelfth">12th Grade</option>
                 </select>
                 {errors.gradeLevel && (
-                  <p className="mt-1 text-sm text-red-600">{errors.gradeLevel.message}</p>
+                  <p className="mt-1 text-xs text-red-500 font-bold">{(errors.gradeLevel as any).message}</p>
                 )}
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Month Achieved (optional)
+              <div className="space-y-1.5">
+                <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+                  Month Achieved <span className="text-slate-400 font-normal">(optional)</span>
                 </label>
                 <select
                   value={selectedMonth}
                   onChange={(e) => setSelectedMonth(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
+                  className="w-full h-10 px-3 py-2 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                 >
                   <option value="">Select month</option>
                   {MONTHS.map((month) => (
@@ -356,14 +367,14 @@ export default function AchievementForm({ onNext, onSave, onBack, initialData = 
                 </select>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Year Achieved (optional)
+              <div className="space-y-1.5">
+                <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+                  Year Achieved <span className="text-slate-400 font-normal">(optional)</span>
                 </label>
                 <select
                   value={selectedYear}
                   onChange={(e) => setSelectedYear(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
+                  className="w-full h-10 px-3 py-2 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                 >
                   <option value="">Select year</option>
                   {years.map((year) => (
@@ -375,13 +386,13 @@ export default function AchievementForm({ onNext, onSave, onBack, initialData = 
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Recognition Level *
+            <div className="space-y-1.5">
+              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+                Recognition Level <span className="text-red-500">*</span>
               </label>
               <select
                 {...register('recognitionLevel')}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
+                className="w-full h-10 px-3 py-2 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
               >
                 <option value="">Select level</option>
                 <option value="School">School</option>
@@ -394,40 +405,50 @@ export default function AchievementForm({ onNext, onSave, onBack, initialData = 
               </select>
               
               {errors.recognitionLevel && (
-                <p className="mt-1 text-sm text-red-600">{errors.recognitionLevel.message}</p>
+                <p className="mt-1 text-xs text-red-500 font-bold">{(errors.recognitionLevel as any).message}</p>
               )}
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Description *
+            <div className="space-y-1.5">
+              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+                Description <span className="text-red-500">*</span>
               </label>
               <textarea
                 {...register('description')}
                 rows={3}
                 placeholder="Describe the achievement and your role..."
-                className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
+                className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
               />
               {errors.description && (
-                <p className="mt-1 text-sm text-red-600">{errors.description.message}</p>
+                <p className="mt-1 text-xs text-red-500 font-bold">{(errors.description as any).message}</p>
               )}
             </div>
 
             {achievementType === 'Social_Impact' && (
-              <Input
-                label="Measurable Impact (optional)"
-                placeholder="e.g., 500 families served, ₹50,000 raised"
-                {...register('metrics')}
-                error={errors.metrics?.message}
-              />
+              <div className="space-y-1.5">
+                <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+                  Measurable Impact <span className="text-slate-400 font-normal">(optional)</span>
+                </label>
+                <Input
+                  placeholder="e.g., 500 families served, ₹50,000 raised"
+                  {...register('metrics')}
+                  className="bg-white border-slate-200 focus:ring-2 focus:ring-blue-500/20"
+                />
+                {errors.metrics && <p className="text-xs text-red-500 font-bold">{(errors.metrics as any).message}</p>}
+              </div>
             )}
 
-            <Input
-              label="Verification Link (optional)"
-              placeholder="https://..."
-              {...register('verifiableLink')}
-              error={errors.verifiableLink?.message}
-            />
+            <div className="space-y-1.5">
+              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+                Verification Link <span className="text-slate-400 font-normal">(optional)</span>
+              </label>
+              <Input
+                placeholder="https://..."
+                {...register('verifiableLink')}
+                className="bg-white border-slate-200 focus:ring-2 focus:ring-blue-500/20"
+              />
+              {errors.verifiableLink && <p className="text-xs text-red-500 font-bold">{(errors.verifiableLink as any).message}</p>}
+            </div>
 
             <div className="flex gap-2">
               <Button type="submit" className="flex-1">
