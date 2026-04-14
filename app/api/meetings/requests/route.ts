@@ -5,6 +5,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { sendMeetingRequest } from '@/lib/meetings/notifications';
 import { createEvent } from '@/lib/meetings/googleCalendar';
+import { BRAND_NAME } from '@/lib/branding';
 import { z, ZodError } from 'zod';
 
 const createSchema = z.object({
@@ -91,7 +92,7 @@ export async function POST(req: Request) {
       if (request.hostId && request.student.user.email) {
         const { eventId } = await createEvent(request.hostId, {
           title: `Tentative: ${request.meetingType} with ${request.student.user.firstName} ${request.student.user.lastName}`,
-          description: `Meeting Request from Waypoint.\n\nNote: ${request.studentNote || 'None'}\n\nThis slot is blocked tentatively until confirmed.`,
+          description: `Meeting Request from ${BRAND_NAME}.\n\nNote: ${request.studentNote || 'None'}\n\nThis slot is blocked tentatively until confirmed.`,
           startTime: request.requestedStart.toISOString(),
           endTime: request.requestedEnd.toISOString(),
           studentEmail: request.student.user.email,

@@ -14,12 +14,12 @@ async function main() {
   const org = await prisma.organization.upsert({
     where: { id: "waypoint" },
     update: {
-      name: "Waypoint Counseling Organization",
+      name: "Engage Counseling Organization",
       primaryColor: "#3B82F6",
     },
     create: {
       id: "waypoint",
-      name: "Waypoint Counseling Organization",
+      name: "Engage Counseling Organization",
       primaryColor: "#3B82F6",
     },
   });

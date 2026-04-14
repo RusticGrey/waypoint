@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { Providers } from "./providers";
+import { FULL_BRAND_NAME, BRAND_DESCRIPTION } from "@/lib/branding";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -15,8 +16,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Waypoint Student Portal",
-  description: "Your complete college counseling platform",
+  title: FULL_BRAND_NAME,
+  description: BRAND_DESCRIPTION,
 };
 
 export default function RootLayout({

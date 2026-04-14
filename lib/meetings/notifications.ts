@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import { BRAND_NAME } from '../branding';
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
@@ -28,13 +29,13 @@ function generateICS(meeting: any) {
   const content = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
-    'PRODID:-//Waypoint//Meeting//EN',
+    `PRODID:-//${BRAND_NAME}//Meeting//EN`,
     'BEGIN:VEVENT',
     `UID:${meeting.id}`,
     `DTSTAMP:${formatDate(new Date())}`,
     `DTSTART:${formatDate(start)}`,
     `DTEND:${formatDate(end)}`,
-    `SUMMARY:${meeting.meetingType} - Waypoint`,
+    `SUMMARY:${meeting.meetingType} - ${BRAND_NAME}`,
     `DESCRIPTION:Join Meeting: ${meeting.conferenceJoinUrl}`,
     `LOCATION:${meeting.conferenceJoinUrl}`,
     'STATUS:CONFIRMED',

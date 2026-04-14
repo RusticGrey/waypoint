@@ -3,6 +3,7 @@
 import { signIn } from 'next-auth/react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { BRAND_NAME } from '@/lib/branding';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -50,7 +51,7 @@ export default function LoginPage() {
       <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
         <div>
           <h2 className="text-center text-3xl font-bold text-gray-900">
-            WayPoint
+            {BRAND_NAME}
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
             Sign in to your account
@@ -100,12 +101,6 @@ export default function LoginPage() {
             {loading ? 'Signing in...' : 'Sign in'}
           </button>
         </form>
-        <div className="text-center text-xs text-gray-500 space-y-1">
-          <p>Test Accounts:</p>
-          <p>Counselor: counselor@waypoint.com / password123</p>
-          <p>Counselor: counselor@waypoint.com / counselor123</p>
-          <p>Student: student@waypoint.com / student123</p>
-        </div>
       </div>
     </div>
   );

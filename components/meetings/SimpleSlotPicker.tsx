@@ -48,7 +48,7 @@ export function SimpleSlotPicker({ hostId, onSlotSelected }: SimpleSlotPickerPro
         const futureDate = new Date();
         futureDate.setDate(now.getDate() + 14);
 
-        // Fetch Waypoint occupied
+        // Fetch platform occupied slots
         const occupiedRes = await fetch(`/api/meetings/occupied-slots?hostId=${hostId}&days=14`);
         const occupiedData = await occupiedRes.json();
         const appOccupied = Array.isArray(occupiedData) ? occupiedData : [];

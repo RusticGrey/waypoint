@@ -1,9 +1,11 @@
+import { BRAND_NAME, FULL_BRAND_NAME } from "./branding";
+
 export const featureFlags = {
   // Whitelabeling
   branding: {
-    name: 'Engage',
-    logoText: 'Engage',
-    fullTitle: 'Engage College Counselling',
+    name: BRAND_NAME,
+    logoText: BRAND_NAME,
+    fullTitle: FULL_BRAND_NAME,
   },
 
   // Main Counselor Features

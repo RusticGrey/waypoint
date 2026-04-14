@@ -6,6 +6,7 @@ import { createConferenceMeeting } from '@/lib/meetings/conferenceFactory';
 import { deleteZoomMeeting } from '@/lib/meetings/zoom';
 import { deleteEvent } from '@/lib/meetings/googleCalendar';
 import { sendMeetingConfirmation } from '@/lib/meetings/notifications';
+import { BRAND_NAME } from '@/lib/branding';
 
 export async function POST(
   req: Request,
@@ -51,7 +52,7 @@ export async function POST(
 
     const conference = await createConferenceMeeting(meeting.hostId, {
       title: `${meeting.meetingType} with ${meeting.student.user.firstName} (Rescheduled)`,
-      description: `Rescheduled meeting on Waypoint platform.`,
+      description: `Rescheduled meeting on ${BRAND_NAME} platform.`,
       startTime,
       endTime,
       studentEmail: meeting.student.user.email!,

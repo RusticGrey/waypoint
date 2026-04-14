@@ -6,6 +6,7 @@ import { createConferenceMeeting } from '@/lib/meetings/conferenceFactory';
 import { sendMeetingConfirmation, sendRequestUpdate } from '@/lib/meetings/notifications';
 import { deleteEvent } from '@/lib/meetings/googleCalendar';
 import { z, ZodError } from 'zod';
+import { BRAND_NAME } from '@/lib/branding';
 
 const patchSchema = z.object({
   status: z.enum(['Accepted', 'Declined', 'ChangeSuggested', 'Cancelled']),
@@ -79,7 +80,7 @@ export async function PATCH(
       // 3. Create Conference Meeting
       const conference = await createConferenceMeeting(request.hostId, {
         title: `${request.meetingType} with ${request.student.user.firstName}`,
-        description: `Scheduled meeting on Waypoint platform.`,
+        description: `Scheduled meeting on ${BRAND_NAME} platform.`,
         startTime: request.requestedStart.toISOString(),
         endTime: request.requestedEnd.toISOString(),
         studentEmail: request.student.user.email,
