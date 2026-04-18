@@ -95,6 +95,7 @@ export async function POST(req: Request) {
           description: `Meeting Request from ${BRAND_NAME}.\n\nNote: ${request.studentNote || 'None'}\n\nThis slot is blocked tentatively until confirmed.`,
           startTime: request.requestedStart.toISOString(),
           endTime: request.requestedEnd.toISOString(),
+          timeZone: request.student.user.timezone,
           studentEmail: request.student.user.email,
           requestMeetLink: false, // Don't generate link yet
           transparency: 'opaque' // Mark as busy

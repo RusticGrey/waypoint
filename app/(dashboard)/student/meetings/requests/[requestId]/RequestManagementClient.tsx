@@ -1,9 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { SimpleSlotPicker } from '@/components/meetings/SimpleSlotPicker';
+import { ux } from '@/lib/ux';
+import { cn } from '@/lib/utils';
 
 interface RequestManagementClientProps {
   request: any;
@@ -14,7 +16,23 @@ export function RequestManagementClient({ request }: RequestManagementClientProp
   const [isRescheduling, setIsRescheduling] = useState(false);
   const [studentNote, setStudentNote] = useState(request.studentNote || '');
   const [loading, setLoading] = useState(false);
+  const [userTimezone, setUserTimezone] = useState('UTC');
   const router = useRouter();
+
+  useEffect(() => {
+    async function fetchPreferences() {
+      try {
+        const res = await fetch('/api/user/settings/preferences');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.timezone) setUserTimezone(data.timezone);
+        }
+      } catch (err) {
+        console.error('Failed to fetch timezone', err);
+      }
+    }
+    fetchPreferences();
+  }, []);
 
   const handleUpdateNote = async () => {
     setLoading(true);
@@ -77,61 +95,72 @@ export function RequestManagementClient({ request }: RequestManagementClientProp
     }
   };
 
+  const formatLocalTime = (dateStr: string) => {
+    return new Date(dateStr).toLocaleString([], { 
+      dateStyle: 'medium', 
+      timeStyle: 'short', 
+      timeZone: userTimezone 
+    });
+  };
+
   const isClosed = request.status === 'Declined' || request.status === 'Cancelled';
 
   return (
-    <div className="space-y-6 pt-4">
+    <div className="space-y-10 pt-4">
       {/* Reschedule Section */}
-      <div className="space-y-4">
+      <section className="space-y-6">
         <div className="flex justify-between items-center">
-          <h2 className="text-lg font-bold text-black border-l-4 border-blue-500 pl-3 uppercase tracking-tight">Time & Schedule</h2>
+          <h2 className={ux.text.accent}>Time & Schedule</h2>
           {!isRescheduling && !isClosed && (
-            <button onClick={() => setIsRescheduling(true)} className="text-xs text-blue-600 font-bold hover:underline uppercase">
+            <button onClick={() => setIsRescheduling(true)} className="text-xs text-brand-600 font-black uppercase tracking-widest hover:underline">
               Propose New Time
             </button>
           )}
         </div>
 
         {isRescheduling ? (
-          <div className="space-y-4 animate-in fade-in slide-in-from-top-1 duration-200">
-             <div className="bg-blue-50 p-4 rounded-lg border border-blue-100 mb-4">
-               <p className="text-sm text-blue-800">Select a new slot below to propose a change to your counselor.</p>
+          <div className="space-y-6 animate-in fade-in slide-in-from-top-2 duration-300">
+             <div className="bg-brand-50 p-5 rounded-2xl border border-brand-100 mb-4">
+               <p className="text-sm font-bold text-brand-900">Choose a different slot below.</p>
+               <p className="text-xs text-brand-700 mt-1">This will update your pending request for the counselor to review.</p>
              </div>
              <SimpleSlotPicker hostId={request.hostId} onSlotSelected={handleReschedule} />
              <Button variant="outline" onClick={() => setIsRescheduling(false)} className="w-full">
-                Cancel Rescheduling
+                Cancel Changes
              </Button>
           </div>
         ) : (
-          <div className="flex items-center gap-4 text-sm text-gray-700 bg-gray-50 px-4 py-3 rounded-lg border border-gray-200">
-            <span className="text-lg">⏰</span>
-            <span className="font-medium">Currently Requested:</span>
-            <span>{new Date(request.requestedStart).toLocaleString()}</span>
+          <div className="flex items-center gap-4 bg-surface-soft px-5 py-4 rounded-2xl border border-slate-100">
+            <span className="text-2xl">⏰</span>
+            <div className="flex flex-col">
+              <span className={ux.text.accent + " mb-1 opacity-50"}>Requested Time ({userTimezone})</span>
+              <span className="text-sm font-bold text-slate-900">{formatLocalTime(request.requestedStart)}</span>
+            </div>
           </div>
         )}
-      </div>
+      </section>
 
-      <div className="space-y-4">
+      <section className="space-y-6">
         <div className="flex justify-between items-center">
-          <h2 className="text-lg font-bold text-black border-l-4 border-yellow-400 pl-3">Your Note to Counselor</h2>
+          <h2 className={ux.text.accent}>Student Note</h2>
           {!isEditing && !isClosed && (
-            <button onClick={() => setIsEditing(true)} className="text-xs text-blue-600 font-bold hover:underline uppercase">
+            <button onClick={() => setIsEditing(true)} className="text-xs text-brand-600 font-black uppercase tracking-widest hover:underline">
               Edit Note
             </button>
           )}
         </div>
 
         {isEditing ? (
-          <div className="space-y-3">
+          <div className="space-y-4">
             <textarea
-              className="w-full text-sm p-4 border rounded-lg text-black focus:ring-2 focus:ring-blue-500 outline-none min-h-[150px]"
+              className={cn(ux.form.input, "min-h-[160px] resize-none")}
               value={studentNote}
               onChange={(e) => setStudentNote(e.target.value)}
               placeholder="What would you like to discuss?"
             />
             <div className="flex gap-3">
               <Button disabled={loading} onClick={handleUpdateNote} className="flex-1">
-                Save Changes
+                Save Note
               </Button>
               <Button disabled={loading} variant="outline" onClick={() => setIsEditing(false)} className="flex-1">
                 Discard
@@ -139,34 +168,34 @@ export function RequestManagementClient({ request }: RequestManagementClientProp
             </div>
           </div>
         ) : (
-          <div className="text-sm text-gray-700 bg-gray-50 p-4 rounded-lg italic border border-gray-200">
-            {request.studentNote || "No note was added."}
+          <div className="text-sm text-slate-700 bg-surface-soft p-6 rounded-2xl italic border border-slate-100 leading-relaxed">
+            "{request.studentNote || "No note was added to this request."}"
           </div>
         )}
-      </div>
+      </section>
 
       {!isClosed && (
-        <div className="pt-8 border-t">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-red-50 rounded-lg border border-red-100">
-            <div>
-              <p className="text-sm font-bold text-red-900">Cancel Request</p>
-              <p className="text-xs text-red-700">Changed your mind? You can cancel this request before the counselor accepts it.</p>
+        <div className="pt-10 border-t border-slate-100">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 p-6 bg-red-50 rounded-2xl border border-red-100">
+            <div className="max-w-md">
+              <p className="text-sm font-black text-red-900 uppercase tracking-tight mb-1">Withdraw Request</p>
+              <p className="text-xs text-red-700 font-medium leading-relaxed">Changed your mind or made a mistake? You can cancel this request entirely before it's accepted.</p>
             </div>
             <Button 
               disabled={loading} 
               variant="outline" 
               onClick={handleCancel}
-              className="text-red-600 border-red-200 hover:bg-red-100 bg-white"
+              className="text-red-600 border-red-200 hover:bg-red-600 hover:text-white bg-white sm:whitespace-nowrap"
             >
-              Cancel Meeting Request
+              Cancel Request
             </Button>
           </div>
         </div>
       )}
 
       {isClosed && (
-        <div className="bg-gray-50 border border-gray-200 p-4 rounded-lg italic text-gray-500 text-sm">
-           This request is closed and cannot be modified.
+        <div className="bg-surface-muted border border-slate-200 p-6 rounded-2xl italic text-slate-400 text-sm text-center">
+           This request has been processed and can no longer be modified.
         </div>
       )}
     </div>

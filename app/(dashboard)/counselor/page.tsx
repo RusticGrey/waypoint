@@ -3,8 +3,11 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { featureFlags } from '@/lib/feature-flags';
+import { ux } from '@/lib/ux';
+import { cn } from '@/lib/utils';
 
 export default async function StaffDashboard() {
   const session = await getServerSession(authOptions);
@@ -57,57 +60,65 @@ export default async function StaffDashboard() {
     });
   }
 
+  // Get Meeting Stats
+  const [pendingRequestsCount, upcomingMeetingsCount] = await Promise.all([
+    prisma.meetingRequest.count({
+      where: { hostId: session.user.id, status: 'Pending' }
+    }),
+    prisma.meeting.count({
+      where: { hostId: session.user.id, status: 'Upcoming', startTime: { gt: new Date() } }
+    })
+  ]);
+
   const studentsByPhase = {
     Onboarding: students.filter((s) => s.phase === 'Onboarding'),
     Profile_Building: students.filter((s) => s.phase === 'Profile_Building'),
     College_Applications: students.filter((s) => s.phase === 'College_Applications'),
   };
 
-  const showMeetings = process.env.NEXT_PUBLIC_ENABLE_MEETINGS === 'true';
-
   const renderStudentTable = (title: string, studentList: typeof students) => (
-    <Card className="mb-8">
+    <Card className="mb-8" variant="base">
       <CardHeader>
-        <CardTitle>{title} ({studentList.length})</CardTitle>
+        <CardTitle className={ux.text.subheading}>{title} ({studentList.length})</CardTitle>
       </CardHeader>
       <CardContent>
         {studentList.length > 0 ? (
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
+            <table className="min-w-full divide-y divide-slate-200">
               <thead>
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Student</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Grade</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Curriculum</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Profile</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                  <th className="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Student</th>
+                  <th className="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Email</th>
+                  <th className="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Grade</th>
+                  <th className="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Curriculum</th>
+                  <th className="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Profile</th>
+                  <th className="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-slate-200">
                 {studentList.map((student) => (
-                  <tr key={student.userId}>
-                    <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                  <tr key={student.userId} className="hover:bg-surface-soft transition-colors">
+                    <td className="px-4 py-3 text-sm font-bold text-slate-900">
                       {student.user.firstName} {student.user.lastName}
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-600">
+                    <td className="px-4 py-3 text-sm text-slate-600 font-medium">
                       {student.user.email}
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-600">
-                      {student.currentGrade}
+                    <td className="px-4 py-3 text-sm">
+                      <Badge variant="neutral">{student.currentGrade}</Badge>
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-600">
+                    <td className="px-4 py-3 text-sm text-slate-600 font-medium">
                       {student.academicProfile?.curriculumType || '-'}
                     </td>
                     <td className="px-4 py-3 text-sm">
-                      <div className="flex items-center">
-                        <div className="w-16 bg-gray-200 rounded-full h-2 mr-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-16 bg-slate-100 rounded-full h-1.5">
                           <div
-                            className="bg-blue-600 h-2 rounded-full"
+                            className="bg-brand-500 h-1.5 rounded-full"
                             style={{ width: `${student.profileCompletionPct || 0}%` }}
                           />
                         </div>
-                        <span className="text-xs text-gray-600">
+                        <span className="text-[10px] font-black text-slate-400">
                           {student.profileCompletionPct || 0}%
                         </span>
                       </div>
@@ -115,7 +126,7 @@ export default async function StaffDashboard() {
                     <td className="px-4 py-3 text-sm">
                       <Link
                         href={`/counselor/students/${student.userId}`}
-                        className="text-blue-600 hover:text-blue-700"
+                        className="text-brand-600 hover:text-brand-700 font-bold text-xs uppercase tracking-tight"
                       >
                         View Profile
                       </Link>
@@ -126,126 +137,100 @@ export default async function StaffDashboard() {
             </table>
           </div>
         ) : (
-          <p className="text-gray-500 text-center py-8">No students in this phase.</p>
+          <p className="text-slate-400 text-center py-12 italic">No students in this phase.</p>
         )}
       </CardContent>
     </Card>
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">
+    <div className={ux.layout.page}>
+      <div className={ux.layout.header}>
+        <h1 className={ux.text.heading}>
           {roleTitle} Dashboard
         </h1>
-        <p className="mt-2 text-gray-600">
-          Welcome back, {session.user.name}!
+        <p className={ux.text.body}>
+          Manage your caseload and track student progress across lifecycle phases.
         </p>
       </div>
 
-      {/* Meeting Management Quick Links */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        {featureFlags.counselorDashboard.eventManagement && (
-          <Link href="/counselor/events" className="group p-4 bg-white rounded-lg border-2 border-blue-100 hover:border-blue-500 hover:shadow-md transition-all flex items-center gap-3">
-            <span className="text-2xl group-hover:scale-110 transition-transform">🤝</span>
-            <div>
-              <span className="font-bold text-black block">Event Management</span>
-              <span className="text-xs text-gray-500">Public events & consultations</span>
-            </div>
-          </Link>
-        )}
-        {showMeetings && featureFlags.counselorDashboard.quickLinks.meetings && (
-          <Link href="/counselor/meetings" className="group p-4 bg-white rounded-lg border border-gray-200 hover:border-blue-500 hover:shadow-md transition-all flex items-center gap-3">
-            <span className="text-2xl group-hover:scale-110 transition-transform">🗓️</span>
-            <div>
-              <span className="font-bold text-black block">Manage Meetings</span>
-              <span className="text-xs text-gray-500">View calendar and requests</span>
-            </div>
-          </Link>
-        )}
-        {showMeetings && featureFlags.counselorDashboard.quickLinks.availability && (
-          <Link href="/counselor/meetings/availability" className="group p-4 bg-white rounded-lg border border-gray-200 hover:border-blue-500 hover:shadow-md transition-all flex items-center gap-3">
-            <span className="text-2xl group-hover:scale-110 transition-transform">⏰</span>
-            <div>
-              <span className="font-bold text-black block">Set Availability</span>
-              <span className="text-xs text-gray-500">Define your working hours</span>
-            </div>
-          </Link>
-        )}
-        {showMeetings && featureFlags.counselorDashboard.quickLinks.profile && (
-          <Link href="/counselor/profile" className="group p-4 bg-white rounded-lg border border-gray-200 hover:border-blue-500 hover:shadow-md transition-all flex items-center gap-3">
-            <span className="text-2xl group-hover:scale-110 transition-transform">⚙️</span>
-            <div>
-              <span className="font-bold text-black block">Setup & Profile</span>
-              <span className="text-xs text-gray-500">Manage integrations</span>
-            </div>
-          </Link>
-        )}
-      </div>
-
-      {/* Stats */}
+      {/* Stats Cards */}
       {featureFlags.counselorDashboard.stats && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card>
-            <CardContent className="pt-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+          <Card variant="pop" className={ux.card.highlight}>
+            <CardContent className="pt-8">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">{!isAdmin ? 'My Students' : 'Total Students'}</p>
-                  <p className="text-3xl font-bold text-gray-900">{students.length}</p>
+                  <p className={ux.text.accent}>Caseload Size</p>
+                  <p className="text-5xl font-black text-slate-900 mt-2">{students.length}</p>
                 </div>
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                  <span className="text-2xl">👥</span>
+                <div className="w-16 h-16 bg-brand-50 rounded-2xl flex items-center justify-center">
+                  <span className="text-4xl">👥</span>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardContent className="pt-6">
+          <Link href="/counselor/meetings" className="block group">
+            <Card variant="pop" className="group-hover:border-brand-300 transition-all">
+              <CardContent className="pt-8">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <p className={ux.text.accent}>Pending Meetings</p>
+                    <div className="flex items-baseline gap-2 mt-2">
+                      <span className="text-5xl font-black text-slate-900">{pendingRequestsCount}</span>
+                      <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Requests</span>
+                    </div>
+                  </div>
+                  <div className="w-16 h-16 bg-amber-50 rounded-2xl flex items-center justify-center group-hover:bg-amber-100 transition-colors">
+                    <span className="text-3xl text-amber-600">🗓️</span>
+                  </div>
+                </div>
+                <div className="mt-4 flex items-center gap-2">
+                  <Badge variant="neutral" className="bg-slate-100">{upcomingMeetingsCount} upcoming sessions</Badge>
+                  <span className="text-[10px] font-bold text-brand-600 uppercase ml-auto group-hover:underline">Manage &rarr;</span>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Card variant="pop">
+            <CardContent className="pt-8">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Profiles Complete</p>
-                  <p className="text-3xl font-bold text-gray-900">
-                    {students.filter(s => s.profileCompletionPct >= 80).length}
-                  </p>
+                  <p className={ux.text.accent}>Caseload Health</p>
+                  <div className="flex items-baseline gap-2 mt-2">
+                    <span className="text-5xl font-black text-slate-900">
+                      {students.length > 0 ? Math.round((students.filter(s => s.profileCompletionPct >= 80).length / students.length) * 100) : 0}%
+                    </span>
+                    <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Complete</span>
+                  </div>
                 </div>
-                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                  <span className="text-2xl">✓</span>
+                <div className="w-16 h-16 bg-green-50 rounded-2xl flex items-center justify-center">
+                  <span className="text-4xl text-green-600">✓</span>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Needs Attention</p>
-                  <p className="text-3xl font-bold text-gray-900">{students.filter((s) => s.profileCompletionPct < 50).length}</p>
-                </div>
-                <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
-                  <span className="text-2xl">⚠️</span>
-                </div>
+              <div className="mt-4 flex items-center gap-2">
+                 <span className="text-[10px] font-bold text-red-500 uppercase">{students.filter((s) => s.profileCompletionPct < 50).length} Need Attention</span>
               </div>
             </CardContent>
           </Card>
         </div>
       )}
 
-      {featureFlags.counselorDashboard.studentsList && (
-        <>
+      {/* Main Pipeline */}
+      {featureFlags.counselorDashboard.studentsList ? (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className={ux.text.accent}>Student Management Pipeline</h2>
+          </div>
           {renderStudentTable('Onboarding Phase', studentsByPhase.Onboarding)}
           {renderStudentTable('Profile Building Phase', studentsByPhase.Profile_Building)}
           {renderStudentTable('College Applications Phase', studentsByPhase.College_Applications)}
-        </>
-      )}
-
-      {!featureFlags.counselorDashboard.studentsList && !featureFlags.counselorDashboard.stats && (
-        <Card className="bg-slate-50 border-dashed border-2">
-          <CardContent className="py-20 text-center text-slate-500">
-            <span className="text-4xl block mb-4">🏠</span>
-            Welcome to your Dashboard. Access features from the quick links above.
-          </CardContent>
+        </div>
+      ) : (
+        <Card variant="base" className="bg-surface-soft border-dashed border-2 py-24 text-center">
+          <p className={ux.text.body}>Pipeline view is currently disabled.</p>
         </Card>
       )}
     </div>

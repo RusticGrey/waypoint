@@ -7,108 +7,94 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-//===============================================================
-// --- Models ---
-//===============================================================
-
 model Organization {
-  id           String   @id @default(uuid())
+  id           String        @id @default(uuid())
   name         String
-  logoUrl      String?  @map("logo_url")
-  primaryColor String   @default("#3B82F6") @map("primary_color")
-  createdAt    DateTime @default(now()) @map("created_at")
-  users        User[]
+  logoUrl      String?       @map("logo_url")
+  primaryColor String        @default("#3B82F6") @map("primary_color")
+  createdAt    DateTime      @default(now()) @map("created_at")
   publicEvents PublicEvent[]
+  users        User[]
 
   @@map("Organization")
 }
 
 model User {
-  id             String   @id @default(uuid())
-  organizationId String   @map("organization_id")
-  email          String   @unique
-  passwordHash   String   @map("password_hash")
+  id             String       @id @default(uuid())
+  organizationId String       @map("organization_id")
+  email          String       @unique
+  passwordHash   String       @map("password_hash")
   role           UserRole
-  firstName      String   @map("first_name")
-  lastName       String   @map("last_name")
-  createdAt      DateTime @default(now()) @map("created_at")
-
-  // Relations
-  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  student      Student?     @relation("UserToStudent")
-  counselor    Counselor?   @relation("UserToCounselor")
+  firstName      String       @map("first_name")
+  lastName       String       @map("last_name")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  timezone       String       @default("UTC")
+  counselor      Counselor?   @relation("UserToCounselor")
+  student        Student?     @relation("UserToStudent")
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@map("User")
 }
 
 model Counselor {
-  userId  String  @id @map("user_id")
-  isAdmin Boolean @default(false) @map("is_admin")
-
-  // Relations
-  user           User                    @relation("UserToCounselor", fields: [userId], references: [id], onDelete: Cascade)
-  caseload       Student[]               @relation("CounselorCaseload")
-  meetings       Meeting[]               @relation("CounselorMeetings")
-  meetingNotes   MeetingNote[]
-  availabilities CounselorAvailability[]
-  settings       CounselorSettings?
-  comments       ProfileComment[]
-  overrides      ProfileOverride[]
-
-  hostMeetingRequests MeetingRequest[]  @relation("HostMeetingRequests")
+  userId              String                  @id @map("user_id")
+  isAdmin             Boolean                 @default(false) @map("is_admin")
+  user                User                    @relation("UserToCounselor", fields: [userId], references: [id], onDelete: Cascade)
+  availabilities      CounselorAvailability[]
+  settings            CounselorSettings?
   eventAssignments    EventAssignment[]
   completedSignups    EventSignup[]
+  meetings            Meeting[]               @relation("CounselorMeetings")
+  meetingNotes        MeetingNote[]
+  hostMeetingRequests MeetingRequest[]        @relation("HostMeetingRequests")
+  comments            ProfileComment[]
+  overrides           ProfileOverride[]
+  caseload            Student[]               @relation("CounselorCaseload")
 
   @@map("Counselor")
 }
 
 model Student {
-  userId               String       @id @map("user_id")
-  graduationYear       Int          @map("graduation_year")
-  currentGrade         GradeLevel   @map("current_grade")
-  profileCompletionPct Int          @default(0) @map("profile_completion_pct")
-  counselorId          String?      @map("counselor_id")
-  phase                StudentPhase @default(Onboarding)
-
-  // Relations
-  user            User                 @relation("UserToStudent", fields: [userId], references: [id], onDelete: Cascade)
-  counselor       Counselor?           @relation("CounselorCaseload", fields: [counselorId], references: [userId])
-  academicProfile AcademicProfile?
-  personalProfile     PersonalProfile?
-  achievements        Achievement[]
-  activities          Activity[]
-  transcripts         Transcript[]
-  testScores          TestScore[]
-  projectExperiences  ProjectExperience[]
-  applications        CollegeApplication[]
-  goals               ProfileGoal[]
-  changeLogs          ChangeLog[]
-  profileOverride     ProfileOverride?
-  targetColleges    TargetCollege[]
-  meetings          Meeting[]        @relation("StudentMeetings")
-  meetingRequests   MeetingRequest[] @relation("StudentMeetingRequests")
-  meetingNotes      MeetingNote[]
+  userId               String               @id @map("user_id")
+  graduationYear       Int                  @map("graduation_year")
+  currentGrade         GradeLevel           @map("current_grade")
+  profileCompletionPct Int                  @default(0) @map("profile_completion_pct")
+  counselorId          String?              @map("counselor_id")
+  phase                StudentPhase         @default(Onboarding)
+  notificationsEnabled Boolean              @default(true) @map("notifications_enabled")
+  academicProfile      AcademicProfile?
+  achievements         Achievement[]
+  activities           Activity[]
+  changeLogs           ChangeLog[]
+  applications         CollegeApplication[]
+  meetings             Meeting[]            @relation("StudentMeetings")
+  meetingNotes         MeetingNote[]
+  meetingRequests      MeetingRequest[]     @relation("StudentMeetingRequests")
+  personalProfile      PersonalProfile?
+  goals                ProfileGoal[]
+  profileOverride      ProfileOverride?
+  projectExperiences   ProjectExperience[]
+  counselor            Counselor?           @relation("CounselorCaseload", fields: [counselorId], references: [userId])
+  user                 User                 @relation("UserToStudent", fields: [userId], references: [id], onDelete: Cascade)
+  targetColleges       TargetCollege[]
+  testScores           TestScore[]
+  transcripts          Transcript[]
 
   @@map("Student")
 }
 
-// -------------------------------------------------
-// --- STUDENT PROFILE MODELS ---
-// -------------------------------------------------
-
 model PersonalProfile {
   studentId      String    @id @map("student_id")
-  preferredName  String?   @map("preferred_name")
-  phone          String?
   dateOfBirth    DateTime? @map("date_of_birth")
+  phone          String?
   currentSchool  String?   @map("current_school")
   schoolLocation String?   @map("school_location")
-  parentName     String    @map("parent_name") @default("")
-  parentEmail    String    @map("parent_email") @default("")
-  parentPhone    String    @map("parent_phone") @default("")
   createdAt      DateTime  @default(now()) @map("created_at")
-
-  student Student @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+  parentEmail    String    @default("") @map("parent_email")
+  parentName     String    @default("") @map("parent_name")
+  parentPhone    String    @default("") @map("parent_phone")
+  preferredName  String?   @map("preferred_name")
+  student        Student   @relation(fields: [studentId], references: [userId], onDelete: Cascade)
 
   @@map("PersonalProfile")
 }
@@ -126,8 +112,8 @@ model AcademicProfile {
 
 model Subject {
   id             String         @id @default(cuid())
-  subjectName    String         @map("subject_name")
   curriculumType CurriculumType @map("curriculum_type")
+  subjectName    String         @map("subject_name")
 
   @@unique([subjectName, curriculumType])
   @@map("Subject")
@@ -154,16 +140,15 @@ model Activity {
   id           String           @id @default(cuid())
   studentId    String           @map("student_id")
   activityName String           @map("activity_name")
-  category     ActivityCategory
   role         String?
-  gradeLevel   GradeLevel       @map("grade_level")
   hoursPerWeek Int              @map("hours_per_week")
   weeksPerYear Int              @map("weeks_per_year")
   description  String?
   createdAt    DateTime         @default(now()) @map("created_at")
   updatedAt    DateTime         @updatedAt @map("updated_at")
-
-  student Student @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+  gradeLevel   GradeLevel       @map("grade_level")
+  category     ActivityCategory
+  student      Student          @relation(fields: [studentId], references: [userId], onDelete: Cascade)
 
   @@map("Activity")
 }
@@ -171,17 +156,16 @@ model Activity {
 model ProjectExperience {
   id             String         @id @default(cuid())
   studentId      String         @map("student_id")
-  title          String
   experienceType ExperienceType @map("experience_type")
+  title          String
   organization   String?
-  roleTitle      String?        @map("role_title")
   startDate      DateTime       @map("start_date")
   endDate        DateTime?      @map("end_date")
   isOngoing      Boolean        @default(false) @map("is_ongoing")
+  roleTitle      String?        @map("role_title")
   description    String?
   createdAt      DateTime       @default(now()) @map("created_at")
-
-  student Student @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+  student        Student        @relation(fields: [studentId], references: [userId], onDelete: Cascade)
 
   @@map("ProjectExperience")
 }
@@ -196,22 +180,18 @@ model Achievement {
   dateAchieved     DateTime?         @map("date_achieved")
   description      String?
   recognitionLevel RecognitionLevel? @map("recognition_level")
-  verifiableLink   String?           @map("verifiable_link")
-  metrics          String?
   createdAt        DateTime          @default(now()) @map("created_at")
   updatedAt        DateTime          @updatedAt @map("updated_at")
+  metrics          String?
+  verifiableLink   String?           @map("verifiable_link")
   student          Student           @relation(fields: [studentId], references: [userId], onDelete: Cascade)
 
   @@map("Achievement")
 }
 
-// -------------------------------------------------
-// --- COLLEGE PREP MODELS ---
-// -------------------------------------------------
-
 model College {
   id             String               @id @default(cuid())
-  name           String
+  name           String               @unique
   country        String               @default("United States")
   acceptanceRate Float?               @map("acceptance_rate")
   avgGpa         Float?               @map("avg_gpa")
@@ -224,7 +204,6 @@ model College {
   applications   CollegeApplication[]
   targetColleges TargetCollege[]
 
-  @@unique([name])
   @@map("College")
 }
 
@@ -245,9 +224,8 @@ model CollegeApplication {
   decisionReceivedDate  DateTime?         @map("decision_received_date")
   createdAt             DateTime          @default(now()) @map("created_at")
   updatedAt             DateTime          @updatedAt @map("updated_at")
-
-  college College @relation(fields: [collegeId], references: [id], onDelete: Cascade)
-  student Student @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+  college               College           @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+  student               Student           @relation(fields: [studentId], references: [userId], onDelete: Cascade)
 
   @@unique([studentId, collegeId])
   @@map("CollegeApplication")
@@ -259,13 +237,12 @@ model TestScore {
   testType            String   @map("test_type")
   testDate            DateTime @map("test_date")
   compositeScore      Int      @map("composite_score")
-  mathScore           Int?     @map("math_score")
-  englishScore        Int?     @map("english_score")
-  scienceScore        Int?     @map("science_score")
-  readingWritingScore Int?     @map("reading_writing_score")
   createdAt           DateTime @default(now()) @map("created_at")
-
-  student Student @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+  englishScore        Int?     @map("english_score")
+  mathScore           Int?     @map("math_score")
+  readingWritingScore Int?     @map("reading_writing_score")
+  scienceScore        Int?     @map("science_score")
+  student             Student  @relation(fields: [studentId], references: [userId], onDelete: Cascade)
 
   @@map("TestScore")
 }
@@ -274,19 +251,14 @@ model TargetCollege {
   id             String         @id @default(cuid())
   studentId      String         @map("student_id")
   collegeId      String         @map("college_id")
-  targetCategory TargetCategory @map("target_category")
   priority       Int?
-
-  student Student @relation(fields: [studentId], references: [userId], onDelete: Cascade)
-  college College @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+  targetCategory TargetCategory @map("target_category")
+  college        College        @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+  student        Student        @relation(fields: [studentId], references: [userId], onDelete: Cascade)
 
   @@unique([studentId, collegeId])
   @@map("TargetCollege")
 }
-
-// -------------------------------------------------
-// --- MEETINGS & CHANGE LOGS MODELS ---
-// -------------------------------------------------
 
 model Meeting {
   id                    String                 @id @default(uuid())
@@ -305,45 +277,35 @@ model Meeting {
   agenda                String?
   createdAt             DateTime               @default(now()) @map("created_at")
   updatedAt             DateTime               @updatedAt @map("updated_at")
-
-  student        Student         @relation("StudentMeetings", fields: [studentId], references: [userId], onDelete: Cascade)
-  host           Counselor       @relation("CounselorMeetings", fields: [hostId], references: [userId], onDelete: Cascade)
-  meetingRequest MeetingRequest?
-  note           MeetingNote?
+  host                  Counselor              @relation("CounselorMeetings", fields: [hostId], references: [userId], onDelete: Cascade)
+  student               Student                @relation("StudentMeetings", fields: [studentId], references: [userId], onDelete: Cascade)
+  note                  MeetingNote?
+  meetingRequest        MeetingRequest?
 
   @@map("Meeting")
 }
 
 model MeetingNote {
-  id              String      @id @default(cuid())
-  meetingId       String      @unique @map("meeting_id")
-  studentId       String      @map("student_id")
-  counselorId     String      @map("counselor_id")
-  
-  // Note Fields
-  counselorNotes  String?     @map("counselor_notes")
-  studentNotes    String?     @map("student_notes")
-  actionItems     String[]    @map("action_items")
-  
-  // Additional Tracking
-  studentMood     String?     @map("student_mood")
-  nextMeetingDate DateTime?   @map("next_meeting_date")
-  
-  // Future state placeholders
-  transcriptUrl   String?     @map("transcript_url")
-  recordingUrl    String?     @map("recording_url")
-  summaryAi       String?     @map("summary_ai")
-  
-  createdAt       DateTime    @default(now()) @map("created_at")
-  updatedAt       DateTime    @updatedAt @map("updated_at")
-
-  meeting   Meeting   @relation(fields: [meetingId], references: [id], onDelete: Cascade)
-  counselor Counselor @relation(fields: [counselorId], references: [userId], onDelete: Cascade)
-  student   Student   @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+  id              String    @id @default(cuid())
+  meetingId       String    @unique @map("meeting_id")
+  studentId       String    @map("student_id")
+  counselorId     String    @map("counselor_id")
+  actionItems     String[]  @map("action_items")
+  nextMeetingDate DateTime? @map("next_meeting_date")
+  studentMood     String?   @map("student_mood")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  counselorNotes  String?   @map("counselor_notes")
+  recordingUrl    String?   @map("recording_url")
+  studentNotes    String?   @map("student_notes")
+  summaryAi       String?   @map("summary_ai")
+  transcriptUrl   String?   @map("transcript_url")
+  counselor       Counselor @relation(fields: [counselorId], references: [userId], onDelete: Cascade)
+  meeting         Meeting   @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  student         Student   @relation(fields: [studentId], references: [userId], onDelete: Cascade)
 
   @@map("MeetingNote")
 }
-
 
 model ChangeLog {
   id          String       @id @default(cuid())
@@ -357,8 +319,7 @@ model ChangeLog {
   newValue    String?      @map("new_value")
   description String
   createdAt   DateTime     @default(now()) @map("created_at")
-
-  student Student @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+  student     Student      @relation(fields: [studentId], references: [userId], onDelete: Cascade)
 
   @@map("ChangeLog")
 }
@@ -371,47 +332,39 @@ model ProfileGoal {
   targetValue  String     @map("target_value")
   currentValue String     @map("current_value")
   deadline     DateTime?
-  completedAt  DateTime?  @map("completed_at")
+  status       GoalStatus @default(Not_Started)
   priority     Int?
   notes        String?
-  status       GoalStatus @default(Not_Started)
-
-  createdAt DateTime @default(now()) @map("created_at")
-
-  student Student @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+  createdAt    DateTime   @default(now()) @map("created_at")
+  completedAt  DateTime?  @map("completed_at")
+  student      Student    @relation(fields: [studentId], references: [userId], onDelete: Cascade)
 
   @@map("ProfileGoal")
 }
 
 model ProfileOverride {
-  id             String   @id @default(cuid())
-  studentId      String   @unique @map("student_id")
-  overrideScore  Int      @map("override_score")
-  overrideReason String   @map("override_reason")
-  overriddenBy   String   @map("overridden_by")
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @updatedAt @map("updated_at")
-
-  counselor Counselor @relation(fields: [overriddenBy], references: [userId])
-  student   Student   @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+  id             String    @id @default(cuid())
+  studentId      String    @unique @map("student_id")
+  overrideScore  Int       @map("override_score")
+  overrideReason String    @map("override_reason")
+  overriddenBy   String    @map("overridden_by")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+  counselor      Counselor @relation(fields: [overriddenBy], references: [userId])
+  student        Student   @relation(fields: [studentId], references: [userId], onDelete: Cascade)
 
   @@map("ProfileOverride")
 }
 
 model ProfileComment {
-  id        String   @id @default(cuid())
-  userId    String   @map("user_id")
+  id        String    @id @default(cuid())
+  createdAt DateTime  @default(now()) @map("created_at")
   content   String
-  createdAt DateTime @default(now()) @map("created_at")
-
+  userId    String    @map("user_id")
   counselor Counselor @relation(fields: [userId], references: [userId])
 
   @@map("ProfileComment")
 }
-
-// -------------------------------------------------
-// --- NEW MEETING MANAGEMENT MODULE MODELS ---
-// -------------------------------------------------
 
 model MeetingRequest {
   id                    String               @id @default(uuid())
@@ -426,141 +379,122 @@ model MeetingRequest {
   suggestedStart        DateTime?            @map("suggested_start")
   suggestedEnd          DateTime?            @map("suggested_end")
   scheduledMeetingId    String?              @unique @map("scheduled_meeting_id")
-  googleCalendarEventId String?              @map("google_calendar_event_id")
   createdAt             DateTime             @default(now()) @map("created_at")
   updatedAt             DateTime             @updatedAt @map("updated_at")
-
-  student Student @relation("StudentMeetingRequests", fields: [studentId], references: [userId], onDelete: Cascade)
-  host    Counselor @relation("HostMeetingRequests", fields: [hostId], references: [userId], onDelete: Cascade)
-  meeting Meeting?  @relation(fields: [scheduledMeetingId], references: [id])
+  googleCalendarEventId String?              @map("google_calendar_event_id")
+  host                  Counselor            @relation("HostMeetingRequests", fields: [hostId], references: [userId], onDelete: Cascade)
+  meeting               Meeting?             @relation(fields: [scheduledMeetingId], references: [id])
+  student               Student              @relation("StudentMeetingRequests", fields: [studentId], references: [userId], onDelete: Cascade)
 
   @@map("MeetingRequest")
 }
 
 model CounselorSettings {
-  userId              String              @id @map("user_id")
-  preferredConference PreferredConference @default(Zoom) @map("preferred_conference")
-  googleAccessToken   String?             @map("google_access_token")
-  googleRefreshToken  String?             @map("google_refresh_token")
-  googleTokenExpiry   DateTime?           @map("google_token_expiry")
-  googleCalendarId    String?             @map("google_calendar_id")
-  googleConnected     Boolean             @default(false) @map("google_connected")
-  zoomAccessToken     String?             @map("zoom_access_token")
-  zoomRefreshToken    String?             @map("zoom_refresh_token")
-  zoomTokenExpiry     DateTime?           @map("zoom_token_expiry")
-  zoomUserId          String?             @map("zoom_user_id")
-  zoomConnected       Boolean             @default(false) @map("zoom_connected")
-  createdAt           DateTime            @default(now()) @map("created_at")
-  updatedAt           DateTime            @updatedAt @map("updated_at")
-
-  counselor Counselor @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  userId                 String              @id @map("user_id")
+  preferredConference    PreferredConference @default(Zoom) @map("preferred_conference")
+  googleAccessToken      String?             @map("google_access_token")
+  googleRefreshToken     String?             @map("google_refresh_token")
+  googleTokenExpiry      DateTime?           @map("google_token_expiry")
+  googleCalendarId       String?             @map("google_calendar_id")
+  googleConnected        Boolean             @default(false) @map("google_connected")
+  zoomAccessToken        String?             @map("zoom_access_token")
+  zoomRefreshToken       String?             @map("zoom_refresh_token")
+  zoomTokenExpiry        DateTime?           @map("zoom_token_expiry")
+  zoomUserId             String?             @map("zoom_user_id")
+  zoomConnected          Boolean             @default(false) @map("zoom_connected")
+  createdAt              DateTime            @default(now()) @map("created_at")
+  updatedAt              DateTime            @updatedAt @map("updated_at")
+  bufferTime             Int                 @default(15) @map("buffer_time")
+  defaultMeetingDuration Int                 @default(30) @map("default_meeting_duration")
+  counselor              Counselor           @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
   @@map("CounselorSettings")
 }
 
 model CounselorAvailability {
-  id          String   @id @default(uuid())
-  counselorId String   @map("counselor_id")
-  dayOfWeek   Int      @map("day_of_week") // 0-6, where 0 = Sunday
-  startTime   String   @map("start_time") // "09:00"
-  endTime     String   @map("end_time") // "17:00"
-  isActive    Boolean  @default(true) @map("is_active")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-
-  counselor Counselor @relation(fields: [counselorId], references: [userId], onDelete: Cascade)
+  id          String    @id @default(uuid())
+  counselorId String    @map("counselor_id")
+  dayOfWeek   Int       @map("day_of_week")
+  startTime   String    @map("start_time")
+  endTime     String    @map("end_time")
+  isActive    Boolean   @default(true) @map("is_active")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  counselor   Counselor @relation(fields: [counselorId], references: [userId], onDelete: Cascade)
 
   @@unique([counselorId, dayOfWeek])
   @@map("CounselorAvailability")
 }
 
-// -------------------------------------------------
-// --- EVENT MANAGEMENT MODELS ---
-// -------------------------------------------------
-
 model PublicEvent {
-  id              String   @id @default(uuid())
-  organizationId  String   @map("organization_id")
-  title           String
-  description     String?  @db.Text
-  location        String
-  startDate       DateTime @map("start_date")
-  endDate         DateTime @map("end_date")
-
-  // Custom Branding
-  headerText    String? @map("header_text") @default("YOUR GLOBAL FUTURE STARTS HERE")
-  subheaderText String? @map("subheader_text") @default("Schedule your FREE 30-minute consultation")
-  slotDuration  Int     @default(30) @map("slot_duration")
-  successMessage String? @map("success_message") @db.Text
-  footerContent  Json?   @map("footer_content")
-
-  isActive  Boolean  @default(true) @map("is_active")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  organization Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  slots        EventSlot[]
-  assignments  EventAssignment[]
+  id             String            @id @default(uuid())
+  organizationId String            @map("organization_id")
+  title          String
+  description    String?
+  location       String
+  startDate      DateTime          @map("start_date")
+  endDate        DateTime          @map("end_date")
+  headerText     String?           @default("YOUR GLOBAL FUTURE STARTS HERE") @map("header_text")
+  subheaderText  String?           @default("Schedule your FREE 30-minute consultation") @map("subheader_text")
+  slotDuration   Int               @default(30) @map("slot_duration")
+  successMessage String?           @map("success_message")
+  footerContent  Json?             @map("footer_content")
+  isActive       Boolean           @default(true) @map("is_active")
+  createdAt      DateTime          @default(now()) @map("created_at")
+  updatedAt      DateTime          @updatedAt @map("updated_at")
+  assignments    EventAssignment[]
+  slots          EventSlot[]
+  organization   Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@map("PublicEvent")
 }
 
 model EventAssignment {
-  id          String @id @default(uuid())
-  eventId     String @map("event_id")
-  counselorId String @map("counselor_id")
-
-  event     PublicEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  counselor Counselor   @relation(fields: [counselorId], references: [userId], onDelete: Cascade)
+  id          String      @id @default(uuid())
+  eventId     String      @map("event_id")
+  counselorId String      @map("counselor_id")
+  counselor   Counselor   @relation(fields: [counselorId], references: [userId], onDelete: Cascade)
+  event       PublicEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
 
   @@unique([eventId, counselorId])
   @@map("EventAssignment")
 }
 
 model EventSlot {
-  id          String   @id @default(uuid())
-  eventId     String   @map("event_id")
-  startTime   DateTime @map("start_time")
-  duration    Int      @default(30)
-  capacity    Int      @default(1)
-  bookedCount Int      @default(0) @map("booked_count")
-  isActive    Boolean  @default(true) @map("is_active")
-
-  event   PublicEvent   @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  signups EventSignup[]
+  id          String        @id @default(uuid())
+  eventId     String        @map("event_id")
+  startTime   DateTime      @map("start_time")
+  duration    Int           @default(30)
+  capacity    Int           @default(1)
+  bookedCount Int           @default(0) @map("booked_count")
+  isActive    Boolean       @default(true) @map("is_active")
+  signups     EventSignup[]
+  event       PublicEvent   @relation(fields: [eventId], references: [id], onDelete: Cascade)
 
   @@index([eventId, startTime])
   @@map("EventSlot")
 }
 
 model EventSignup {
-  id            String @id @default(uuid())
-  slotId        String @map("slot_id")
-  duration      Int
-  prospectName  String @map("prospect_name")
-  prospectEmail String? @map("prospect_email")
-  prospectPhone String @map("prospect_phone")
-  studentGrade  String? @map("student_grade")
-  status        BookingStatus @default(Confirmed)
-
-  // Management Fields
-  completedAt    DateTime? @map("completed_at")
-  completedBy    String?   @map("completed_by")
-  counselorNotes String?   @map("counselor_notes") @db.Text
-  didAttend      Boolean?  @map("did_attend")
-
-  createdAt DateTime @default(now()) @map("created_at")
-
-  slot                 EventSlot  @relation(fields: [slotId], references: [id], onDelete: Cascade)
-  completedByCounselor Counselor? @relation(fields: [completedBy], references: [userId])
+  id                   String        @id @default(uuid())
+  slotId               String        @map("slot_id")
+  duration             Int
+  prospectName         String        @map("prospect_name")
+  prospectEmail        String?       @map("prospect_email")
+  prospectPhone        String        @map("prospect_phone")
+  studentGrade         String?       @map("student_grade")
+  status               BookingStatus @default(Confirmed)
+  completedAt          DateTime?     @map("completed_at")
+  completedBy          String?       @map("completed_by")
+  counselorNotes       String?       @map("counselor_notes")
+  didAttend            Boolean?      @map("did_attend")
+  createdAt            DateTime      @default(now()) @map("created_at")
+  completedByCounselor Counselor?    @relation(fields: [completedBy], references: [userId])
+  slot                 EventSlot     @relation(fields: [slotId], references: [id], onDelete: Cascade)
 
   @@index([slotId])
   @@map("EventSignup")
 }
-
-//===============================================================
-// --- Enums ---
-//===============================================================
 
 enum UserRole {
   counselor
@@ -641,6 +575,7 @@ enum ExperienceType {
 }
 
 enum ApplicationStatus {
+  Not_Started
   Planning
   Researching
   Preparing
@@ -651,7 +586,6 @@ enum ApplicationStatus {
   Waitlisted
   Deferred
   Withdrawn
-  Not_Started
 }
 
 enum GoalType {
@@ -727,7 +661,6 @@ enum ScheduledMeetingStatus {
   Cancelled
   NoShow
 }
-
 
 enum PreferredConference {
   Zoom

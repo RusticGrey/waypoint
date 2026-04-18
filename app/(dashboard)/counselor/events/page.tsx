@@ -3,10 +3,10 @@
 import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import Link from 'next/link';
 import { ux } from '@/lib/ux';
 import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
 
 export default function EventsPage() {
   const [events, setEvents] = useState<any[]>([]);
@@ -35,11 +35,11 @@ export default function EventsPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="flex justify-between items-center mb-8 border-b pb-6">
+    <div className={ux.layout.page}>
+      <div className={cn(ux.layout.header, "flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4")}>
         <div>
-          <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tight">Event Management</h1>
-          <p className="text-slate-500 font-medium mt-1">Manage public booking events and prospective consultations.</p>
+          <h1 className={ux.text.heading}>Event Management</h1>
+          <p className={ux.text.body}>Manage public booking events and prospective consultations.</p>
         </div>
         <Link href="/counselor/events/create">
           <Button>Create New Event</Button>
@@ -47,55 +47,58 @@ export default function EventsPage() {
       </div>
 
       {loading ? (
-        <p>Loading events...</p>
+        <div className="py-24 text-center">
+          <p className={ux.text.body}>Loading events...</p>
+        </div>
       ) : events.length === 0 ? (
-        <Card>
-          <CardContent className="py-12 text-center">
-            <p className="text-gray-500 mb-4">No events found.</p>
+        <Card variant="base" className="bg-surface-soft border-dashed border-2 py-24 text-center">
+          <CardContent>
+            <p className={ux.text.body + " mb-6"}>No events found in your organization.</p>
             <Link href="/counselor/events/create">
               <Button variant="outline">Create your first event</Button>
             </Link>
           </CardContent>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {events.map((event) => (
-            <Card key={event.id} className={cn(ux.card.base, ux.card.interactive, ux.card.pop, ux.card.highlight, ux.card.ribbon)}>
+            <Card key={event.id} variant="pop" className={cn(ux.card.highlight, ux.card.ribbon, "h-full flex flex-col")}>
               <CardHeader className="pb-3 relative z-10">
-                <CardTitle className={cn(ux.text.heading, "flex justify-between items-start text-xl leading-tight")}>
-                  <span>{event.title}</span>
-                  <span className={cn(
-                    "px-2 py-1 rounded-full border",
-                    event.isActive ? ux.badge.success : ux.badge.neutral
-                  )}>
+                <div className="flex justify-between items-start gap-4">
+                  <CardTitle className={cn(ux.text.subheading, "text-xl leading-tight line-clamp-2")}>
+                    {event.title}
+                  </CardTitle>
+                  <Badge variant={event.isActive ? 'success' : 'neutral'} className="flex-shrink-0">
                     {event.isActive ? 'ACTIVE' : 'INACTIVE'}
-                  </span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2.5 text-sm text-slate-600 mb-6 font-medium">
-                  <p className="flex items-center gap-2"><span className="text-slate-400">📍</span> {event.location}</p>
-                  <p className="flex items-center gap-2"><span className="text-slate-400">📅</span> {new Date(event.startDate).toLocaleDateString()} - {new Date(event.endDate).toLocaleDateString()}</p>
-                  <p className="flex items-center gap-2"><span className="text-slate-400">👥</span> {event.assignments?.length || 0} Counselors Assigned</p>
-                  <p className="flex items-center gap-2"><span className="text-slate-400">⏱️</span> {event._count?.slots || 0} Total Slots</p>
+                  </Badge>
                 </div>
-                <div className="flex flex-col gap-2">
-                  <Link href={`/counselor/events/${event.id}`}>
-                    <Button variant="outline" className="w-full font-bold border-slate-200 text-slate-700 hover:bg-slate-50">Manage Bookings</Button>
+              </CardHeader>
+              <CardContent className="flex-1 flex flex-col pt-2">
+                <div className="space-y-3 text-sm text-slate-600 mb-8 font-medium flex-1">
+                  <p className="flex items-center gap-3"><span className="text-lg">📍</span> {event.location}</p>
+                  <p className="flex items-center gap-3"><span className="text-lg">📅</span> {new Date(event.startDate).toLocaleDateString()} - {new Date(event.endDate).toLocaleDateString()}</p>
+                  <p className="flex items-center gap-3"><span className="text-lg">👥</span> {event.assignments?.length || 0} Staff Assigned</p>
+                  <p className="flex items-center gap-3"><span className="text-lg">⏱️</span> {event._count?.slots || 0} Total Slots</p>
+                </div>
+                <div className="grid grid-cols-1 gap-3">
+                  <Link href={`/counselor/events/${event.id}`} className="w-full">
+                    <Button variant="secondary" className="w-full">Manage Bookings</Button>
                   </Link>
-                  <Link href={`/counselor/events/${event.id}/edit`}>
-                    <Button variant="outline" className="w-full">Edit Event</Button>
+                  <div className="grid grid-cols-2 gap-3">
+                    <Link href={`/counselor/events/${event.id}/edit`}>
+                      <Button variant="outline" className="w-full px-2">Edit</Button>
+                    </Link>
+                    <Button 
+                      variant="outline" 
+                      className="w-full px-2"
+                      onClick={() => copyToClipboard(event.id)}
+                    >
+                      Link
+                    </Button>
+                  </div>
+                  <Link href={`/counselor/events/live/${event.id}`} className="w-full">
+                    <Button variant="ghost" className="w-full text-xs">View Live Dashboard</Button>
                   </Link>
-                  <Link href={`/counselor/events/live/${event.id}`}>
-                    <Button variant="outline" className="w-full">Live Dashboard (Mobile)</Button>
-                  </Link>
-                  <Button 
-                    variant="secondary" 
-                    className="w-full"
-                    onClick={() => copyToClipboard(event.id)}
-                  >
-                    Copy Public Link
-                  </Button>
                 </div>
               </CardContent>
             </Card>

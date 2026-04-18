@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ux } from '@/lib/ux';
 import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
 
 interface User {
   id: string;
@@ -111,30 +112,30 @@ export default function ManageUsersPage() {
   const counselorUsers = users.filter(u => u.role === 'counselor');
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Manage Users</h1>
-        <p className="text-gray-600 mt-1">Create and manage counselors and students</p>
+    <div className={ux.layout.page}>
+      <div className={ux.layout.header}>
+        <h1 className={ux.text.heading}>Manage Users</h1>
+        <p className={ux.text.body}>Create and manage organization staff and student accounts.</p>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <Card>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <Card variant="pop">
           <CardContent className="pt-6">
-            <p className="text-sm text-gray-600">Total Students</p>
-            <p className="text-3xl font-bold text-gray-900">{students.length}</p>
+            <p className={ux.text.accent}>Total Students</p>
+            <p className="text-3xl font-black text-slate-900 mt-1">{students.length}</p>
           </CardContent>
         </Card>
-        <Card>
+        <Card variant="pop">
           <CardContent className="pt-6">
-            <p className="text-sm text-gray-600">Counselors</p>
-            <p className="text-3xl font-bold text-gray-900">{counselorUsers.length}</p>
+            <p className={ux.text.accent}>Counselors</p>
+            <p className="text-3xl font-black text-slate-900 mt-1">{counselorUsers.length}</p>
           </CardContent>
         </Card>
-        <Card>
+        <Card variant="pop" className={ux.card.highlight}>
           <CardContent className="pt-6">
-            <p className="text-sm text-gray-600">Unassigned Students</p>
-            <p className="text-3xl font-bold text-yellow-600">
+            <p className={ux.text.accent}>Unassigned</p>
+            <p className="text-3xl font-black text-brand-600 mt-1">
               {students.filter(s => !s.student?.counselorId).length}
             </p>
           </CardContent>
@@ -142,7 +143,7 @@ export default function ManageUsersPage() {
       </div>
 
       {/* Quick Actions */}
-      <div className="flex gap-3 mb-6">
+      <div className="flex gap-4 mb-10">
         <Button
           onClick={() => {
             setModalType('counselor');
@@ -164,188 +165,192 @@ export default function ManageUsersPage() {
         </Button>
       </div>
 
-      {/* Counselors Table */}
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle>Counselors ({counselorUsers.length})</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {counselorUsers.length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead>
-                  <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Students</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Created</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {counselorUsers.map((user) => (
-                    <tr key={user.id}>
-                      <td className="px-4 py-3 text-sm font-medium text-gray-900">
-                        {user.firstName} {user.lastName}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{user.email}</td>
-                      <td className="px-4 py-3 text-sm text-gray-600">
-                        {students.filter(s => s.student?.counselorId === user.id).length}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-600">
-                        {new Date(user.createdAt).toLocaleDateString()}
-                      </td>
-                      <td className="px-4 py-3 text-sm">
-                        <button
-                          onClick={() => deleteUser(user.id)}
-                          className="text-red-600 hover:text-red-800"
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <p className="text-gray-500 text-center py-8">No counselors yet</p>
-          )}
-        </CardContent>
-      </Card>
+      <div className="space-y-12">
+        {/* Counselors Table */}
+        <section className="space-y-4">
+          <h2 className={ux.text.accent}>Counselor Directory</h2>
+          <Card variant="base">
+            <CardHeader>
+              <CardTitle className={ux.text.subheading}>Organization Staff ({counselorUsers.length})</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {counselorUsers.length > 0 ? (
+                <div className="border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+                  <table className="min-w-full divide-y divide-slate-200">
+                    <thead className="bg-surface-soft">
+                      <tr>
+                        <th className="px-6 py-4 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Name</th>
+                        <th className="px-6 py-4 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Email</th>
+                        <th className="px-6 py-4 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Students</th>
+                        <th className="px-6 py-4 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Joined</th>
+                        <th className="px-6 py-4 text-right text-[10px] font-black text-slate-500 uppercase tracking-widest">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-slate-100">
+                      {counselorUsers.map((user) => (
+                        <tr key={user.id} className="hover:bg-surface-soft transition-colors">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-slate-900">
+                            {user.firstName} {user.lastName}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600 font-medium">{user.email}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm">
+                            <Badge variant="brand">{students.filter(s => s.student?.counselorId === user.id).length}</Badge>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 font-medium">
+                            {new Date(user.createdAt).toLocaleDateString()}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-bold">
+                            <button
+                              onClick={() => deleteUser(user.id)}
+                              className="text-red-600 hover:text-red-800 transition-colors uppercase text-xs tracking-tight"
+                            >
+                              Delete
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <p className="text-slate-400 text-center py-12 italic">No counselors registered yet.</p>
+              )}
+            </CardContent>
+          </Card>
+        </section>
 
-      {/* Students Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Students ({students.length})</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {students.length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead>
-                  <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Counselor</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Created</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {students.map((user) => (
-                    <tr key={user.id}>
-                      <td className="px-4 py-3 text-sm font-medium text-gray-900">
-                        {user.firstName} {user.lastName}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{user.email}</td>
-                      <td className="px-4 py-3 text-sm">
-                        <select
-                          value={user.student?.counselorId || ''}
-                          onChange={(e) => assignCounselor(user.id, e.target.value)}
-                          className="text-sm px-2 py-1 border rounded text-gray-900"
-                        >
-                          <option value="">Unassigned</option>
-                          {counselors.map((assoc) => (
-                            <option key={assoc.id} value={assoc.id}>
-                              {assoc.firstName} {assoc.lastName}
-                            </option>
-                          ))}
-                        </select>
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-600">
-                        {new Date(user.createdAt).toLocaleDateString()}
-                      </td>
-                      <td className="px-4 py-3 text-sm">
-                        <button
-                          onClick={() => deleteUser(user.id)}
-                          className="text-red-600 hover:text-red-800"
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <p className="text-gray-500 text-center py-8">No students yet</p>
-          )}
-        </CardContent>
-      </Card>
+        {/* Students Table */}
+        <section className="space-y-4">
+          <h2 className={ux.text.accent}>Student Caseload</h2>
+          <Card variant="base">
+            <CardHeader>
+              <CardTitle className={ux.text.subheading}>All Enrolled Students ({students.length})</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {students.length > 0 ? (
+                <div className="border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+                  <table className="min-w-full divide-y divide-slate-200">
+                    <thead className="bg-surface-soft">
+                      <tr>
+                        <th className="px-6 py-4 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Name</th>
+                        <th className="px-6 py-4 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Email</th>
+                        <th className="px-6 py-4 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Assigned Counselor</th>
+                        <th className="px-6 py-4 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Joined</th>
+                        <th className="px-6 py-4 text-right text-[10px] font-black text-slate-500 uppercase tracking-widest">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-slate-100">
+                      {students.map((user) => (
+                        <tr key={user.id} className="hover:bg-surface-soft transition-colors">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-slate-900">
+                            {user.firstName} {user.lastName}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600 font-medium">{user.email}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm">
+                            <select
+                              value={user.student?.counselorId || ''}
+                              onChange={(e) => assignCounselor(user.id, e.target.value)}
+                              className={cn(ux.form.input, "text-xs py-1 px-3 h-8 w-auto bg-white border-slate-200")}
+                            >
+                              <option value="">Unassigned</option>
+                              {counselors.map((assoc) => (
+                                <option key={assoc.id} value={assoc.id}>
+                                  {assoc.firstName} {assoc.lastName}
+                                </option>
+                              ))}
+                            </select>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 font-medium">
+                            {new Date(user.createdAt).toLocaleDateString()}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-bold">
+                            <button
+                              onClick={() => deleteUser(user.id)}
+                              className="text-red-600 hover:text-red-800 transition-colors uppercase text-xs tracking-tight"
+                            >
+                              Delete
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <p className="text-slate-400 text-center py-12 italic">No students registered yet.</p>
+              )}
+            </CardContent>
+          </Card>
+        </section>
+      </div>
 
       {/* Create User Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Create {modalType === 'counselor' ? 'Counselor' : 'Student'}
-            </h2>
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <Card className="max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border-brand-100" variant="base">
+            <CardHeader className="border-b border-slate-100 pb-6 mb-8">
+              <CardTitle className="text-2xl">
+                Create {modalType === 'counselor' ? 'Counselor' : 'Student'}
+              </CardTitle>
+            </CardHeader>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <label className={cn("block text-xs uppercase tracking-wider font-bold text-slate-500")}>
-                    First Name <span className="text-red-500">*</span>
-                  </label>
+            <form onSubmit={handleSubmit} className="space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className={ux.form.label}>First Name</label>
                   <Input
                     value={formData.firstName}
                     onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                     required
-                    className="bg-slate-50 border-slate-200 focus:bg-white transition-colors"
+                    className={ux.form.input}
+                    placeholder="Jane"
                   />
                 </div>
-                <div className="space-y-1.5">
-                  <label className={cn("block text-xs uppercase tracking-wider font-bold text-slate-500")}>
-                    Last Name <span className="text-red-500">*</span>
-                  </label>
+                <div className="space-y-2">
+                  <label className={ux.form.label}>Last Name</label>
                   <Input
                     value={formData.lastName}
                     onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                     required
-                    className="bg-slate-50 border-slate-200 focus:bg-white transition-colors"
+                    className={ux.form.input}
+                    placeholder="Doe"
                   />
                 </div>
               </div>
 
-              <div className="space-y-1.5">
-                <label className={cn("block text-xs uppercase tracking-wider font-bold text-slate-500")}>
-                  Email Address <span className="text-red-500">*</span>
-                </label>
+              <div className="space-y-2">
+                <label className={ux.form.label}>Email Address</label>
                 <Input
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   required
-                  className="bg-slate-50 border-slate-200 focus:bg-white transition-colors"
+                  className={ux.form.input}
+                  placeholder="jane.doe@example.com"
                 />
               </div>
 
-              <div className="space-y-1.5">
-                <label className={cn("block text-xs uppercase tracking-wider font-bold text-slate-500")}>
-                  Password <span className="text-red-500">*</span>
-                </label>
+              <div className="space-y-2">
+                <label className={ux.form.label}>Temporary Password</label>
                 <Input
                   type="password"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   required
-                  className="bg-slate-50 border-slate-200 focus:bg-white transition-colors"
+                  className={ux.form.input}
+                  placeholder="Minimum 8 characters"
                 />
               </div>
 
               {modalType === 'student' && (
-                <>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <label className={cn("block text-xs uppercase tracking-wider font-bold text-slate-500")}>
-                        Current Grade <span className="text-red-500">*</span>
-                      </label>
+                <div className="pt-4 border-t border-slate-100 space-y-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label className={ux.form.label}>Current Grade</label>
                       <select
                         value={formData.currentGrade}
                         onChange={(e) => setFormData({ ...formData, currentGrade: e.target.value })}
-                        className="w-full h-10 px-3 py-2 bg-slate-50 border border-slate-200 rounded-md text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                        className={cn(ux.form.input, "bg-white")}
                       >
                         <option value="ninth">9th Grade</option>
                         <option value="tenth">10th Grade</option>
@@ -354,28 +359,24 @@ export default function ManageUsersPage() {
                       </select>
                     </div>
 
-                    <div className="space-y-1.5">
-                      <label className={cn("block text-xs uppercase tracking-wider font-bold text-slate-500")}>
-                        Graduation Year <span className="text-red-500">*</span>
-                      </label>
+                    <div className="space-y-2">
+                      <label className={ux.form.label}>Graduation Year</label>
                       <Input
                         type="number"
                         value={formData.graduationYear}
                         onChange={(e) => setFormData({ ...formData, graduationYear: parseInt(e.target.value) })}
                         required
-                        className="bg-slate-50 border-slate-200 focus:bg-white transition-colors"
+                        className={ux.form.input}
                       />
                     </div>
                   </div>
 
-                  <div className="space-y-1.5">
-                    <label className={cn("block text-xs uppercase tracking-wider font-bold text-slate-500")}>
-                      Assign to Counselor
-                    </label>
+                  <div className="space-y-2">
+                    <label className={ux.form.label}>Assign to Counselor</label>
                     <select
                       value={formData.counselorId}
                       onChange={(e) => setFormData({ ...formData, counselorId: e.target.value })}
-                      className="w-full h-10 px-3 py-2 bg-slate-50 border border-slate-200 rounded-md text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                      className={cn(ux.form.input, "bg-white")}
                     >
                       <option value="">Assign later</option>
                       {counselors.map((assoc) => (
@@ -385,23 +386,24 @@ export default function ManageUsersPage() {
                       ))}
                     </select>
                   </div>
-                </>
+                </div>
               )}
 
-              <div className="flex gap-2 pt-4">
-                <Button type="submit" className="flex-1">
-                  Create {modalType === 'counselor' ? 'Counselor' : 'Student'}
+              <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t border-slate-100">
+                <Button type="submit" className="flex-1 order-1 sm:order-2">
+                  Create Account
                 </Button>
                 <Button
                   type="button"
                   onClick={() => setShowModal(false)}
                   variant="outline"
+                  className="flex-1 order-2 sm:order-1"
                 >
                   Cancel
                 </Button>
               </div>
             </form>
-          </div>
+          </Card>
         </div>
       )}
     </div>

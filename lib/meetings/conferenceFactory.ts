@@ -19,6 +19,7 @@ export async function createConferenceMeeting(
     endTime: string;
     studentEmail: string;
     durationMinutes: number;
+    timeZone?: string;
     agenda?: string;
   }
 ): Promise<ConferenceResult> {
@@ -53,6 +54,7 @@ export async function createConferenceMeeting(
       description: `${details.description}\n\nJoin Zoom Meeting: ${zoomMeeting.joinUrl}`,
       startTime: details.startTime,
       endTime: details.endTime,
+      timeZone: details.timeZone,
       studentEmail: details.studentEmail,
       requestMeetLink: false,
       transparency: 'opaque',
@@ -72,6 +74,7 @@ export async function createConferenceMeeting(
       description: details.description,
       startTime: details.startTime,
       endTime: details.endTime,
+      timeZone: details.timeZone,
       studentEmail: details.studentEmail,
       requestMeetLink: true,
       transparency: 'opaque',

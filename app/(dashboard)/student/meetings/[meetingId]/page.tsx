@@ -4,10 +4,13 @@ import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import { MeetingBackButton } from '@/components/meetings/MeetingBackButton';
 import StudentMeetingDetailClient from './StudentMeetingDetailClient';
+import { ux } from '@/lib/ux';
+import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
 
 export default async function StudentMeetingDetailPage({ params }: { params: { meetingId: string } }) {
   const session = await getServerSession(authOptions);
-  if (!session) return null;
+  if (!session?.user?.id) return null;
 
   const meeting = await prisma.meeting.findUnique({
     where: { id: params.meetingId },
@@ -29,27 +32,22 @@ export default async function StudentMeetingDetailPage({ params }: { params: { m
   if (!meeting) return notFound();
   if (meeting.studentId !== session.user.id && session.user.role !== 'counselor') return notFound();
 
+  const userTimezone = (meeting.student.user as any).timezone || 'UTC';
+
   return (
-    <div className="p-8 space-y-8 max-w-5xl mx-auto">
-      <div className="flex justify-start">
+    <div className={ux.layout.page}>
+      <div className="mb-6">
         <MeetingBackButton label="Back to Meetings" variant="outline" />
       </div>
 
-      <div className="bg-white p-8 rounded-xl border border-gray-200 shadow-sm space-y-8">
-        <div className="space-y-4 border-b pb-8">
-          <h1 className="text-4xl font-bold text-gray-900">{meeting.meetingType} Session</h1>
-          <p className="text-lg text-gray-600">
-            With <span className="font-semibold text-gray-900">{meeting.host.user.firstName} {meeting.host.user.lastName}</span>
-          </p>
-          
-          <div className="flex flex-wrap items-center gap-3 mt-4">
-            <div className="flex items-center gap-2 text-sm text-gray-700 bg-gradient-to-br from-blue-50 to-white px-4 py-2 rounded-lg border border-blue-200">
-              <span className="text-lg">📅</span>
-              <span>{new Date(meeting.startTime).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
-            </div>
-            <div className="flex items-center gap-2 text-sm text-gray-700 bg-gradient-to-br from-amber-50 to-white px-4 py-2 rounded-lg border border-amber-200">
-              <span className="text-lg">⏰</span>
-              <span>{new Date(meeting.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(meeting.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+      <div className={ux.layout.section}>
+        <div className="space-y-4 border-b border-slate-100 pb-8 mb-8">
+          <div className="flex justify-between items-start gap-4">
+            <div>
+              <h1 className={ux.text.heading}>{meeting.meetingType} Session</h1>
+              <p className={cn(ux.text.body, "text-lg mt-1")}>
+                With <span className="font-bold text-slate-900">{meeting.host.user.firstName} {meeting.host.user.lastName}</span>
+              </p>
             </div>
             {(() => {
                 const now = new Date();
@@ -60,50 +58,56 @@ export default async function StudentMeetingDetailPage({ params }: { params: { m
                 const isOngoing = start <= now && end >= now && !isCancelled && !isCompleted;
                 const isPast = end < now;
                 
-                let label = meeting.status === 'Upcoming' ? '✅ Confirmed' : meeting.status;
-                let colorClass = 'bg-blue-100 text-blue-700';
-
-                if (isCancelled) {
-                  label = 'Cancelled';
-                  colorClass = 'bg-red-100 text-red-700';
-                } else if (isCompleted) {
-                  label = 'Completed';
-                  colorClass = 'bg-green-100 text-green-700';
-                } else if (isOngoing) {
-                  label = 'Ongoing';
-                  colorClass = 'bg-amber-100 text-amber-700';
-                } else if (isPast) {
-                  label = 'Past';
-                  colorClass = 'bg-gray-100 text-gray-700';
-                }
-
-                return (
-                  <span className={`ml-auto px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wide ${colorClass}`}>
-                    {label}
-                  </span>
-                );
+                if (isCancelled) return <Badge variant="error">Cancelled</Badge>;
+                if (isCompleted) return <Badge variant="success">Completed</Badge>;
+                if (isOngoing) return <Badge variant="warning">Ongoing</Badge>;
+                if (isPast) return <Badge variant="neutral">Past</Badge>;
+                return <Badge variant="brand">Confirmed</Badge>;
               })()}
+          </div>
+          
+          <div className="flex flex-wrap items-center gap-4 mt-6">
+            <div className="bg-brand-50 border border-brand-100 px-5 py-3 rounded-2xl flex items-center gap-3">
+              <span className="text-2xl">📅</span>
+              <div className="flex flex-col">
+                <span className="text-[10px] font-black text-brand-600 uppercase tracking-widest leading-none mb-1">Date</span>
+                <span className="text-sm font-bold text-brand-900">
+                  {new Date(meeting.startTime).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: userTimezone })}
+                </span>
+              </div>
+            </div>
+
+            <div className="bg-amber-50 border border-amber-100 px-5 py-3 rounded-2xl flex items-center gap-3">
+              <span className="text-2xl">⏰</span>
+              <div className="flex flex-col">
+                <span className="text-[10px] font-black text-amber-600 uppercase tracking-widest leading-none mb-1">Time ({userTimezone})</span>
+                <span className="text-sm font-bold text-amber-900">
+                  {new Date(meeting.startTime).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZone: userTimezone })} - {new Date(meeting.endTime).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZone: userTimezone })}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Client side component for notes and editing */}
         <StudentMeetingDetailClient initialMeeting={JSON.parse(JSON.stringify(meeting))} />
 
-        <div className="space-y-4">
-           <h2 className="text-lg font-bold text-black">Meeting Details</h2>
+        <div className="mt-12 pt-8 border-t border-slate-100 space-y-6">
+           <h2 className={ux.text.accent}>Technical Details</h2>
            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {meeting.conferenceJoinUrl && (meeting.status === 'Upcoming' || (new Date(meeting.startTime) <= new Date() && new Date(meeting.endTime) >= new Date())) && (
                   <div>
-                    <p className="text-xs font-bold text-gray-500 uppercase">Meeting Link</p>
-                    <a href={meeting.conferenceJoinUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline break-all">
+                    <label className={ux.form.label}>Conference Link</label>
+                    <a href={meeting.conferenceJoinUrl} target="_blank" rel="noopener noreferrer" className="text-sm font-bold text-brand-600 hover:text-brand-800 break-all underline decoration-brand-200 underline-offset-4">
                       {meeting.conferenceJoinUrl}
                     </a>
                   </div>
                 )}
                 <div>
-                   <p className="text-xs font-bold text-gray-500 uppercase">Agenda / Topic</p>
-                   <p className="text-sm text-gray-700 mt-1">{meeting.agenda || 'No agenda provided.'}</p>
+                   <label className={ux.form.label}>Agenda / Topic</label>
+                   <p className="text-sm text-slate-700 leading-relaxed font-medium bg-surface-soft p-4 rounded-xl border border-slate-100">
+                     {meeting.agenda || 'No specific agenda provided for this session.'}
+                   </p>
                 </div>
               </div>
            </div>

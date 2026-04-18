@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { ux } from '@/lib/ux';
 import { cn } from '@/lib/utils';
 
 const CURRICULUMS = ['CBSE', 'ICSE', 'IB', 'CAIE', 'State_Board', 'US_High_School', 'Other'];
@@ -76,87 +77,94 @@ export default function SubjectsManagementPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">Manage Course List</h1>
+    <div className={ux.layout.page}>
+      <div className={ux.layout.header}>
+        <h1 className={ux.text.heading}>Manage Course List</h1>
+        <p className={ux.text.body}>Configure the available subjects for each student curriculum type.</p>
+      </div>
 
-      <Card>
+      <Card variant="base">
         <CardHeader>
-          <CardTitle>Courses by Curriculum</CardTitle>
+          <CardTitle className={ux.text.subheading}>Courses by Curriculum</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-6">
+          <div className="space-y-8">
             {/* Curriculum Selector */}
-            <div className="space-y-1.5">
-              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+            <div className="space-y-2">
+              <label className={ux.form.label}>
                 Select Curriculum
               </label>
               <select
                 value={selectedCurriculum}
                 onChange={(e) => {
                     setSelectedCurriculum(e.target.value);
-                    cancelEditing(); // Cancel editing when changing curriculum
+                    cancelEditing(); 
                 }}
-                className="w-full max-w-xs h-10 px-3 py-2 bg-slate-50 border border-slate-200 rounded-md text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                className={cn(ux.form.input, "max-w-xs h-12 bg-white")}
               >
                 {CURRICULUMS.map((curr) => (
-                  <option key={curr} value={curr}>{curr}</option>
+                  <option key={curr} value={curr}>{curr.replace(/_/g, ' ')}</option>
                 ))}
               </select>
             </div>
 
             {/* Add New Subject */}
-            <div className="space-y-1.5">
-              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
-                {editingId ? "Edit Course Name" : "Course Name"}
+            <div className="space-y-2">
+              <label className={ux.form.label}>
+                {editingId ? "Update Course Name" : "Add New Course"}
               </label>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <Input
-                  placeholder={editingId ? "Update course name" : "Enter new course name"}
+                  placeholder={editingId ? "Update course name" : "Enter course name (e.g. Physics HL)"}
                   value={newSubjectName}
                   onChange={(e) => setNewSubjectName(e.target.value)}
-                  className="flex-1 max-w-md bg-slate-50 border-slate-200 focus:bg-white transition-colors"
+                  className={cn(ux.form.input, "flex-1 max-w-md")}
                 />
-                {editingId && (
-                  <Button variant="outline" onClick={cancelEditing} disabled={loading}>
-                    Cancel
+                <div className="flex gap-3">
+                  {editingId && (
+                    <Button variant="outline" onClick={cancelEditing} disabled={loading}>
+                      Cancel
+                    </Button>
+                  )}
+                  <Button onClick={handleAddOrUpdateSubject} disabled={loading || !newSubjectName.trim()}>
+                    {editingId ? 'Update Course' : 'Add Course'}
                   </Button>
-                )}
-                <Button onClick={handleAddOrUpdateSubject} disabled={loading || !newSubjectName.trim()}>
-                  {editingId ? 'Update Course' : 'Add Course'}
-                </Button>
+                </div>
               </div>
             </div>
 
             {/* Subject List */}
-            <div>
-              <h3 className="text-sm font-medium text-gray-700 mb-2">
-                Available Courses for {selectedCurriculum} ({subjects.length})
+            <div className="pt-4">
+              <h3 className={ux.text.accent}>
+                Available Courses for {selectedCurriculum.replace(/_/g, ' ')} ({subjects.length})
               </h3>
-              <div className="border rounded-md divide-y max-h-96 overflow-y-auto">
-                {subjects.map((subject) => (
-                  <div key={subject.id} className="px-4 py-3 flex justify-between items-center hover:bg-gray-50">
-                    <span className="text-gray-900">{subject.subjectName}</span>
-                    <div className="flex gap-2">
-                        <button 
-                            onClick={() => startEditing(subject)}
-                            className="text-blue-600 hover:text-blue-900 text-sm font-medium"
-                        >
-                            Edit
-                        </button>
-                        <button 
-                            onClick={() => deleteSubject(subject.id)}
-                            className="text-red-600 hover:text-red-900 text-sm font-medium"
-                        >
-                            Remove
-                        </button>
+              <div className="mt-4 border border-slate-200 rounded-2xl divide-y divide-slate-100 overflow-hidden shadow-sm">
+                <div className="max-h-[500px] overflow-y-auto">
+                  {subjects.map((subject) => (
+                    <div key={subject.id} className="px-6 py-4 flex justify-between items-center hover:bg-surface-soft transition-colors">
+                      <span className="text-sm font-bold text-slate-900">{subject.subjectName}</span>
+                      <div className="flex gap-4">
+                          <button 
+                              onClick={() => startEditing(subject)}
+                              className="text-brand-600 hover:text-brand-800 font-bold text-xs uppercase tracking-tight"
+                          >
+                              Edit
+                          </button>
+                          <button 
+                              onClick={() => deleteSubject(subject.id)}
+                              className="text-red-600 hover:text-red-800 font-bold text-xs uppercase tracking-tight"
+                          >
+                              Remove
+                          </button>
+                      </div>
                     </div>
-                  </div>
-                ))}
-                {subjects.length === 0 && (
-                  <div className="px-4 py-8 text-center text-gray-500">
-                    No courses added yet
-                  </div>
-                )}
+                  ))}
+                  {subjects.length === 0 && (
+                    <div className="px-6 py-12 text-center text-slate-400 italic">
+                      No courses added for this curriculum yet.
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>

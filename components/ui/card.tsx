@@ -1,13 +1,16 @@
 import React from 'react';
+import { cn } from '@/lib/utils';
+import { ux } from '@/lib/ux';
 
 interface CardProps {
   children: React.ReactNode;
   className?: string;
+  variant?: 'base' | 'pop';
 }
 
-export function Card({ children, className = '' }: CardProps) {
+export function Card({ children, className = '', variant = 'base' }: CardProps) {
   return (
-    <div className={`bg-white shadow rounded-lg p-6 ${className}`}>
+    <div className={cn(ux.card[variant], 'p-6', className)}>
       {children}
     </div>
   );
@@ -20,7 +23,7 @@ interface CardHeaderProps {
 
 export function CardHeader({ children, className = '' }: CardHeaderProps) {
   return (
-    <div className={`mb-4 ${className}`}>
+    <div className={cn('mb-4', className)}>
       {children}
     </div>
   );
@@ -33,7 +36,7 @@ interface CardTitleProps {
 
 export function CardTitle({ children, className = '' }: CardTitleProps) {
   return (
-    <h3 className={`text-lg font-semibold text-gray-900 ${className}`}>
+    <h3 className={cn(ux.text.subheading, 'text-lg', className)}>
       {children}
     </h3>
   );

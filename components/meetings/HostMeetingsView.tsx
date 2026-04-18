@@ -1,4 +1,3 @@
-'use client';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -10,6 +9,8 @@ import { MeetingRequest } from '@/components/meetings/MeetingRequest';
 import { MeetingCard } from '@/components/meetings/MeetingCard';
 import { CalendarView } from '@/components/meetings/CalendarView';
 import { filterMeetingsAndRequests } from '@/lib/meetings/meetingUtils';
+import { ux } from '@/lib/ux';
+import { cn } from '@/lib/utils';
 
 interface HostMeetingsViewProps {
   initialRequests: any[];
@@ -40,7 +41,6 @@ export function HostMeetingsView({
 
   const refreshData = async () => {
     try {
-      // Use no-store to avoid race conditions with Vercel/Next.js data caching
       const [reqRes, meetRes] = await Promise.all([
         fetch('/api/meetings/requests?status=Pending', { cache: 'no-store' }),
         fetch('/api/meetings/scheduled', { cache: 'no-store' })
@@ -53,7 +53,6 @@ export function HostMeetingsView({
       const reqData = await reqRes.json();
       const meetData = await meetRes.json();
       
-      // Ensure we only update state if data is valid arrays
       if (Array.isArray(reqData) && Array.isArray(meetData)) {
         setRequests(reqData);
         setMeetings(meetData);
@@ -71,15 +70,12 @@ export function HostMeetingsView({
       if (document.hidden) {
         clearInterval(interval);
       } else {
-        // Refresh immediately when tab becomes visible
         refreshData();
-        // Resume polling
-        interval = setInterval(refreshData, 60000); // 1 minute interval
+        interval = setInterval(refreshData, 60000);
       }
     };
 
-    // Initial setup
-    interval = setInterval(refreshData, 60000); // 1 minute interval
+    interval = setInterval(refreshData, 60000);
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
@@ -97,97 +93,92 @@ export function HostMeetingsView({
 
   return (
     <MeetingGate role={role}>
-      <div className="p-8 space-y-8 max-w-7xl mx-auto">
-        <div className="space-y-4">
-          <div className="flex justify-between items-start gap-4">
-            <div className="space-y-2">
-              <h1 className="text-4xl font-bold text-gray-900">
-                {role === 'counselor' ? 'Meetings Admin' : 'Manage Meetings'}
-              </h1>
-              <p className="text-gray-600">Oversee and coordinate all meeting activities</p>
-            </div>
-            <Link href={`/${role}/profile`}>
-              <Button variant="outline" className="text-gray-900 border-gray-300 hover:bg-gray-50">
-                ⚙️ Set Availability
-              </Button>
-            </Link>
+      <div className={ux.layout.page}>
+        <div className={cn(ux.layout.header, "flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4")}>
+          <div>
+            <h1 className={ux.text.heading}>Meetings Manager</h1>
+            <p className={ux.text.body}>Oversee and coordinate all counseling sessions.</p>
           </div>
+          <Link href="/settings">
+            <Button variant="outline">
+              ⚙️ Settings
+            </Button>
+          </Link>
+        </div>
 
-          {/* Stats Cards */}
-          <div className="grid grid-cols-3 gap-4">
-            <Card className="bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200">
-              <CardContent className="p-4">
-                <p className="text-xs text-yellow-700 font-semibold uppercase">Pending Requests</p>
-                <p className="text-3xl font-bold text-yellow-900 mt-1">{totalStats.pending}</p>
-              </CardContent>
-            </Card>
-            <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-              <CardContent className="p-4">
-                <p className="text-xs text-blue-700 font-semibold uppercase">Upcoming & Ongoing</p>
-                <p className="text-3xl font-bold text-blue-900 mt-1">{totalStats.upcoming}</p>
-              </CardContent>
-            </Card>
-            <Card className="bg-gradient-to-br from-gray-50 to-gray-100 border-gray-200">
-              <CardContent className="p-4">
-                <p className="text-xs text-gray-700 font-semibold uppercase">Past Meetings</p>
-                <p className="text-3xl font-bold text-gray-900 mt-1">{totalStats.past}</p>
-              </CardContent>
-            </Card>
-          </div>
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+          <Card variant="pop">
+            <CardContent className="pt-6">
+              <p className={ux.text.accent}>Pending Requests</p>
+              <p className="text-3xl font-black text-slate-900 mt-1">{totalStats.pending}</p>
+            </CardContent>
+          </Card>
+          <Card variant="pop" className={ux.card.highlight}>
+            <CardContent className="pt-6">
+              <p className={ux.text.accent}>Upcoming Sessions</p>
+              <p className="text-3xl font-black text-brand-600 mt-1">{totalStats.upcoming}</p>
+            </CardContent>
+          </Card>
+          <Card variant="pop">
+            <CardContent className="pt-6">
+              <p className={ux.text.accent}>Completed</p>
+              <p className="text-3xl font-black text-slate-900 mt-1">{totalStats.past}</p>
+            </CardContent>
+          </Card>
         </div>
 
         {/* View Toggle */}
-        <div className="flex bg-gray-100 p-1 rounded-lg w-fit">
+        <div className="flex bg-surface-muted p-1.5 rounded-xl w-fit mb-8">
           <button
             onClick={() => setViewMode('calendar')}
-            className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-              currentView === 'calendar' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-900'
-            }`}
+            className={cn(
+              "px-6 py-2 text-xs font-black uppercase tracking-widest rounded-lg transition-all",
+              currentView === 'calendar' ? "bg-white shadow-sm text-brand-600" : "text-slate-400 hover:text-slate-600"
+            )}
           >
-            📅 Calendar View
+            Calendar
           </button>
           <button
             onClick={() => setViewMode('list')}
-            className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-              currentView === 'list' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-900'
-            }`}
+            className={cn(
+              "px-6 py-2 text-xs font-black uppercase tracking-widest rounded-lg transition-all",
+              currentView === 'list' ? "bg-white shadow-sm text-brand-600" : "text-slate-400 hover:text-slate-600"
+            )}
           >
-            📋 List View
+            Timeline
           </button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+          <div className="lg:col-span-2 space-y-12">
             {currentView === 'calendar' ? (
-              <section className="space-y-4">
-                <h2 className="text-2xl font-semibold text-gray-900">Your Schedule</h2>
-                <CalendarView hostId={userId} isHostView={true} refreshKey={refreshKey} />
+              <section className="space-y-6">
+                <h2 className={ux.text.accent}>Your Schedule</h2>
+                <div className={ux.layout.section}>
+                  <CalendarView hostId={userId} isHostView={true} refreshKey={refreshKey} />
+                </div>
               </section>
             ) : (
-              <div className="space-y-8">
-                {/* Upcoming Meetings */}
-                <section className="space-y-4">
-                  <h2 className="text-2xl font-semibold text-gray-900">📅 Upcoming & Ongoing Meetings</h2>
+              <div className="space-y-12">
+                <section className="space-y-6">
+                  <h2 className={ux.text.accent}>Upcoming & Ongoing</h2>
                   <div className="space-y-4">
                     {filtered.upcomingMeetings.length > 0 ? (
                       filtered.upcomingMeetings.map((meeting: any) => (
                         <MeetingCard key={meeting.id} meeting={meeting} />
                       ))
                     ) : (
-                      <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-                        <CardContent className="p-6 text-center">
-                          <p className="text-blue-700 font-medium">No upcoming meetings scheduled.</p>
-                          <p className="text-sm text-blue-600 mt-1">You're all caught up!</p>
-                        </CardContent>
+                      <Card variant="base" className="bg-surface-soft border-dashed border-2 py-12 text-center">
+                        <p className={ux.text.body}>No upcoming meetings scheduled.</p>
                       </Card>
                     )}
                   </div>
                 </section>
 
-                {/* Past & Cancelled */}
                 {filtered.pastMeetings.length > 0 && (
-                  <section className="space-y-4">
-                    <h2 className="text-2xl font-semibold text-gray-900">📚 Past & Cancelled</h2>
+                  <section className="space-y-6">
+                    <h2 className={ux.text.accent}>History</h2>
                     <div className="space-y-4">
                       {filtered.pastMeetings.map((meeting: any) => (
                         <MeetingCard key={meeting.id} meeting={meeting} />
@@ -199,14 +190,10 @@ export function HostMeetingsView({
             )}
           </div>
 
-          {/* Requests Sidebar */}
-          <div className="space-y-6">
-            <div className="space-y-3">
-              <h2 className="text-2xl font-semibold text-gray-900">🤝 Pending Requests</h2>
-              <p className="text-sm text-gray-600">Accept or decline meeting requests</p>
-            </div>
+          <aside className="space-y-6">
+            <h2 className={ux.text.accent}>Action Needed</h2>
             <MeetingRequest requests={filtered.pendingRequests} onUpdate={refreshData} />
-          </div>
+          </aside>
         </div>
       </div>
     </MeetingGate>

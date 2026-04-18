@@ -139,6 +139,7 @@ export async function createEvent(
     description: string;
     startTime: string;
     endTime: string;
+    timeZone?: string;
     studentEmail: string;
     requestMeetLink: boolean;
     transparency?: 'opaque' | 'transparent';
@@ -157,8 +158,14 @@ export async function createEvent(
   const event: any = {
     summary: details.title,
     description: details.description,
-    start: { dateTime: details.startTime },
-    end: { dateTime: details.endTime },
+    start: { 
+      dateTime: details.startTime,
+      timeZone: details.timeZone || 'UTC'
+    },
+    end: { 
+      dateTime: details.endTime,
+      timeZone: details.timeZone || 'UTC'
+    },
     attendees: [{ email: details.studentEmail }],
     transparency: details.transparency || 'opaque',
     reminders: {

@@ -83,6 +83,7 @@ export async function PATCH(
         description: `Scheduled meeting on ${BRAND_NAME} platform.`,
         startTime: request.requestedStart.toISOString(),
         endTime: request.requestedEnd.toISOString(),
+        timeZone: request.student.user.timezone,
         studentEmail: request.student.user.email,
         durationMinutes,
         agenda: request.studentNote || undefined,
