@@ -15,7 +15,7 @@ export default async function DynamicDocPage({
   }
 
   return (
-    <article className="prose prose-blue max-w-none">
+    <article className="prose prose-slate prose-brand max-w-none prose-headings:text-slate-900 prose-a:text-brand-600 prose-strong:text-slate-900 prose-code:text-brand-700">
       <ReactMarkdown remarkPlugins={[remarkGfm]}>
         {content}
       </ReactMarkdown>
