@@ -4,7 +4,6 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { BRAND_NAME, FULL_BRAND_NAME, COPYRIGHT_HOLDER } from '@/lib/branding';
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -55,9 +54,9 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-2">
             <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">{BRAND_NAME[0]}</span>
+              <span className="text-white font-bold text-lg">W</span>
             </div>
-            <span className="text-xl font-bold text-gray-900">{BRAND_NAME}</span>
+            <span className="text-xl font-bold text-gray-900">Waypoint</span>
           </div>
           <Link
             href="/login"
@@ -147,9 +146,9 @@ export default function Home() {
             <div>
               <div className="flex items-center space-x-2 mb-4">
                 <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center">
-                  <span className="text-white font-bold">{BRAND_NAME[0]}</span>
+                  <span className="text-white font-bold">W</span>
                 </div>
-                <span className="font-bold text-gray-900">{BRAND_NAME}</span>
+                <span className="font-bold text-gray-900">Waypoint</span>
               </div>
               <p className="text-sm text-gray-600">Empowering counselors to transform student futures.</p>
             </div>
@@ -179,7 +178,7 @@ export default function Home() {
             </div>
           </div>
           <div className="border-t border-gray-200 pt-8 text-center text-sm text-gray-500">
-            <p>&copy; 2026 {COPYRIGHT_HOLDER}. All rights reserved.</p>
+            <p>&copy; 2026 Waypoint Student Portal. All rights reserved.</p>
           </div>
         </div>
       </footer>
@@ -300,9 +299,9 @@ function FeatureTabs() {
               <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100 flex items-center justify-center">
                  <div className="w-full h-full bg-white rounded-xl shadow-lg p-6">
                     <div className="flex items-center space-x-4 border-b border-gray-100 pb-4 mb-4">
-                        <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold">{BRAND_NAME[0]}</div>
+                        <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold">W</div>
                         <div>
-                            <div className="font-bold text-gray-900">{BRAND_NAME} Platform</div>
+                            <div className="font-bold text-gray-900">Waypoint Platform</div>
                             <div className="text-xs text-gray-500">All-in-one Solution</div>
                         </div>
                     </div>
@@ -480,7 +479,7 @@ function FeatureTabs() {
         {activeTab === 'roadmap' && (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">The Future of {BRAND_NAME}</h2>
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">The Future of Waypoint</h2>
               <p className="text-xl text-gray-600 max-w-2xl mx-auto">
                 We're continuously building new features to make college counseling even more efficient and effective.
               </p>

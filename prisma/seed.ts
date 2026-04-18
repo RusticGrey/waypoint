@@ -12,7 +12,7 @@ async function main() {
 
   // 1. Seed Organization
   const org = await prisma.organization.upsert({
-    where: { id: "waypoint" },
+    where: { id: "engage" },
     update: {
       name: "Engage Counseling Organization",
       primaryColor: "#3B82F6",
