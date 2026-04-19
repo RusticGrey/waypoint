@@ -5,8 +5,21 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { featureFlags } from "@/lib/feature-flags";
 
-export function NavClientComponent({ role, isAdmin, studentPhase }: { role: string; isAdmin: boolean; studentPhase?: string }) {
+export function NavClientComponent({
+  role,
+  isAdmin,
+  studentPhase,
+  profileCompletionPct = 0,
+}: {
+  role: string;
+  isAdmin: boolean;
+  studentPhase?: string;
+  profileCompletionPct?: number;
+}) {
   const pathname = usePathname();
+
+  const isProfileBuilding = studentPhase === 'Profile_Building' || studentPhase === 'College_Applications';
+  const isCollegeApps = studentPhase === 'College_Applications';
 
   const navItems = role === 'counselor' ? [
     ...(featureFlags.navigation.dashboard ? [{ name: 'Dashboard', href: '/counselor' }] : []),
@@ -19,13 +32,13 @@ export function NavClientComponent({ role, isAdmin, studentPhase }: { role: stri
   ] : [
     { name: 'Dashboard', href: '/student' },
     { name: 'Profile', href: '/student/profile' },
-    ...(studentPhase !== 'Onboarding' ? [
+    { name: 'Test Scores', href: '/student/test-scores' },
+    ...(isProfileBuilding ? [
       { name: 'Goals', href: '/student/goals' },
-      { name: 'Test Scores', href: '/student/test-scores' },
       { name: 'History', href: '/student/history' },
       { name: 'Meetings', href: '/student/meetings' },
     ] : []),
-    ...(studentPhase === 'College_Applications' ? [
+    ...(isCollegeApps ? [
       { name: 'Colleges', href: '/student/colleges' },
       { name: 'Applications', href: '/student/applications' },
       { name: 'Analysis', href: '/student/analysis' },

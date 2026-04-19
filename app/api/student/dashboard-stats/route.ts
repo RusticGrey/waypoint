@@ -22,6 +22,7 @@ export async function GET(req: Request) {
       activities, 
       achievements, 
       projects,
+      testScores,
       nextMeeting
     ] = await Promise.all([
       prisma.student.findUnique({
@@ -54,6 +55,9 @@ export async function GET(req: Request) {
         where: { studentId: session.user.id },
       }),
       prisma.projectExperience.count({
+        where: { studentId: session.user.id },
+      }),
+      prisma.testScore.count({
         where: { studentId: session.user.id },
       }),
       prisma.meeting.findFirst({
@@ -108,6 +112,8 @@ export async function GET(req: Request) {
         activities,
         achievements,
         projects,
+        transcripts: student?.transcripts.length || 0,
+        testScores: testScores || 0,
       },
       meetingStats: {
         openActionItems: 0, // Model missing in schema

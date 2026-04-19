@@ -24,12 +24,15 @@ export default async function DashboardLayout({
   let newStudentCheck = false;
   let studentPhase = 'Onboarding';
 
+  let profileCompletionPct = 0;
+
   if (session.user.role === 'student') {
     const student = await prisma.student.findUnique({
       where: { userId: session.user.id },
-      select: { phase: true },
+      select: { phase: true, profileCompletionPct: true },
     });
     studentPhase = student?.phase || 'Onboarding';
+    profileCompletionPct = student?.profileCompletionPct || 0;
     
     newStudentCheck = await isNewStudent(session.user.id);
   }  
@@ -52,6 +55,7 @@ export default async function DashboardLayout({
                 role={session.user.role} 
                 isAdmin={session.user.isAdmin} 
                 studentPhase={studentPhase} 
+                profileCompletionPct={profileCompletionPct}
               />
             </div>
 

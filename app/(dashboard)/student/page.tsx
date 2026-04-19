@@ -34,6 +34,8 @@ interface DashboardStats {
     activities: number;
     achievements: number;
     projects: number;
+    transcripts: number;
+    testScores: number;
   };
 }
 
@@ -72,7 +74,8 @@ export default function StudentDashboard() {
     );
   }
 
-  const isProfileBuilding = stats?.phase === 'Profile_Building';
+  const isOnboarding = stats?.phase === 'Onboarding';
+  const isProfileBuilding = stats?.phase === 'Profile_Building' || stats?.phase === 'College_Applications';
   const isCollegeApps = stats?.phase === 'College_Applications';
 
   return (
@@ -82,19 +85,30 @@ export default function StudentDashboard() {
           <div>
             <h1 className={ux.text.heading}>Dashboard</h1>
             <p className={ux.text.body}>
-              {isProfileBuilding && "Focus on building your profile and exploring your interests."}
+              {isOnboarding && "Welcome! Complete your onboarding to start building your profile."}
+              {stats?.phase === 'Profile_Building' && "Focus on building your profile and exploring your interests."}
               {isCollegeApps && "Manage your college applications and track deadlines."}
             </p>
           </div>
-          {stats?.curriculum && (
-            <div className="bg-white px-4 py-2 rounded-xl border border-slate-200 shadow-sm">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-tight">Curriculum</p>
-              <p className="text-sm font-bold text-brand-600 uppercase tracking-tight">
-                {stats.curriculum}
-                {stats.curriculum === 'Other' && stats.otherCurriculumName && ` (${stats.otherCurriculumName})`}
-              </p>
-            </div>
-          )}
+          <div className="flex gap-4">
+            {stats?.phase && (
+              <div className="bg-white px-4 py-2 rounded-xl border border-slate-200 shadow-sm">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-tight">Phase</p>
+                <p className="text-sm font-bold text-slate-600 uppercase tracking-tight">
+                  {stats.phase.replace('_', ' ')}
+                </p>
+              </div>
+            )}
+            {stats?.curriculum && (
+              <div className="bg-white px-4 py-2 rounded-xl border border-slate-200 shadow-sm">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-tight">Curriculum</p>
+                <p className="text-sm font-bold text-slate-600 uppercase tracking-tight">
+                  {stats.curriculum}
+                  {stats.curriculum === 'Other' && stats.otherCurriculumName && ` (${stats.otherCurriculumName})`}
+                </p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -118,45 +132,75 @@ export default function StudentDashboard() {
           </>
         )}
 
-        <Card variant="pop" className={!isCollegeApps ? ux.card.highlight : ''}>
+        <Card variant="pop" className={isOnboarding ? ux.card.highlight : ''}>
           <CardContent className="pt-6 text-center">
-            <p className={ux.text.accent}>Active Goals</p>
-            <p className="text-4xl font-black text-brand-600 mt-1">{stats?.activeGoals || 0}</p>
+            <p className={ux.text.accent}>Activities</p>
+            <p className="text-4xl font-black text-slate-900 mt-1">{stats?.profileStats?.activities || 0}</p>
+            {isOnboarding && (stats?.profileStats?.activities || 0) < 5 && (
+              <p className="text-[10px] text-amber-600 font-bold mt-2 uppercase tracking-tight">Add 5-10 activities</p>
+            )}
           </CardContent>
         </Card>
 
         <Card variant="pop">
           <CardContent className="pt-6 text-center">
-            <p className={ux.text.accent}>Activities</p>
-            <p className="text-4xl font-black text-slate-900 mt-1">{stats?.profileStats?.activities || 0}</p>
+            <p className={ux.text.accent}>Projects</p>
+            <p className="text-4xl font-black text-slate-900 mt-1">{stats?.profileStats?.projects || 0}</p>
+            {isOnboarding && (stats?.profileStats?.projects || 0) < 1 && (
+              <p className="text-[10px] text-amber-600 font-bold mt-2 uppercase tracking-tight">Add your projects</p>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card variant="pop">
+          <CardContent className="pt-6 text-center">
+            <p className={ux.text.accent}>Achievements</p>
+            <p className="text-4xl font-black text-slate-900 mt-1">{stats?.profileStats?.achievements || 0}</p>
+            {isOnboarding && (stats?.profileStats?.achievements || 0) < 1 && (
+              <p className="text-[10px] text-amber-600 font-bold mt-2 uppercase tracking-tight">Add achievements</p>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card variant="pop">
+          <CardContent className="pt-6 text-center">
+            <p className={ux.text.accent}>Test Scores</p>
+            <p className="text-4xl font-black text-slate-900 mt-1">{stats?.profileStats?.testScores || 0}</p>
+            {isOnboarding && (stats?.profileStats?.testScores || 0) < 1 && (
+              <p className="text-[10px] text-amber-600 font-bold mt-2 uppercase tracking-tight">Add your scores</p>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card variant="pop">
+          <CardContent className="pt-6 text-center">
+            <p className={ux.text.accent}>Transcripts</p>
+            <p className="text-4xl font-black text-slate-900 mt-1">{stats?.profileStats?.transcripts || 0}</p>
+            {isOnboarding && (stats?.profileStats?.transcripts || 0) < 1 && (
+              <p className="text-[10px] text-amber-600 font-bold mt-2 uppercase tracking-tight">Upload transcripts</p>
+            )}
           </CardContent>
         </Card>
 
         {isProfileBuilding && (
-          <>
-             <Card variant="pop">
-              <CardContent className="pt-6 text-center">
-                <p className={ux.text.accent}>Projects</p>
-                <p className="text-4xl font-black text-slate-900 mt-1">{stats?.profileStats?.projects || 0}</p>
-              </CardContent>
-            </Card>
-             <Card variant="pop">
-              <CardContent className="pt-6 text-center">
-                <p className={ux.text.accent}>Achievements</p>
-                <p className="text-4xl font-black text-slate-900 mt-1">{stats?.profileStats?.achievements || 0}</p>
-              </CardContent>
-            </Card>
-          </>
-        )}
-
-        <FeatureFlagGate>
-          <Card variant="pop">
+          <Card variant="pop" className={!isCollegeApps ? ux.card.highlight : ''}>
             <CardContent className="pt-6 text-center">
-              <p className={ux.text.accent}>Action Items</p>
-              <p className="text-4xl font-black text-brand-600 mt-1">{(stats as any)?.meetingStats?.openActionItems || 0}</p>
+              <p className={ux.text.accent}>Active Goals</p>
+              <p className="text-4xl font-black text-brand-600 mt-1">{stats?.activeGoals || 0}</p>
             </CardContent>
           </Card>
-        </FeatureFlagGate>
+        )}
+
+        {isProfileBuilding && (
+          <FeatureFlagGate>
+            <Card variant="pop">
+              <CardContent className="pt-6 text-center">
+                <p className={ux.text.accent}>Action Items</p>
+                <p className="text-4xl font-black text-brand-600 mt-1">{(stats as any)?.meetingStats?.openActionItems || 0}</p>
+              </CardContent>
+            </Card>
+          </FeatureFlagGate>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
@@ -256,87 +300,6 @@ export default function StudentDashboard() {
             </CardContent>
           </Card>
         )}
-      </div>
-
-      {/* Quick Access Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {(isCollegeApps || isProfileBuilding) && (
-          <Link href="/student/meetings" className="block group">
-            <Card variant="pop" className="group-hover:border-brand-300 transition-all h-full">
-              <CardContent className="pt-6">
-                <div className="flex flex-col items-center text-center">
-                  <div className="w-16 h-16 bg-brand-50 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                    <span className="text-3xl">🗓️</span>
-                  </div>
-                  <h3 className="text-base font-black text-slate-900 uppercase tracking-tight">Schedule Meetings</h3>
-                  <p className="text-xs text-slate-500 mt-2">Connect with your counselor</p>
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-        )}
-
-        {isCollegeApps && (
-          <Link href="/student/applications" className="block group">
-            <Card variant="pop" className="group-hover:border-brand-300 transition-all h-full">
-              <CardContent className="pt-6">
-                <div className="flex flex-col items-center text-center">
-                  <div className="w-16 h-16 bg-green-50 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                    <span className="text-3xl">🎓</span>
-                  </div>
-                  <h3 className="text-base font-black text-slate-900 uppercase tracking-tight">Applications</h3>
-                  <p className="text-xs text-slate-500 mt-2">Manage your submissions</p>
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-        )}
-        
-        {isProfileBuilding && (
-          <Link href="/student/goals" className="block group">
-            <Card variant="pop" className="group-hover:border-brand-300 transition-all h-full">
-              <CardContent className="pt-6">
-                <div className="flex flex-col items-center text-center">
-                  <div className="w-16 h-16 bg-amber-50 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                    <span className="text-3xl">🎯</span>
-                  </div>
-                  <h3 className="text-base font-black text-slate-900 uppercase tracking-tight">Goals</h3>
-                  <p className="text-xs text-slate-500 mt-2">Track your growth</p>
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-        )}
-
-        {(isCollegeApps || isProfileBuilding) && (
-          <Link href="/student/analysis" className="block group">
-            <Card variant="pop" className="group-hover:border-brand-300 transition-all h-full">
-              <CardContent className="pt-6">
-                <div className="flex flex-col items-center text-center">
-                  <div className="w-16 h-16 bg-purple-50 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                    <span className="text-3xl">📊</span>
-                  </div>
-                  <h3 className="text-base font-black text-slate-900 uppercase tracking-tight">Analysis</h3>
-                  <p className="text-xs text-slate-500 mt-2">View your profile strength</p>
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-        )}
-
-        <Link href="/student/profile" className="block group">
-          <Card variant="pop" className="group-hover:border-brand-300 transition-all h-full">
-            <CardContent className="pt-6">
-              <div className="flex flex-col items-center text-center">
-                <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  <span className="text-3xl">👤</span>
-                </div>
-                <h3 className="text-base font-black text-slate-900 uppercase tracking-tight">My Profile</h3>
-                <p className="text-xs text-slate-500 mt-2">Manage your data</p>
-              </div>
-            </CardContent>
-          </Card>
-        </Link>
       </div>
     </div>
   );
