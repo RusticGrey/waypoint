@@ -7,8 +7,8 @@ The Waypoint experience is structured around a 3-phase lifecycle. This ensures t
 ### 1. Onboarding
 **Goal**: Establish the baseline data for the student profile.
 - **Trigger**: New account creation.
-- **Experience**: The student is locked into the **7-Step Onboarding Wizard** (`/onboarding`).
-- **Data Collected**: Personal info, academic baseline, historical transcripts, initial extracurricular activities, and achievements.
+- **Experience**: The student is locked into the **6-Step Onboarding Wizard** (`/onboarding`).
+- **Data Collected**: Personal info, academic/curriculum baseline, historical transcripts, test scores, initial extracurricular activities, and achievements.
 - **Transition**: Moves to **Profile Building** automatically once the profile is 100% complete (verified via `lib/utils/profile-completion.ts`).
 
 ### 2. Profile Building
@@ -27,9 +27,10 @@ The Waypoint experience is structured around a 3-phase lifecycle. This ensures t
 ## Technical Enforcement
 
 ### Phase Enforcement (Navigation)
-The platform uses the `Student.phase` field (enum) to control access via `app/(dashboard)/student/layout.tsx`:
+The platform uses the `Student.phase` field (enum) to control access via `app/(dashboard)/student/layout.tsx` and `app/(dashboard)/layout.tsx`:
 - If `phase === 'Onboarding'`, the student is redirected to `/onboarding`.
-- If a student tries to access `/onboarding` while in a later phase, they are redirected back to the dashboard.
+- Layout-level checks ensure the side navigation and dashboard elements are adjusted or hidden for students in the onboarding phase.
+- Post-onboarding, the system forces a refresh/navigation to the main dashboard to initialize stats and state.
 
 ### Transition Logic
 1. **Automatic (Onboarding → Profile Building)**: 
