@@ -1,6 +1,5 @@
 interface Student {
   personalProfile?: any;
-  academicProfile?: any;
   transcripts?: any[];
   activities?: any[];
   testScores?: any[];
@@ -12,7 +11,6 @@ export function calculateProfileCompletion(student: Student): {
   percentage: number;
   breakdown: {
     personal: number;
-    academic: number;
     transcripts: number;
     activities: number;
     testScores: number;
@@ -21,10 +19,9 @@ export function calculateProfileCompletion(student: Student): {
   };
 } {
   const weights = {
-    personal: 15,
-    academic: 15,
-    transcripts: 25,
-    testScores: 10,
+    personal: 20,
+    transcripts: 30,
+    testScores: 15,
     activities: 15,
     achievements: 15,
     projects: 5,
@@ -33,7 +30,6 @@ export function calculateProfileCompletion(student: Student): {
   let score = 0;
   const breakdown = {
     personal: 0,
-    academic: 0,
     transcripts: 0,
     activities: 0,
     testScores: 0,
@@ -41,7 +37,7 @@ export function calculateProfileCompletion(student: Student): {
     projects: 0,
   };
 
-  // Personal profile (15%)
+  // Personal profile (20%)
   if (student.personalProfile) {
     const hasRequired =
       student.personalProfile.currentSchool &&
@@ -54,21 +50,15 @@ export function calculateProfileCompletion(student: Student): {
     }
   }
 
-  // Academic profile (15%)
-  if (student.academicProfile) {
-    score += weights.academic;
-    breakdown.academic = 100;
-  }
-
-  // Transcripts (20%) - Target: 5+ courses
+  // Transcripts (30%) - Target: 5+ courses
   const transcriptCount = student.transcripts?.length || 0;
   const transcriptScore = Math.min(transcriptCount / 5, 1) * weights.transcripts;
   score += transcriptScore;
-  breakdown.transcripts = Math.round((transcriptCount / 5) * 100);
+  breakdown.transcripts = Math.min(Math.round((transcriptCount / 5) * 100), 100);
 
-    // Test scores (10%) - Target: 1+ test
+  // Test scores (15%) - Target: 1+ test
   const testScoreCount = student.testScores?.length || 0;
-  if (testScoreCount >= 0) {
+  if (testScoreCount > 0) {
     score += weights.testScores;
     breakdown.testScores = 100;
   }

@@ -34,7 +34,9 @@ export async function POST(req: Request) {
           ? new Date(achievement.dateAchieved) 
           : null,
         description: achievement.description,
-        recognitionLevel: achievement.recognitionLevel,
+        recognitionLevel: achievement.recognitionLevel as any,
+        achievementType: achievement.achievementType as any,
+        gradeLevel: achievement.gradeLevel as any,
         studentId: session.user.id,
       })),
     });
@@ -44,7 +46,6 @@ export async function POST(req: Request) {
       where: { userId: session.user.id },
       include: {
         personalProfile: true,
-        academicProfile: true,
         transcripts: true,
         activities: true,
         achievements: true,

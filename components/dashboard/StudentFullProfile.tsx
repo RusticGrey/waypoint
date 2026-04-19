@@ -9,6 +9,8 @@ interface StudentFullProfileProps {
   analysis: any;
 }
 
+import { getDerivedCurriculum } from '@/lib/api-helpers/profile';
+
 export default function StudentFullProfile({ student, analysis }: StudentFullProfileProps) {
   const [activeTab, setActiveTab] = useState('overview');
 
@@ -114,7 +116,7 @@ export default function StudentFullProfile({ student, analysis }: StudentFullPro
               <CardContent>
                 {student.meetings && student.meetings.length > 0 ? (
                   <div className="space-y-3">
-                    {student.meetings.map((meeting) => (
+                    {student.meetings.map((meeting: any) => (
                       <div key={meeting.id} className="border-b pb-3 last:border-0">
                         <p className="text-sm font-medium text-gray-900">
                           {new Date(meeting.meetingDate).toLocaleDateString('en-US', {
@@ -151,18 +153,20 @@ export default function StudentFullProfile({ student, analysis }: StudentFullPro
               <CardTitle>Academic Profile</CardTitle>
             </CardHeader>
             <CardContent>
-              <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-6">
+              <dl className="grid grid-cols-1 gap-y-6">
                 <div>
-                  <dt className="text-sm font-medium text-gray-500">Curriculum</dt>
-                  <dd className="mt-1 text-sm text-gray-900">{student.academicProfile?.curriculumType || 'Not set'}</dd>
-                </div>
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">Grading System</dt>
-                  <dd className="mt-1 text-sm text-gray-900">{student.academicProfile?.gradingSystemType?.replace(/_/g, ' ') || 'Not set'}</dd>
-                </div>
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">Current GPA/Score</dt>
-                  <dd className="mt-1 text-sm text-gray-900">{student.academicProfile?.currentGpa || 'Not set'}</dd>
+                  <dt className="text-sm font-medium text-gray-500">Graduating Curriculum (Derived)</dt>
+                  <dd className="mt-1 text-sm text-gray-900">
+                    {(() => {
+                      const derived = getDerivedCurriculum(student);
+                      return derived ? (
+                        <span>
+                          {derived.curriculumType}
+                          {derived.curriculumType === 'Other' && derived.otherName && ` (${derived.otherName})`}
+                        </span>
+                      ) : 'No transcripts added yet';
+                    })()}
+                  </dd>
                 </div>
               </dl>
             </CardContent>
@@ -178,7 +182,9 @@ export default function StudentFullProfile({ student, analysis }: StudentFullPro
                   {student.testScores.map((score: any) => (
                     <div key={score.id} className="p-3 border rounded-lg">
                       <div className="flex justify-between">
-                        <span className="font-medium text-gray-900">{score.testType}</span>
+                        <span className="font-medium text-gray-900">
+                          {score.testType === 'Other' ? score.testName || 'Other Test' : score.testType}
+                        </span>
                         <span className="text-gray-500 text-sm">{new Date(score.testDate).toLocaleDateString()}</span>
                       </div>
                       <div className="mt-2 text-sm text-gray-700">
@@ -188,6 +194,9 @@ export default function StudentFullProfile({ student, analysis }: StudentFullPro
                         {score.readingWritingScore && <span className="ml-3">RW: {score.readingWritingScore}</span>}
                         {score.scienceScore && <span className="ml-3">Science: {score.scienceScore}</span>}
                       </div>
+                      {score.comments && (
+                        <p className="mt-2 text-xs text-gray-500 italic">"{score.comments}"</p>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -203,29 +212,53 @@ export default function StudentFullProfile({ student, analysis }: StudentFullPro
             </CardHeader>
             <CardContent>
               {student.transcripts && student.transcripts.length > 0 ? (
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead>
-                      <tr>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Course</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Grade Level</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Semester</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Grade</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Level</th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {student.transcripts.map((t: any) => (
-                        <tr key={t.id}>
-                          <td className="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900">{t.courseName}</td>
-                          <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500 capitalize">{t.gradeLevel}</td>
-                          <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500">{t.semester.replace('_', ' ')}</td>
-                          <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">{t.gradeValue}</td>
-                          <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500">{t.honorsLevel.replace('_', ' ')}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                <div className="space-y-8">
+                  {['ninth', 'tenth', 'eleventh', 'twelfth'].map((grade) => {
+                    const gradeTranscripts = student.transcripts.filter((t: any) => t.gradeLevel === grade);
+                    if (gradeTranscripts.length === 0) return null;
+                  return (
+                    <div key={grade} className="space-y-3">
+                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 bg-slate-50 p-3 rounded-lg border border-slate-100">
+                        <h4 className="text-sm font-black text-slate-700 uppercase tracking-tight">
+                          {grade} Grade
+                        </h4>
+                        <div className="flex gap-4">
+                          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            Curriculum: <span className="text-brand-600">
+                              {(gradeTranscripts[0] as any).curriculumType}
+                              {(gradeTranscripts[0] as any).curriculumType === 'Other' && (gradeTranscripts[0] as any).otherCurriculumName && ` (${(gradeTranscripts[0] as any).otherCurriculumName})`}
+                            </span>
+                          </span>
+                          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            Scale: <span className="text-brand-600">{(gradeTranscripts[0] as any).gradingSystemType?.replace(/_/g, ' ')}</span>
+                          </span>
+                        </div>
+                      </div>
+                      <div className="overflow-x-auto">
+                          <table className="min-w-full divide-y divide-gray-200">
+                            <thead>
+                              <tr>
+                                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Course</th>
+                                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Semester</th>
+                                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Grade</th>
+                                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Level</th>
+                              </tr>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                              {gradeTranscripts.map((t: any) => (
+                                <tr key={t.id}>
+                                  <td className="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900">{t.courseName}</td>
+                                  <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500">{t.semester.replace('_', ' ')}</td>
+                                  <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">{t.gradeValue}</td>
+                                  <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500">{t.honorsLevel.replace('_', ' ')}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               ) : (
                 <p className="text-sm text-gray-500">No transcripts added.</p>
@@ -415,6 +448,17 @@ export default function StudentFullProfile({ student, analysis }: StudentFullPro
               <div className="sm:col-span-2">
                 <dt className="text-sm font-medium text-gray-500">School Location</dt>
                 <dd className="mt-1 text-sm text-gray-900">{student.personalProfile?.schoolLocation || '-'}</dd>
+              </div>
+
+              <div className="border-t border-gray-100 col-span-full my-2"></div>
+
+              <div>
+                <dt className="text-sm font-medium text-gray-500">Residency</dt>
+                <dd className="mt-1 text-sm text-gray-900">{student.personalProfile?.residency || '-'}</dd>
+              </div>
+              <div>
+                <dt className="text-sm font-medium text-gray-500">Citizenship</dt>
+                <dd className="mt-1 text-sm text-gray-900">{student.personalProfile?.citizenship || '-'}</dd>
               </div>
 
               <div className="border-t border-gray-100 col-span-full my-2"></div>

@@ -35,7 +35,6 @@ export async function GET(req: Request) {
           },
         },
         personalProfile: true,
-        academicProfile: true,
       },
       orderBy: {
         user: {

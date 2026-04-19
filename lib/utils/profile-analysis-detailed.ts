@@ -3,7 +3,6 @@ import { Prisma } from '@prisma/client';
 type StudentWithRelations = Prisma.StudentGetPayload<{
   include: {
     personalProfile: true;
-    academicProfile: true;
     transcripts: true;
     activities: true;
     achievements: true;
@@ -77,9 +76,9 @@ export function analyzeProfileDetailed(student: StudentWithRelations) {
     projects: Math.round((projects.total / projects.max) * 100),
   };
 
-  const strengths = [];
-  const weaknesses = [];
-  const recommendations = [];
+  const strengths: string[] = [];
+  const weaknesses: string[] = [];
+  const recommendations: string[] = [];
 
   // Identify strengths (>= 80)
   Object.entries(categoryScores).forEach(([key, score]) => {
@@ -136,39 +135,71 @@ export function analyzeProfileDetailed(student: StudentWithRelations) {
 
 function analyzeAcademicDetailed(student: StudentWithRelations): AcademicDetails {
   const details: string[] = [];
-  let gpaScore = 0;
+  let gpaScore = 0; // Using name gpaScore for compatibility with interface
   let courseRigorScore = 0;
   let courseBreadthScore = 0;
 
-  // GPA Score (max 40 points)
-  const gpa = student.academicProfile?.currentGpa;
-  if (gpa) {
-    const gpaNum = parseFloat(gpa);
-    if (gpaNum >= 3.9) {
-      gpaScore = 40;
-      details.push(`Excellent GPA (${gpa}) = 40/40 points`);
-    } else if (gpaNum >= 3.7) {
-      gpaScore = 35;
-      details.push(`Strong GPA (${gpa}) = 35/40 points`);
-    } else if (gpaNum >= 3.5) {
-      gpaScore = 30;
-      details.push(`Good GPA (${gpa}) = 30/40 points`);
-    } else if (gpaNum >= 3.0) {
-      gpaScore = 25;
-      details.push(`Average GPA (${gpa}) = 25/40 points`);
+  // Grade Quality Score from transcripts (max 40 points)
+  const studentTranscripts = student.transcripts || [];
+  // Grade Quality Score from transcripts (max 40 points)
+  if (studentTranscripts.length > 0) {
+    let gradeQualityTotal = 0;
+    let gradeCount = 0;
+
+    studentTranscripts.forEach(t => {
+      const gradeValue = t.gradeValue;
+      const gradingSystem = (t as any).gradingSystemType;
+      
+      if (!gradeValue || !gradingSystem) return;
+      
+      let normalized = 0;
+      if (gradingSystem === 'Marks_Out_Of_100' || gradingSystem === 'Percentage') {
+        normalized = parseFloat(gradeValue) || 0;
+      } else if (gradingSystem === 'IB_Scale') {
+        normalized = (parseFloat(gradeValue) || 0) / 7 * 100;
+      } else if (gradingSystem === 'Letter_Grade') {
+        const gradeMap: { [key: string]: number } = {
+          'A+': 97, 'A': 93, 'A-': 90, 'B+': 87, 'B': 83, 'B-': 80,
+          'C+': 77, 'C': 73, 'C-': 70, 'D+': 67, 'D': 63, 'D-': 60, 'F': 50
+        };
+        normalized = gradeMap[gradeValue.toUpperCase()] || 0;
+      }
+
+      if (normalized > 0) {
+        gradeQualityTotal += normalized;
+        gradeCount++;
+      }
+    });
+
+    if (gradeCount > 0) {
+      const avgGrade = gradeQualityTotal / gradeCount;
+      if (avgGrade >= 95) {
+        gpaScore = 40;
+        details.push(`Exceptional grade quality (avg ~${Math.round(avgGrade)}%) = 40/40 points`);
+      } else if (avgGrade >= 90) {
+        gpaScore = 35;
+        details.push(`Strong grade quality (avg ~${Math.round(avgGrade)}%) = 35/40 points`);
+      } else if (avgGrade >= 85) {
+        gpaScore = 30;
+        details.push(`Good grade quality (avg ~${Math.round(avgGrade)}%) = 30/40 points`);
+      } else if (avgGrade >= 80) {
+        gpaScore = 25;
+        details.push(`Average grade quality (avg ~${Math.round(avgGrade)}%) = 25/40 points`);
+      } else {
+        gpaScore = 15;
+        details.push(`Grade quality needs improvement (avg ~${Math.round(avgGrade)}%) = 15/40 points`);
+      }
     } else {
-      gpaScore = 15;
-      details.push(`GPA (${gpa}) = 15/40 points`);
+      details.push('No valid grades in transcripts = 0/40 points');
     }
   } else {
-    details.push('No GPA provided = 0/40 points');
+    details.push('No transcripts added yet = 0/40 points');
   }
 
   // Course Rigor (max 30 points)
-  const transcripts = student.transcripts || [];
-  const apCourses = transcripts.filter(t => t.honorsLevel === 'AP').length;
-  const ibCourses = transcripts.filter(t => t.honorsLevel === 'IB' || t.honorsLevel === 'IB_HL' || t.honorsLevel === 'IB_SL').length;
-  const honorsCourses = transcripts.filter(t => t.honorsLevel === 'Honors').length;
+  const apCourses = studentTranscripts.filter(t => t.honorsLevel === 'AP').length;
+  const ibCourses = studentTranscripts.filter(t => t.honorsLevel === 'IB_HL' || t.honorsLevel === 'IB_SL').length;
+  const honorsCourses = studentTranscripts.filter(t => t.honorsLevel === 'Honors').length;
 
   courseRigorScore = Math.min(30, apCourses * 3 + ibCourses * 3 + honorsCourses * 2);
   
@@ -179,7 +210,7 @@ function analyzeAcademicDetailed(student: StudentWithRelations): AcademicDetails
   }
 
   // Course Breadth (max 30 points)
-  const totalCourses = transcripts.length;
+  const totalCourses = studentTranscripts.length;
   if (totalCourses >= 20) {
     courseBreadthScore = 30;
     details.push(`Excellent course breadth (${totalCourses} courses) = 30/30 points`);

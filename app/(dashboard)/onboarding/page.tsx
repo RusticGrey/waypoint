@@ -23,11 +23,11 @@ export default async function OnboardingPage() {
     where: { userId: session.user.id },
     include: {
       personalProfile: true,
-      academicProfile: true,
       transcripts: true,
       activities: true,
       achievements: true,
       projectExperiences: true,
+      testScores: true,
     },
   });
 

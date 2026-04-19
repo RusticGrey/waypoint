@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { ux } from '@/lib/ux';
+import { cn } from '@/lib/utils';
 import PersonalProfileForm from './PersonalProfileForm';
-import AcademicProfileForm from './AcademicProfileForm';
 import TranscriptForm from './TranscriptForm';
 import TestScoreForm from './TestScoreForm';
 import ActivityForm from './ActivityForm';
@@ -10,11 +11,10 @@ import AchievementForm from './AchievementForm';
 import ProjectForm from './ProjectForm';
 // import { Student } from '@prisma/client';        
 
-type Step = 1 | 2 | 3 | 4 | 5 | 6 | 7;
+type Step = 1 | 2 | 3 | 4 | 5 | 6;
 
 interface FormData {
   personal: any;
-  academic: any;
   transcripts: any[];
   testScores: any[];
   activities: any[];
@@ -38,7 +38,6 @@ export default function OnboardingWizard({ student, userId }: OnboardingWizardPr
       ...student?.personalProfile,
       currentGrade: student?.currentGrade,
     },
-    academic: student?.academicProfile,
     transcripts: student?.transcripts || [],
     testScores: student?.testScores || [],
     activities: student?.activities || [],
@@ -46,14 +45,23 @@ export default function OnboardingWizard({ student, userId }: OnboardingWizardPr
     projects: student?.projectExperiences || [],
   });
 
+  // Re-sync test scores if student prop changes (e.g. after internal navigate/refresh)
+  useEffect(() => {
+    if (student?.testScores) {
+      setFormData(prev => ({
+        ...prev,
+        testScores: student.testScores
+      }));
+    }
+  }, [student?.testScores]);
+
   const steps = [
     { number: 1, title: 'Personal Information' },
-    { number: 2, title: 'Academic Background' },
-    { number: 3, title: 'Transcripts' },
-    { number: 4, title: 'Test Scores' },
-    { number: 5, title: 'Activities' },
-    { number: 6, title: 'Achievements' },
-    { number: 7, title: 'Projects & Experiences (Optional)' },
+    { number: 2, title: 'Transcripts' },
+    { number: 3, title: 'Test Scores' },
+    { number: 4, title: 'Activities' },
+    { number: 5, title: 'Achievements' },
+    { number: 6, title: 'Projects & Experiences (Optional)' },
   ];
 
   const handleNext = (stepKey: keyof FormData, data: any, newCompletionPct?: number) => {
@@ -63,7 +71,7 @@ export default function OnboardingWizard({ student, userId }: OnboardingWizardPr
       setCompletionPct(newCompletionPct);
     }
 
-    if (currentStep < 7) {
+    if (currentStep < 6) {
       setCurrentStep((prev) => (prev + 1) as Step);
     }
   };
@@ -93,24 +101,15 @@ export default function OnboardingWizard({ student, userId }: OnboardingWizardPr
         );
       case 2:
         return (
-          <AcademicProfileForm
-            onNext={(data, pct) => handleNext('academic', data, pct)}
-            onBack={handleBack}
-            initialData={formData.academic}
-          />
-        );
-      case 3:
-        return (
           <TranscriptForm
             onNext={(data, pct) => handleNext('transcripts', data, pct)}
             onSave={(data, pct) => handleSave('transcripts', data, pct)}
             onBack={handleBack}
             initialData={formData.transcripts}
-            curriculum={formData.academic?.curriculumType}
             currentGrade={formData.personal?.currentGrade}
           />
         );
-      case 4:
+      case 3:
         return (
           <TestScoreForm
             onNext={(data, pct) => handleNext('testScores', data, pct)}
@@ -119,7 +118,7 @@ export default function OnboardingWizard({ student, userId }: OnboardingWizardPr
             initialData={formData.testScores}
           />
         );
-      case 5:
+      case 4:
         return (
           <ActivityForm
             onNext={(data, pct) => handleNext('activities', data, pct)}
@@ -128,7 +127,7 @@ export default function OnboardingWizard({ student, userId }: OnboardingWizardPr
             initialData={formData.activities}
           />
         );
-      case 6:
+      case 5:
         return (
           <AchievementForm
             onNext={(data, pct) => handleNext('achievements', data, pct)}
@@ -138,7 +137,7 @@ export default function OnboardingWizard({ student, userId }: OnboardingWizardPr
             currentGrade={formData.personal?.currentGrade}
           />
         );
-      case 7:
+      case 6:
         return (
           <ProjectForm
             onNext={(data, pct) => handleNext('projects', data, pct)}
@@ -155,34 +154,45 @@ export default function OnboardingWizard({ student, userId }: OnboardingWizardPr
   return (
     <div className="max-w-4xl mx-auto p-6">
       {/* Progress bar */}
-      <div className="mb-8">
+      <div className="mb-12">
         <div className="flex items-center justify-between">
           {steps.map((step, idx) => (
             <div key={step.number} className="flex items-center flex-1">
               <div
-                className={`
-                  w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold
-                  ${currentStep >= step.number ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'}
-                `}
+                className={cn(
+                  "w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all shadow-sm",
+                  currentStep >= step.number 
+                    ? "bg-brand-600 text-white shadow-brand-100" 
+                    : "bg-surface-muted text-slate-400"
+                )}
               >
                 {step.number}
               </div>
               {idx < steps.length - 1 && (
                 <div
-                  className={`h-1 flex-1 mx-2 ${currentStep > step.number ? 'bg-blue-600' : 'bg-gray-200'}`}
+                  className={cn(
+                    "h-1.5 flex-1 mx-2 rounded-full transition-all",
+                    currentStep > step.number ? "bg-brand-600" : "bg-surface-muted"
+                  )}
                 />
               )}
             </div>
           ))}
         </div>
-        <div className="mt-4 text-center">
-          <h2 className="text-xl font-semibold text-gray-900">{steps[currentStep - 1].title}</h2>
-          <p className="text-sm text-gray-500">Step {currentStep} of {steps.length} ({completionPct}% complete)</p>
+        <div className="mt-6 text-center space-y-1">
+          <h2 className={ux.text.subheading}>{steps[currentStep - 1].title}</h2>
+          <p className={ux.text.muted}>Step {currentStep} of {steps.length} ({completionPct}% complete)</p>
         </div>
       </div>
 
       {/* Step content */}
-      <div className="bg-white rounded-lg shadow p-8">
+      <div className={cn(ux.card.base, "p-8 shadow-md relative overflow-hidden")}>
+        <div className="absolute top-0 left-0 w-full h-1.5 bg-surface-soft">
+          <div 
+            className="h-full bg-brand-500 transition-all duration-500" 
+            style={{ width: `${(currentStep / steps.length) * 100}%` }}
+          />
+        </div>
         {renderStep()}
       </div>
     </div>

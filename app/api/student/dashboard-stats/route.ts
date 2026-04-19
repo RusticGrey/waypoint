@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { getDerivedCurriculum } from '@/lib/api-helpers/profile';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,7 +26,10 @@ export async function GET(req: Request) {
     ] = await Promise.all([
       prisma.student.findUnique({
         where: { userId: session.user.id },
-        select: { phase: true },
+        select: { 
+          phase: true,
+          transcripts: true
+        },
       }),
       prisma.collegeApplication.findMany({
         where: { studentId: session.user.id },
@@ -91,8 +95,12 @@ export async function GET(req: Request) {
       },
     };
     
+    const derivedCurriculum = student ? getDerivedCurriculum(student) : null;
+
     return NextResponse.json({
       phase: student?.phase || 'Onboarding',
+      curriculum: derivedCurriculum?.curriculumType || null,
+      otherCurriculumName: derivedCurriculum?.otherName || null,
       upcomingDeadlines,
       applicationStats,
       activeGoals: goals.length,

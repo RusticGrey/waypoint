@@ -58,7 +58,7 @@ export function PhaseControl({ studentId, currentPhase }: { studentId: string; c
               disabled={isLoading}
               className="bg-white border-blue-300"
             >
-              <option value="Onboarding" disabled={currentPhase !== 'Onboarding'}>Onboarding</option>
+              <option value="Onboarding">Onboarding</option>
               <option value="Profile_Building">Profile Building</option>
               <option value="College_Applications">College Applications</option>
             </Select>

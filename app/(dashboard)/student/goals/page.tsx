@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { ux } from '@/lib/ux';
 
 interface Goal {
   id: string;
@@ -105,15 +106,17 @@ export default function GoalsPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="mb-6 flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Profile Goals</h1>
-          <p className="text-gray-600 mt-1">Set and track goals to strengthen your college profile</p>
+    <div className={ux.layout.page}>
+      <div className={ux.layout.header}>
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className={ux.text.heading}>Profile Goals</h1>
+            <p className={ux.text.body}>Set and track goals to strengthen your college profile</p>
+          </div>
+          <Button onClick={() => setShowAddModal(true)}>
+            + Add Goal
+          </Button>
         </div>
-        <Button onClick={() => setShowAddModal(true)}>
-          + Add Goal
-        </Button>
       </div>
 
       {/* Summary Stats */}
@@ -266,34 +269,42 @@ export default function GoalsPage() {
                 </select>
               </div>
 
-              <Input
-                label="Category *"
-                placeholder="e.g., GPA Improvement, Leadership Role, SAT Score"
-                value={formData.category}
-                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-              />
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-900">Category *</label>
+                <Input
+                  placeholder="e.g., GPA Improvement, Leadership Role, SAT Score"
+                  value={formData.category}
+                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                />
+              </div>
 
-              <Input
-                label="Target Value *"
-                placeholder="e.g., 3.9 GPA, Club President, 1500 SAT"
-                value={formData.targetValue}
-                onChange={(e) => setFormData({ ...formData, targetValue: e.target.value })}
-              />
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-900">Target Value *</label>
+                <Input
+                  placeholder="e.g., 3.9 GPA, Club President, 1500 SAT"
+                  value={formData.targetValue}
+                  onChange={(e) => setFormData({ ...formData, targetValue: e.target.value })}
+                />
+              </div>
 
-              <Input
-                label="Current Value (optional)"
-                placeholder="e.g., 3.7 GPA, Vice President"
-                value={formData.currentValue}
-                onChange={(e) => setFormData({ ...formData, currentValue: e.target.value })}
-              />
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-900">Current Value (optional)</label>
+                <Input
+                  placeholder="e.g., 3.7 GPA, Vice President"
+                  value={formData.currentValue}
+                  onChange={(e) => setFormData({ ...formData, currentValue: e.target.value })}
+                />
+              </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <Input
-                  label="Deadline (optional)"
-                  type="date"
-                  value={formData.deadline}
-                  onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
-                />
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-900">Deadline (optional)</label>
+                  <Input
+                    type="date"
+                    value={formData.deadline}
+                    onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
+                  />
+                </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-900 mb-1">

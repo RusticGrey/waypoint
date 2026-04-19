@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { ux } from '@/lib/ux';
 import ApplicationModal from './application-modal';
 import StatsOverview from './stats-overview';
 import DeadlineTracker from './deadline-tracker';
@@ -130,10 +131,10 @@ export default function ApplicationsPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">College Applications</h1>
-        <p className="text-gray-600 mt-1">Track your application progress and deadlines</p>
+    <div className={ux.layout.page}>
+      <div className={ux.layout.header}>
+        <h1 className={ux.text.heading}>College Applications</h1>
+        <p className={ux.text.body}>Track your application progress and deadlines</p>
       </div>
 
       <StatsOverview applications={applications} />
@@ -188,7 +189,7 @@ export default function ApplicationsPage() {
                         <tr key={app.id} className="hover:bg-gray-50">
                           <td className="px-4 py-3">
                             <div className="text-sm font-medium text-gray-900">{app.college.name}</div>
-                            <div className="text-xs text-gray-500">{app.college.country}</div>
+                            <div className="text-xs text-gray-500">{app.college.location}</div>
                           </td>
                           <td className="px-4 py-3">
                             <span className={`px-2 py-1 text-xs rounded ${getCategoryBadge(app.targetCategory)}`}>

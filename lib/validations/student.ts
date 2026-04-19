@@ -17,35 +17,38 @@ export const personalProfileSchema = z.object({
   parentName: z.string().min(1, 'Parent name is required'),
   parentEmail: z.string().email('Invalid email'),
   parentPhone: z.string().min(1, 'Parent phone is required'),
-});
-
-export const academicProfileSchema = z.object({
-  curriculumType: createEnumSchema(enums.curriculumTypes),
-  gradingSystemType: createEnumSchema(enums.gradingSystemTypes),
-  currentGpa: z.string().optional(),
+  residency: z.string().optional(),
+  citizenship: z.string().optional(),
 });
 
 export const transcriptSchema = z.object({
   courseName: z.string().min(1, 'Course name is required'),
   gradeLevel: createEnumSchema(enums.gradeLevels),
+  curriculumType: createEnumSchema(enums.curriculumTypes).optional().nullable().or(z.literal('')),
+  otherCurriculumName: z.string().optional().nullable().or(z.literal('')),
+  gradingSystemType: createEnumSchema(enums.gradingSystemTypes).optional().nullable().or(z.literal('')),
   semester: createEnumSchema(enums.semesterTypes),
   gradeValue: z.string().min(1, 'Grade is required'),
-  credits: z.number().optional(),
+  credits: z.number().optional().nullable(),
   honorsLevel: createEnumSchema(enums.honorsLevels).default('Standard'),
   isBoardExam: z.boolean().default(false),
 });
 
 export const testScoreSchema = z.object({
   testType: z.string().min(1, 'Test type is required'),
+  testName: z.string().optional().nullable(),
   testDate: z.string().min(1, 'Test date is required'),
-  compositeScore: z.number({ required_error: "Score is required" }).int().min(0, 'Score must be positive'),
-  mathScore: z.number().int().optional(),
-  englishScore: z.number().int().optional(),
-  scienceScore: z.number().int().optional(),
-  readingWritingScore: z.number().int().optional(),
+  compositeScore: z.coerce.number().int().min(0, 'Score must be positive'),
+  mathScore: z.number().int().optional().nullable(),
+  englishScore: z.number().int().optional().nullable(),
+  scienceScore: z.number().int().optional().nullable(),
+  readingWritingScore: z.number().int().optional().nullable(),
+  listeningScore: z.number().int().optional().nullable(),
+  speakingScore: z.number().int().optional().nullable(),
+  writingScore: z.number().int().optional().nullable(),
+  comments: z.string().optional().nullable(),
 });
 
 export type PersonalProfileInput = z.infer<typeof personalProfileSchema>;
-export type AcademicProfileInput = z.infer<typeof academicProfileSchema>;
 export type TranscriptInput = z.infer<typeof transcriptSchema>;
 export type TestScoreInput = z.infer<typeof testScoreSchema>;

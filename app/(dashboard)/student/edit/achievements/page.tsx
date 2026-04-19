@@ -5,7 +5,9 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useEnums } from '@/lib/hooks/useEnums';
+import { ux } from '@/lib/ux';
 
 interface Achievement {
   id: string;
@@ -19,6 +21,7 @@ interface Achievement {
 }
 
 export default function EditAchievementsPage() {
+  const router = useRouter(); // Added router
   const { enums, loading: enumsLoading } = useEnums();
   const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -60,7 +63,6 @@ export default function EditAchievementsPage() {
       const res = await fetch('/api/student/achievements');
       if (!res.ok) throw new Error('Failed to fetch achievements');
       const data = await res.json();
-      console.log('Fetched Achievement:', data);
       setAchievements(data.achievements || []);
     } catch (err) {
       console.error('Fetch error:', err);
@@ -80,8 +82,6 @@ export default function EditAchievementsPage() {
       
       const method = editingId ? 'PATCH' : 'POST';
 
-      console.log('Submitting:', method, url, formData);
-
       const res = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
@@ -90,12 +90,8 @@ export default function EditAchievementsPage() {
 
       if (!res.ok) {
         const errorData = await res.json();
-        console.error('API Error:', errorData);
         throw new Error(errorData.error || 'Failed to save achievement');
       }
-
-      const result = await res.json();
-      console.log('Saved successfully:', result);
 
       resetForm();
       await fetchAchievements();
@@ -172,15 +168,17 @@ export default function EditAchievementsPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="mb-6 flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Edit Achievements</h1>
-          <p className="text-gray-600 mt-1">Manage your honors, awards, and recognitions</p>
+    <div className={ux.layout.page}>
+      <div className={ux.layout.header}>
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className={ux.text.heading}>Edit Achievements</h1>
+            <p className={ux.text.body}>Manage your honors, awards, and recognitions</p>
+          </div>
+          <Link href="/student/profile" className="text-blue-600 hover:text-blue-700 font-medium">
+            ← Back to Profile
+          </Link>
         </div>
-        <Link href="/student/profile" className="text-blue-600 hover:text-blue-700">
-          ← Back to Profile
-        </Link>
       </div>
 
       {error && (
@@ -208,15 +206,17 @@ export default function EditAchievementsPage() {
               </h3>
               
               <div className="space-y-4">
-                <Input
-                  label="Achievement Title *"
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  required
-                />
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Achievement Title *</label>
+                  <Input
+                    value={formData.title}
+                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    required
+                  />
+                </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
+                  <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-900 mb-1">
                       Type *
                     </label>
@@ -232,15 +232,17 @@ export default function EditAchievementsPage() {
                     </select>
                   </div>
 
-                  <Input
-                    label="Organization (optional)"
-                    value={formData.organization}
-                    onChange={(e) => setFormData({ ...formData, organization: e.target.value })}
-                  />
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">Organization (optional)</label>
+                    <Input
+                      value={formData.organization}
+                      onChange={(e) => setFormData({ ...formData, organization: e.target.value })}
+                    />
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
+                  <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-900 mb-1">
                       Recognition Level *
                     </label>
@@ -256,7 +258,7 @@ export default function EditAchievementsPage() {
                     </select>
                   </div>
 
-                  <div>
+                  <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-900 mb-1">
                       Grade Level
                     </label>
@@ -274,12 +276,14 @@ export default function EditAchievementsPage() {
                   </div>
                 </div>
 
-                <Input
-                  label="Date Received"
-                  type="date"
-                  value={formData.dateReceived}
-                  onChange={(e) => setFormData({ ...formData, dateReceived: e.target.value })}
-                />
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Date Received</label>
+                  <Input
+                    type="date"
+                    value={formData.dateReceived}
+                    onChange={(e) => setFormData({ ...formData, dateReceived: e.target.value })}
+                  />
+                </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-900 mb-1">

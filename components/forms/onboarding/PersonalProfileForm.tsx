@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { ux } from '@/lib/ux';
 
 const personalProfileWithGradeSchema = z.object({
   preferredName: z.string().optional(),
@@ -16,6 +17,8 @@ const personalProfileWithGradeSchema = z.object({
   parentEmail: z.string().email('Invalid email'),
   parentPhone: z.string().min(1, 'Parent phone is required'),
   currentGrade: z.enum(['ninth', 'tenth', 'eleventh', 'twelfth']),
+  residency: z.string().optional(),
+  citizenship: z.string().optional(),
 });
 
 type PersonalProfileWithGradeInput = z.infer<typeof personalProfileWithGradeSchema>;
@@ -53,59 +56,85 @@ export default function PersonalProfileForm({ onNext, initialData }: Props) {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-1.5">
-          <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+          <label className={ux.form.label}>
             Preferred Name <span className="text-slate-400 font-normal">(optional)</span>
           </label>
           <Input
             {...register('preferredName')}
-            className="bg-slate-50 border-slate-200 focus:bg-white transition-colors"
+            className={ux.form.input}
           />
-          {errors.preferredName && <p className="text-xs text-red-500 font-bold">{errors.preferredName.message}</p>}
+          {errors.preferredName && <p className={ux.form.error}>{errors.preferredName.message}</p>}
         </div>
 
         <div className="space-y-1.5">
-          <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+          <label className={ux.form.label}>
             Phone <span className="text-slate-400 font-normal">(optional)</span>
           </label>
           <Input
             type="tel"
             {...register('phone')}
-            className="bg-slate-50 border-slate-200 focus:bg-white transition-colors"
+            className={ux.form.input}
           />
-          {errors.phone && <p className="text-xs text-red-500 font-bold">{errors.phone.message}</p>}
+          {errors.phone && <p className={ux.form.error}>{errors.phone.message}</p>}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="space-y-1.5">
+          <label className={ux.form.label}>
+            Residency <span className="text-slate-400 font-normal">(optional)</span>
+          </label>
+          <Input
+            {...register('residency')}
+            placeholder="e.g., California, USA"
+            className={ux.form.input}
+          />
+          {errors.residency && <p className={ux.form.error}>{errors.residency.message}</p>}
+        </div>
+
+        <div className="space-y-1.5">
+          <label className={ux.form.label}>
+            Citizenship <span className="text-slate-400 font-normal">(optional)</span>
+          </label>
+          <Input
+            {...register('citizenship')}
+            placeholder="e.g., USA"
+            className={ux.form.input}
+          />
+          {errors.citizenship && <p className={ux.form.error}>{errors.citizenship.message}</p>}
         </div>
       </div>
 
       <div className="space-y-1.5">
-        <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+        <label className={ux.form.label}>
           Current School <span className="text-red-500">*</span>
         </label>
         <Input
           {...register('currentSchool')}
-          className="bg-slate-50 border-slate-200 focus:bg-white transition-colors"
+          className={ux.form.input}
         />
-        {errors.currentSchool && <p className="text-xs text-red-500 font-bold">{errors.currentSchool.message}</p>}
+        {errors.currentSchool && <p className={ux.form.error}>{errors.currentSchool.message}</p>}
       </div>
 
       <div className="space-y-1.5">
-        <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+        <label className={ux.form.label}>
           School Location <span className="text-red-500 font-normal text-[10px]">(City, State, Country) *</span>
         </label>
         <Input
           placeholder="e.g., Bangalore, Karnataka, India"
           {...register('schoolLocation')}
-          className="bg-slate-50 border-slate-200 focus:bg-white transition-colors"
+          className={ux.form.input}
         />
-        {errors.schoolLocation && <p className="text-xs text-red-500 font-bold">{errors.schoolLocation.message}</p>}
+        {errors.schoolLocation && <p className={ux.form.error}>{errors.schoolLocation.message}</p>}
       </div>
 
       <div className="space-y-1.5">
-        <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+        <label className={ux.form.label}>
           Current Grade <span className="text-red-500">*</span>
         </label>
         <select
           {...register('currentGrade')}
-          className="w-full h-10 px-3 py-2 bg-slate-50 border border-slate-200 rounded-md text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+          className={ux.form.input}
         >
           <option value="">Select your current grade</option>
           <option value="ninth">9th Grade</option>
@@ -114,55 +143,55 @@ export default function PersonalProfileForm({ onNext, initialData }: Props) {
           <option value="twelfth">12th Grade</option>
         </select>
         {errors.currentGrade && (
-          <p className="mt-1 text-xs text-red-500 font-bold">{errors.currentGrade.message}</p>
+          <p className={ux.form.error}>{errors.currentGrade.message}</p>
         )}
       </div>
 
-      <div className="border-t border-slate-100 pt-8">
-        <h3 className="text-sm font-black text-slate-900 uppercase tracking-tight mb-6">Parent/Guardian Information</h3>
+      <div className="border-t border-surface-muted pt-8">
+        <h3 className={cn(ux.text.accent, "text-sm mb-6")}>Parent/Guardian Information</h3>
         
         <div className="space-y-6">
           <div className="space-y-1.5">
-            <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+            <label className={ux.form.label}>
               Parent/Guardian Name <span className="text-red-500">*</span>
             </label>
             <Input
               {...register('parentName')}
-              className="bg-slate-50 border-slate-200 focus:bg-white transition-colors"
+              className={ux.form.input}
             />
-            {errors.parentName && <p className="text-xs text-red-500 font-bold">{errors.parentName.message}</p>}
+            {errors.parentName && <p className={ux.form.error}>{errors.parentName.message}</p>}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+              <label className={ux.form.label}>
                 Parent Email <span className="text-red-500">*</span>
               </label>
               <Input
                 type="email"
                 {...register('parentEmail')}
-                className="bg-slate-50 border-slate-200 focus:bg-white transition-colors"
+                className={ux.form.input}
               />
-              {errors.parentEmail && <p className="text-xs text-red-500 font-bold">{errors.parentEmail.message}</p>}
+              {errors.parentEmail && <p className={ux.form.error}>{errors.parentEmail.message}</p>}
             </div>
 
             <div className="space-y-1.5">
-              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+              <label className={ux.form.label}>
                 Parent Phone <span className="text-red-500">*</span>
               </label>
               <Input
                 type="tel"
                 {...register('parentPhone')}
-                className="bg-slate-50 border-slate-200 focus:bg-white transition-colors"
+                className={ux.form.input}
               />
-              {errors.parentPhone && <p className="text-xs text-red-500 font-bold">{errors.parentPhone.message}</p>}
+              {errors.parentPhone && <p className={ux.form.error}>{errors.parentPhone.message}</p>}
             </div>
           </div>
         </div>
       </div>
 
       <div className="flex justify-end">
-        <Button type="submit">
+        <Button type="submit" className={ux.button.primary}>
           Next →
         </Button>
       </div>

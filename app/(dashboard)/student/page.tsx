@@ -10,6 +10,8 @@ import { cn } from '@/lib/utils';
 
 interface DashboardStats {
   phase: string;
+  curriculum?: string;
+  otherCurriculumName?: string;
   upcomingDeadlines: Array<{
     College: string;
     deadline: string;
@@ -76,11 +78,24 @@ export default function StudentDashboard() {
   return (
     <div className={ux.layout.page}>
       <div className={ux.layout.header}>
-        <h1 className={ux.text.heading}>Dashboard</h1>
-        <p className={ux.text.body}>
-          {isProfileBuilding && "Focus on building your profile and exploring your interests."}
-          {isCollegeApps && "Manage your college applications and track deadlines."}
-        </p>
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div>
+            <h1 className={ux.text.heading}>Dashboard</h1>
+            <p className={ux.text.body}>
+              {isProfileBuilding && "Focus on building your profile and exploring your interests."}
+              {isCollegeApps && "Manage your college applications and track deadlines."}
+            </p>
+          </div>
+          {stats?.curriculum && (
+            <div className="bg-white px-4 py-2 rounded-xl border border-slate-200 shadow-sm">
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-tight">Curriculum</p>
+              <p className="text-sm font-bold text-brand-600 uppercase tracking-tight">
+                {stats.curriculum}
+                {stats.curriculum === 'Other' && stats.otherCurriculumName && ` (${stats.otherCurriculumName})`}
+              </p>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Quick Stats Grid */}

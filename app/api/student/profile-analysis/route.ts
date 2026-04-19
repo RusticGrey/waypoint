@@ -18,7 +18,6 @@ export async function GET(req: Request) {
       where: { userId: session.user.id },
       include: {
         personalProfile: true,
-        academicProfile: true,
         transcripts: true,
         activities: true,
         achievements: true,
@@ -57,7 +56,7 @@ export async function GET(req: Request) {
           isOverridden: true,
           overrideScore: override.overrideScore,
           overrideReason: override.overrideReason,
-          overriddenBy: `${override.user.firstName} ${override.user.lastName}`,
+          overriddenBy: `${override.counselor.user.firstName} ${override.counselor.user.lastName}`,
           overriddenAt: override.createdAt,
         },
       });

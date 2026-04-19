@@ -86,7 +86,7 @@ export async function POST(req: Request) {
         firstName,
         lastName,
         role,
-        organizationId: sessionUser.organizationId,
+        organizationId: sessionUser!.organizationId,
       },
     });
     
@@ -152,7 +152,7 @@ export async function DELETE(req: Request) {
     }
 
     // If it's a student, Prisma onDelete: Cascade on Student model will handle 
-    // meetings, academicProfile, etc. when the user is deleted because
+    // meetings, transcripts, etc. when the user is deleted because
     // Student.userId references User.id with onDelete: Cascade.
     
     await prisma.user.delete({

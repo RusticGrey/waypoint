@@ -50,7 +50,6 @@ export async function POST(req: Request) {
       where: { userId: session.user.id },
       include: {
         personalProfile: true,
-        academicProfile: true,
         transcripts: true,
         activities: true,
         achievements: true,

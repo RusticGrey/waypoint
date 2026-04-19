@@ -18,7 +18,11 @@ export async function GET(req: Request) {
       },
     });
 
-    return NextResponse.json({ personalProfile: student?.personalProfile });
+    return NextResponse.json({ 
+      personalProfile: student?.personalProfile,
+      currentGrade: student?.currentGrade,
+      graduationYear: student?.graduationYear 
+    });
   } catch (error) {
     console.error('Personal info fetch error:', error);
     return NextResponse.json({ error: 'Failed to fetch personal info' }, { status: 500 });
@@ -34,12 +38,25 @@ export async function PATCH(req: Request) {
     }
     
     const body = await req.json();
+    const { currentGrade, graduationYear, ...personalData } = body;
+
+    // Update currentGrade/graduationYear on Student if provided
+    if (currentGrade || graduationYear) {
+      const updateData: any = {};
+      if (currentGrade) updateData.currentGrade = currentGrade;
+      if (graduationYear) updateData.graduationYear = parseInt(graduationYear);
+
+      await prisma.student.update({
+        where: { userId: session.user.id },
+        data: updateData,
+      });
+    }
     
-    const personal = await prisma.PersonalProfile.update({
+    const personal = await prisma.personalProfile.update({
       where: { studentId: session.user.id },
       data: {
-        ...body,
-        dateOfBirth: body.dateOfBirth ? new Date(body.dateOfBirth) : null,
+        ...personalData,
+        dateOfBirth: personalData.dateOfBirth ? new Date(personalData.dateOfBirth) : null,
       },
     });
     

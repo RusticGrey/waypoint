@@ -16,21 +16,21 @@ export async function PATCH(
     
     const body = await req.json();
         
-    const testScore = await prisma.TestScore.update({
+    const testScore = await prisma.testScore.update({
       where: {
         id: params.id,
         studentId: session.user.id,
       },
       data: {
         testType: body.testType,
-        // testName: body.testType,
+        testName: body.testName,
         testDate: new Date(body.testDate),
         compositeScore: body.compositeScore,
         mathScore: body.mathScore,
         readingWritingScore: body.readingWritingScore,
         englishScore: body.englishScore,
         scienceScore: body.scienceScore,
-
+        comments: body.comments,
       },
     });
     
@@ -55,7 +55,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    await prisma.TestScore.delete({
+    await prisma.testScore.delete({
       where: {
         id: params.id,
         studentId: session.user.id,

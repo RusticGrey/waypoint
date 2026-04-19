@@ -16,7 +16,6 @@ export async function POST(req: Request) {
       where: { userId: session.user.id },
       include: {
         personalProfile: true,
-        academicProfile: true,
         transcripts: true,
         activities: true,
         achievements: true,
@@ -31,7 +30,6 @@ export async function POST(req: Request) {
     // Validate minimum onboarding requirements
     const errors = [];
     if (!student.personalProfile) errors.push('Personal profile incomplete');
-    if (!student.academicProfile) errors.push('Academic profile incomplete');
     if ((student.transcripts?.length ?? 0) < 1) errors.push('At least 1 transcript required');
     if ((student.activities?.length ?? 0) < 3) errors.push('At least 3 activities required');
     if ((student.achievements?.length ?? 0) < 2) errors.push('At least 2 achievements required');
@@ -45,9 +43,8 @@ export async function POST(req: Request) {
 
     // Calculate profile completion
     let completion = 0;
-    if (student.personalProfile) completion += 15;
-    if (student.academicProfile) completion += 15;
-    if (student.transcripts.length > 0) completion += 25;
+    if (student.personalProfile) completion += 20;
+    if (student.transcripts.length > 0) completion += 35;
     if (student.activities && student.activities.length >= 3) completion += 20;
     if (student.achievements && student.achievements.length >= 2) completion += 15;
     if (student.projectExperiences && student.projectExperiences.length > 0) completion += 10;

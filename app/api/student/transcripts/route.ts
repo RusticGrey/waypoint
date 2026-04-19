@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { CurriculumType } from '@prisma/client';
 
 export async function GET(req: Request) {
   try {
@@ -11,7 +12,7 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const transcripts = await prisma.Transcript.findMany({
+    const transcripts = await prisma.transcript.findMany({
       where: { studentId: session.user.id },
       orderBy: [
         { gradeLevel: 'asc' },
@@ -36,10 +37,40 @@ export async function POST(req: Request) {
     
     const body = await req.json();
     
-    const transcript = await prisma.Transcript.create({
+    // Add to global subjects if curriculum is provided
+    if (body.curriculumType && body.courseName) {
+      try {
+        await prisma.subject.upsert({
+          where: {
+            subjectName_curriculumType: {
+              subjectName: body.courseName,
+              curriculumType: body.curriculumType as CurriculumType,
+            }
+          },
+          update: {},
+          create: {
+            subjectName: body.courseName,
+            curriculumType: body.curriculumType as CurriculumType,
+          }
+        });
+      } catch (e) {
+        console.error('Failed to upsert subject:', e);
+      }
+    }
+
+    const transcript = await prisma.transcript.create({
       data: {
         studentId: session.user.id,
-        ...body,
+        courseName: body.courseName,
+        gradeLevel: body.gradeLevel,
+        semester: body.semester,
+        gradeValue: body.gradeValue,
+        credits: body.credits,
+        honorsLevel: body.honorsLevel,
+        isBoardExam: body.isBoardExam,
+        curriculumType: (body.curriculumType && body.curriculumType !== '') ? body.curriculumType : null,
+        otherCurriculumName: body.otherCurriculumName || null,
+        gradingSystemType: (body.gradingSystemType && body.gradingSystemType !== '') ? body.gradingSystemType : null,
       },
     });
     

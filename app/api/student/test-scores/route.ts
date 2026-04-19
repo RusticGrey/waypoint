@@ -11,7 +11,7 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const testScores = await prisma.TestScore.findMany({
+    const testScores = await prisma.testScore.findMany({
       where: { studentId: session.user.id },
       orderBy: { testDate: 'desc' },
     });
@@ -36,17 +36,18 @@ export async function POST(req: Request) {
     
     const body = await req.json();
         
-    const testScore = await prisma.TestScore.create({
+    const testScore = await prisma.testScore.create({
       data: {
         studentId: session.user.id,
         testType: body.testType,
+        testName: body.testName,
         testDate: new Date(body.testDate),
         compositeScore: body.compositeScore,
         mathScore: body.mathScore,
         readingWritingScore: body.readingWritingScore,
         scienceScore: body.scienceScore,
         englishScore: body.englishScore,
-
+        comments: body.comments,
       },
     });
     

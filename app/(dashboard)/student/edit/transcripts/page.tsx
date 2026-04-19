@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
 import { useEnums } from '@/lib/hooks/useEnums';
+import { ux } from '@/lib/ux';
 
 interface Transcript {
   id: string;
@@ -14,6 +15,9 @@ interface Transcript {
   semester: string;
   gradeValue: string;
   honorsLevel: string;
+  curriculumType?: string;
+  gradingSystemType?: string;
+  otherCurriculumName?: string;
 }
 
 const gradeLabels: Record<string, string> = {
@@ -26,466 +30,289 @@ const gradeLabels: Record<string, string> = {
 export default function EditTranscriptsPage() {
   const { enums, loading: enumsLoading } = useEnums();
   const [transcripts, setTranscripts] = useState<Transcript[]>([]);
-  const [courses, setCourses] = useState<string[]>([]);
-  const [curriculum, setCurriculum] = useState('');
-  const [gradingSystem, setGradingSystem] = useState('');
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [showAdd, setShowAdd] = useState(false);
+  const [gradeSettings, setGradeSettings] = useState<Record<string, { curriculum: string; grading: string; otherName?: string }>>({});
+  const [showAddForm, setShowAddForm] = useState<string | null>(null);
+  const [availableCourses, setAvailableCourses] = useState<Record<string, any[]>>({});
+  const [useCustomCourse, setUseCustomCourse] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
   const [formData, setFormData] = useState({
     courseName: '',
-    gradeLevel: '',
-    semester: '',
+    semester: 'Full_Year',
     gradeValue: '',
-    honorsLevel: '',
+    honorsLevel: 'Standard',
   });
 
   useEffect(() => {
-    fetchStudentCurriculum();
     fetchTranscripts();
   }, []);
-
-  useEffect(() => {
-    if (curriculum) {
-      fetchCourses();
-    }
-  }, [curriculum]);
-
-  // Set defaults when enums load
-  useEffect(() => {
-    if (enums && enums.gradeLevels && enums.semesterTypes && enums.honorsLevels && !formData.gradeLevel) {
-      setFormData(prev => ({
-        ...prev,
-        gradeLevel: enums.gradeLevels[0],
-        semester: enums.semesterTypes[0],
-        honorsLevel: enums.honorsLevels[0],
-      }));
-    }
-  }, [enums]);
-
-  const fetchStudentCurriculum = async () => {
-    try {
-      const res = await fetch('/api/student/academic');
-      const data = await res.json();
-      if (data.academicProfile?.curriculumType) {
-        setCurriculum(data.academicProfile.curriculumType);
-        setGradingSystem(data.academicProfile.gradingSystemType || 'Percentage');
-      }
-    } catch (err) {
-      console.error('Failed to fetch curriculum:', err);
-    }
-  };
 
   const fetchTranscripts = async () => {
     try {
       const res = await fetch('/api/student/transcripts');
       if (!res.ok) throw new Error('Failed to fetch transcripts');
       const data = await res.json();
-      setTranscripts(data.transcripts || []);
+      const fetchedTranscripts = data.transcripts || [];
+      setTranscripts(fetchedTranscripts);
+
+      // Initialize grade settings from transcripts
+      const settings: Record<string, { curriculum: string; grading: string; otherName?: string }> = {};
+      fetchedTranscripts.forEach((t: Transcript) => {
+        if (!settings[t.gradeLevel] && t.curriculumType) {
+          settings[t.gradeLevel] = {
+            curriculum: t.curriculumType,
+            grading: t.gradingSystemType || '',
+            otherName: t.otherCurriculumName || ''
+          };
+          fetchCoursesForGrade(t.gradeLevel, t.curriculumType);
+        }
+      });
+      setGradeSettings(settings);
     } catch (err) {
       console.error('Fetch error:', err);
       setError('Failed to load transcripts');
     }
   };
 
-  const fetchCourses = async () => {
+  const fetchCoursesForGrade = async (grade: string, curriculum: string) => {
+    if (!curriculum || curriculum === 'Other') return;
     try {
       const res = await fetch(`/api/subjects?curriculum=${curriculum}`);
       const data = await res.json();
-      setCourses(data.subjects || []);
+      setAvailableCourses(prev => ({ ...prev, [grade]: data.subjects || [] }));
     } catch (err) {
       console.error('Failed to fetch courses:', err);
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-    
-    try {
-      const url = editingId 
-        ? `/api/student/transcripts/${editingId}`
-        : '/api/student/transcripts';
-      
-      const method = editingId ? 'PATCH' : 'POST';
-
-      const res = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.error || 'Failed to save transcript');
+  const handleGradeSettingChange = async (grade: string, field: string, value: string) => {
+    const newSettings = {
+      ...gradeSettings,
+      [grade]: {
+        ...(gradeSettings[grade] || { curriculum: '', grading: '' }),
+        [field]: value
       }
+    };
+    setGradeSettings(newSettings);
+    
+    if (field === 'curriculum') {
+      fetchCoursesForGrade(grade, value);
+    }
 
-      resetForm();
-      await fetchTranscripts();
-    } catch (err: any) {
-      console.error('Submit error:', err);
-      setError(err.message || 'Failed to save transcript');
-    } finally {
-      setLoading(false);
+    // Optional: Bulk update existing transcripts for this grade
+    const gradeTranscripts = transcripts.filter(t => t.gradeLevel === grade);
+    if (gradeTranscripts.length > 0) {
+        // In a real app, we might want to send a bulk update API call here
+        console.log(`Need to update ${gradeTranscripts.length} transcripts for ${grade} to new ${field}`);
     }
   };
 
-  const handleEdit = (transcript: Transcript) => {
-    setEditingId(transcript.id);
-    setFormData({
-      courseName: transcript.courseName,
-      gradeLevel: transcript.gradeLevel,
-      semester: transcript.semester,
-      gradeValue: transcript.gradeValue,
-      honorsLevel: transcript.honorsLevel,
-    });
-    setShowAdd(true);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const grade = showAddForm!;
+    const settings = gradeSettings[grade];
+
+    if (!settings?.curriculum || !settings?.grading) {
+        alert('Please set curriculum and grading scale first');
+        return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await fetch('/api/student/transcripts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...formData,
+          gradeLevel: grade,
+          curriculumType: settings.curriculum,
+          gradingSystemType: settings.grading,
+          otherCurriculumName: settings.otherName,
+        }),
+      });
+
+      if (!res.ok) throw new Error('Failed to save');
+
+      setFormData({ courseName: '', semester: 'Full_Year', gradeValue: '', honorsLevel: 'Standard' });
+      setShowAddForm(null);
+      setUseCustomCourse(false);
+      await fetchTranscripts();
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm('Delete this course?')) return;
-    
-    setLoading(true);
     try {
-      const res = await fetch(`/api/student/transcripts/${id}`, {
-        method: 'DELETE',
-      });
-
-      if (!res.ok) throw new Error('Failed to delete transcript');
-
+      await fetch(`/api/student/transcripts/${id}`, { method: 'DELETE' });
       await fetchTranscripts();
     } catch (err) {
-      console.error('Delete error:', err);
-      setError('Failed to delete transcript');
-    } finally {
-      setLoading(false);
+      setError('Failed to delete');
     }
   };
 
-  const resetForm = () => {
-    setEditingId(null);
-    setShowAdd(false);
-    setFormData({
-      courseName: '',
-      gradeLevel: enums?.gradeLevels?.[0] || '',
-      semester: enums?.semesterTypes?.[0] || '',
-      gradeValue: '',
-      honorsLevel: enums?.honorsLevels?.[0] || '',
-    });
-  };
-
-  // Get grade field configuration based on grading system
-  const getGradeFieldConfig = () => {
-    switch (gradingSystem) {
-      case 'Marks_Out_Of_100':
-        return {
-          label: 'Grade (Marks) *',
-          placeholder: 'e.g., 85, 92',
-          type: 'number',
-          min: '0',
-          max: '100',
-          step: '0.01',
-          helpText: 'Enter marks out of 100'
-        };
-      case 'Percentage':
-        return {
-          label: 'Grade (%) *',
-          placeholder: 'e.g., 85, 92.5',
-          type: 'number',
-          min: '0',
-          max: '100',
-          step: '0.01',
-          helpText: 'Enter percentage (0-100)'
-        };
-      case 'IB_Scale':
-        return {
-          label: 'IB Grade *',
-          placeholder: 'e.g., 7, 6, 5',
-          type: 'number',
-          min: '1',
-          max: '7',
-          step: '1',
-          helpText: 'Enter IB grade (1-7)'
-        };
-      case 'Letter_Grade':
-        return {
-          label: 'Letter Grade *',
-          placeholder: 'e.g., A+, A, A-, B+, B',
-          type: 'text', // Changed to text for letter grades
-          helpText: 'Enter letter grade (A+, A, A-, B+, B, B-, C+, etc.)'
-        };
-      case 'Other':
-        return {
-          label: 'Grade *',
-          placeholder: 'Enter your grade',
-          type: 'text',
-          helpText: 'Enter grade in your grading system'
-        };
-      default:
-        return {
-          label: 'Grade *',
-          placeholder: 'e.g., A, 85%, 3.8',
-          type: 'text',
-          helpText: 'Enter your grade'
-        };
-    }
-  };
-
-  if (enumsLoading) {
-    return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <p className="text-gray-600 text-center py-12">Loading...</p>
-      </div>
-    );
-  }
-
-  if (!enums || !enums.gradeLevels || !enums.semesterTypes || !enums.honorsLevels) {
-    
-    console.log(JSON.stringify(enums));
-    return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <p className="text-red-600 text-center py-12">Failed to load form options</p>
-      </div>
-    );
-  }
-
-  const gradeConfig = getGradeFieldConfig();
-
-  // Render the appropriate input based on type
-  const renderGradeInput = () => {
-    const baseClasses = "w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500";
-    
-    if (gradeConfig.type === 'number') {
-      return (
-        <input
-          type="number"
-          value={formData.gradeValue}
-          onChange={(e) => setFormData({ ...formData, gradeValue: e.target.value })}
-          placeholder={gradeConfig.placeholder}
-          min={gradeConfig.min}
-          max={gradeConfig.max}
-          step={gradeConfig.step}
-          className={baseClasses}
-          required
-        />
-      );
-    } else {
-      // Text input for Letter_Grade and Other
-      return (
-        <input
-          type="text"
-          value={formData.gradeValue}
-          onChange={(e) => setFormData({ ...formData, gradeValue: e.target.value })}
-          placeholder={gradeConfig.placeholder}
-          className={baseClasses}
-          required
-        />
-      );
-    }
-  };
+  if (enumsLoading) return <div className={ux.layout.page}>Loading...</div>;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="mb-6 flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Edit Transcripts</h1>
-          <p className="text-gray-600 mt-1">
-            Manage your course history and grades
-            {gradingSystem && (
-              <span className="ml-2 text-sm">
-                (Using {gradingSystem.replace(/_/g, ' ')} grading system)
-              </span>
-            )}
-          </p>
+    <div className={ux.layout.page}>
+      <div className={ux.layout.header}>
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className={ux.text.heading}>Edit Transcripts</h1>
+            <p className={ux.text.body}>Manage your courses and grades by academic year</p>
+          </div>
+          <Link href="/student/profile" className={ux.button.outline}>
+            ← Back to Profile
+          </Link>
         </div>
-        <Link href="/student/profile" className="text-blue-600 hover:text-blue-700">
-          ← Back to Profile
-        </Link>
       </div>
 
-      {error && (
-        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-red-800">{error}</p>
-        </div>
-      )}
+      {error && <div className="mb-6 p-4 bg-red-50 text-red-800 rounded-xl border border-red-100">{error}</div>}
 
-      <Card className="mb-6">
-        <CardHeader>
-          <div className="flex justify-between items-center">
-            <CardTitle>My Courses ({transcripts.length})</CardTitle>
-            {!showAdd && (
-              <Button onClick={() => setShowAdd(true)} disabled={loading}>
-                + Add Course
-              </Button>
-            )}
-          </div>
-        </CardHeader>
-        <CardContent>
-          {showAdd && (
-            <form onSubmit={handleSubmit} className="mb-6 p-4 border rounded-lg bg-gray-50">
-              <h3 className="font-semibold text-gray-900 mb-4">
-                {editingId ? 'Edit Course' : 'Add New Course'}
-              </h3>
-              
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-900 mb-1">
-                    Course Name *
-                  </label>
-                  <select
-                    value={formData.courseName}
-                    onChange={(e) => setFormData({ ...formData, courseName: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
-                    required
-                  >
-                    <option value="">Select a course</option>
-                    {courses.map(course => (     
-                 <option key={course} value={course.subjectName}>{course.subjectName}</option>
-                    ))}
-                  </select>
-                  {courses.length === 0 && (
-                    <p className="text-xs text-gray-500 mt-1">
-                      Loading courses for {curriculum.replace(/_/g, ' ')}...
-                    </p>
-                  )}
-                </div>
+      <div className="space-y-8">
+        {['ninth', 'tenth', 'eleventh', 'twelfth'].map((grade) => {
+          const settings = gradeSettings[grade] || { curriculum: '', grading: '' };
+          const gradeTranscripts = transcripts.filter(t => t.gradeLevel === grade);
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-900 mb-1">
-                      Grade Level *
-                    </label>
+          return (
+            <Card key={grade} variant="base">
+              <CardHeader className="border-b border-slate-100 bg-slate-50/30">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <CardTitle className="text-xl font-black text-slate-800 uppercase tracking-tight">
+                    {gradeLabels[grade]}
+                  </CardTitle>
+                  
+                  <div className="flex flex-wrap gap-3">
                     <select
-                      value={formData.gradeLevel}
-                      onChange={(e) => setFormData({ ...formData, gradeLevel: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
-                      required
+                      value={settings.curriculum}
+                      onChange={(e) => handleGradeSettingChange(grade, 'curriculum', e.target.value)}
+                      className="h-9 px-3 bg-white border border-slate-200 rounded-lg text-xs font-bold"
                     >
-                      {enums.gradeLevels.map(grade => (
-                        <option key={grade} value={grade}>
-                          {gradeLabels[grade] || grade}
-                        </option>
-                      ))}
+                      <option value="">Select Curriculum</option>
+                      {enums?.curriculumTypes.map(c => <option key={c} value={c}>{c}</option>)}
                     </select>
-                  </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-900 mb-1">
-                      Semester *
-                    </label>
                     <select
-                      value={formData.semester}
-                      onChange={(e) => setFormData({ ...formData, semester: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
-                      required
+                      value={settings.grading}
+                      onChange={(e) => handleGradeSettingChange(grade, 'grading', e.target.value)}
+                      className="h-9 px-3 bg-white border border-slate-200 rounded-lg text-xs font-bold"
                     >
-                      {enums.semesterTypes.map(sem => (
-                        <option key={sem} value={sem}>
-                          {sem.replace(/_/g, ' ')}
-                        </option>
-                      ))}
+                      <option value="">Select Scale</option>
+                      {enums?.gradingSystemTypes.map(g => <option key={g} value={g}>{g.replace(/_/g, ' ')}</option>)}
                     </select>
                   </div>
                 </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-900 mb-1">
-                      {gradeConfig.label}
-                    </label>
-                    {renderGradeInput()}
-                    <p className="text-xs text-gray-500 mt-1">{gradeConfig.helpText}</p>
+                {settings.curriculum === 'Other' && (
+                  <div className="mt-3">
+                    <Input
+                        placeholder="Curriculum Name"
+                        value={settings.otherName || ''}
+                        onChange={(e) => handleGradeSettingChange(grade, 'otherName', e.target.value)}
+                        className="max-w-xs h-8 text-xs"
+                    />
                   </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-900 mb-1">
-                      Course Level *
-                    </label>
-                    <select
-                      value={formData.honorsLevel}
-                      onChange={(e) => setFormData({ ...formData, honorsLevel: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
-                      required
-                    >
-                      {enums.honorsLevels.map(level => (
-                        <option key={level} value={level}>
-                          {level.replace(/_/g, ' ')}
-                        </option>
-                      ))}
-                    </select>
+                )}
+              </CardHeader>
+              <CardContent className="pt-6">
+                {gradeTranscripts.length > 0 ? (
+                  <div className="overflow-x-auto mb-6 rounded-xl border border-slate-100">
+                    <table className="min-w-full divide-y divide-slate-100">
+                      <thead className="bg-slate-50/50">
+                        <tr>
+                          <th className="px-4 py-2 text-left text-[10px] font-black text-slate-500 uppercase">Course</th>
+                          <th className="px-4 py-2 text-left text-[10px] font-black text-slate-500 uppercase">Semester</th>
+                          <th className="px-4 py-2 text-left text-[10px] font-black text-slate-500 uppercase">Grade</th>
+                          <th className="px-4 py-2 text-right text-[10px] font-black text-slate-500 uppercase">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {gradeTranscripts.map((t) => (
+                          <tr key={t.id} className="hover:bg-slate-50/30">
+                            <td className="px-4 py-3 text-sm font-bold text-slate-900">{t.courseName}</td>
+                            <td className="px-4 py-3 text-xs text-slate-600">{t.semester}</td>
+                            <td className="px-4 py-3 text-sm font-black text-brand-600">{t.gradeValue}</td>
+                            <td className="px-4 py-3 text-right text-xs">
+                              <button onClick={() => handleDelete(t.id)} className="text-red-500 hover:text-red-700 font-bold uppercase">Remove</button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
-                </div>
+                ) : (
+                  <p className="text-sm text-slate-400 italic text-center py-4">No courses added for this year.</p>
+                )}
 
-                <div className="flex gap-2">
-                  <Button 
-                    type="submit" 
-                    className="flex-1"
-                    disabled={loading || !formData.courseName}
-                  >
-                    {loading ? 'Saving...' : editingId ? 'Update Course' : 'Add Course'}
-                  </Button>
+                {showAddForm === grade ? (
+                  <form onSubmit={handleSubmit} className="p-6 border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50 space-y-6 animate-in fade-in zoom-in-95">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className={ux.form.label}>Subject Name</label>
+                        {!useCustomCourse ? (
+                          <select
+                            value={formData.courseName}
+                            onChange={(e) => {
+                                if (e.target.value === '___custom___') { setUseCustomCourse(true); setFormData({...formData, courseName: ''}); }
+                                else setFormData({...formData, courseName: e.target.value});
+                            }}
+                            className={ux.form.input}
+                            required
+                          >
+                            <option value="">Select Subject</option>
+                            {(availableCourses[grade] || []).map(c => <option key={c.subjectName} value={c.subjectName}>{c.subjectName}</option>)}
+                            <option value="___custom___">+ Add custom name...</option>
+                          </select>
+                        ) : (
+                          <Input value={formData.courseName} onChange={(e) => setFormData({...formData, courseName: e.target.value})} placeholder="Enter subject name" required />
+                        )}
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <label className={ux.form.label}>Grade / Score</label>
+                        <Input value={formData.gradeValue} onChange={(e) => setFormData({...formData, gradeValue: e.target.value})} placeholder="e.g. 95 or A" required />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+                        <div className="space-y-2">
+                            <label className={ux.form.label}>Semester</label>
+                            <select value={formData.semester} onChange={(e) => setFormData({...formData, semester: e.target.value})} className={ux.form.input}>
+                                <option value="Full_Year">Full Year</option>
+                                <option value="Fall">Fall</option>
+                                <option value="Spring">Spring</option>
+                            </select>
+                        </div>
+                        <div className="space-y-2">
+                            <label className={ux.form.label}>Level</label>
+                            <select value={formData.honorsLevel} onChange={(e) => setFormData({...formData, honorsLevel: e.target.value})} className={ux.form.input}>
+                                {enums?.honorsLevels.map(l => <option key={l} value={l}>{l}</option>)}
+                            </select>
+                        </div>
+                        <div className="flex gap-2 items-end pb-1">
+                            <Button type="submit" disabled={loading} className="flex-1">Save</Button>
+                            <Button type="button" variant="outline" onClick={() => setShowAddForm(null)}>Cancel</Button>
+                        </div>
+                    </div>
+                  </form>
+                ) : (
                   <Button
-                    type="button"
-                    onClick={resetForm}
                     variant="outline"
-                    disabled={loading}
+                    onClick={() => { setShowAddForm(grade); setUseCustomCourse(false); }}
+                    className="w-full border-dashed border-2 py-8 hover:bg-slate-50 transition-all rounded-2xl"
+                    disabled={!settings.curriculum || !settings.grading}
                   >
-                    Cancel
+                    {!settings.curriculum || !settings.grading ? "Set curriculum above to add courses" : `+ Add ${gradeLabels[grade]} Course`}
                   </Button>
-                </div>
-              </div>
-            </form>
-          )}
-
-          {transcripts.length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead>
-                  <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Course</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Grade Level</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Semester</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Grade</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Level</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {transcripts.map((transcript) => (
-                    <tr key={transcript.id}>
-                      <td className="px-4 py-3 text-sm text-gray-900">{transcript.courseName}</td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{gradeLabels[transcript.gradeLevel]}</td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{transcript.semester.replace(/_/g, ' ')}</td>
-                      <td className="px-4 py-3 text-sm font-medium text-gray-900">{transcript.gradeValue}</td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{transcript.honorsLevel.replace(/_/g, ' ')}</td>
-                      <td className="px-4 py-3 text-sm">
-                        <button
-                          onClick={() => handleEdit(transcript)}
-                          className="text-blue-600 hover:text-blue-800 mr-3"
-                          disabled={loading}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDelete(transcript.id)}
-                          className="text-red-600 hover:text-red-800"
-                          disabled={loading}
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <p className="text-gray-500 text-center py-8">No courses yet. Click "+ Add Course" to get started!</p>
-          )}
-        </CardContent>
-      </Card>
+                )}
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
     </div>
   );
 }

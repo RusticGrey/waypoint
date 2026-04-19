@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { useState, useMemo } from 'react';
 import { useEnums } from '@/lib/hooks/useEnums';
 import { cn } from '@/lib/utils';
+import { ux } from '@/lib/ux';
 
 interface Props {
   onNext: (data: any[], completionPercentage?: number) => void;
@@ -136,37 +137,37 @@ export default function ActivityForm({ onNext, onSave, onBack, initialData = [] 
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-sm text-gray-600 mb-4">
+        <p className={ux.text.body}>
           Add your extracurricular activities, sports, clubs, and other commitments. Add at least 3 activities.
         </p>
 
         {/* List of added activities */}
         {activities.length > 0 && (
-          <div className="mb-6 space-y-2">
-            <h3 className="font-medium text-gray-900">Added Activities ({activities.length})</h3>
+          <div className="mb-8 mt-6 space-y-3">
+            <h3 className={cn(ux.text.accent, "text-sm")}>Added Activities ({activities.length})</h3>
             {activities.map((activity, index) => (
-              <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded border">
+              <div key={index} className="flex items-center justify-between p-4 bg-surface-soft rounded-xl border border-surface-muted shadow-sm">
                 <div>
-                  <p className="font-medium text-gray-900">{activity.activityName}</p>
-                  <p className="text-sm text-gray-600">
+                  <p className="font-bold text-slate-900">{activity.activityName}</p>
+                  <p className="text-xs text-slate-500 font-medium">
                     {formatEnumValue(activity.category)} • {activity.role || 'Member'} • {activity.gradeLevels.length} grade(s)
                   </p>
-                  <p className="text-xs text-gray-500">
-                    {activity.hoursPerWeek}h/week × {activity.weeksPerYear} weeks = {activity.hoursPerWeek * activity.weeksPerYear} total hours
+                  <p className="text-xs text-brand-600 font-black mt-1 uppercase tracking-tight">
+                    {activity.hoursPerWeek}h/wk × {activity.weeksPerYear}wks/yr = {activity.hoursPerWeek * activity.weeksPerYear} total hours
                   </p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-4">
                   <button
                     type="button"
                     onClick={() => editActivity(index)}
-                    className="text-blue-600 hover:text-blue-800 text-sm"
+                    className="text-brand-600 hover:text-brand-700 font-bold text-xs uppercase tracking-tight"
                   >
                     Edit
                   </button>
                   <button
                     type="button"
                     onClick={() => removeActivity(index)}
-                    className="text-red-600 hover:text-red-800 text-sm"
+                    className="text-red-500 hover:text-red-600 font-bold text-xs uppercase tracking-tight"
                   >
                     Remove
                   </button>
@@ -193,7 +194,7 @@ export default function ActivityForm({ onNext, onSave, onBack, initialData = [] 
               });
             }}
             variant="outline"
-            className="w-full"
+            className={cn(ux.button.outline, "w-full border-dashed border-2 py-8 hover:bg-brand-50 transition-colors border-brand-200 text-brand-600 font-bold")}
           >
             + Add Activity
           </Button>
@@ -201,27 +202,27 @@ export default function ActivityForm({ onNext, onSave, onBack, initialData = [] 
 
         {/* Add activity form */}
         {showForm && (
-          <form onSubmit={handleSubmit(onSubmitActivity)} className="space-y-6 p-6 border border-slate-200 rounded-lg bg-slate-50/50 animate-in fade-in zoom-in-95 duration-200">
-            <div className="space-y-1.5">
-              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+          <form onSubmit={handleSubmit(onSubmitActivity)} className="space-y-6 p-6 border-2 border-dashed border-brand-200 rounded-xl bg-brand-50/30 animate-in fade-in zoom-in-95 duration-200">
+            <div className="space-y-2">
+              <label className={ux.form.label}>
                 Activity Name <span className="text-red-500">*</span>
               </label>
               <Input
                 placeholder="e.g., Varsity Basketball, Robotics Club"
                 {...register('activityName')}
-                className="bg-white border-slate-200 focus:ring-2 focus:ring-blue-500/20"
+                className={ux.form.input}
               />
-              {errors.activityName && <p className="text-xs text-red-500 font-bold">{(errors.activityName as any).message}</p>}
+              {errors.activityName && <p className={ux.form.error}>{(errors.activityName as any).message}</p>}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className={ux.form.label}>
                   Category <span className="text-red-500">*</span>
                 </label>
                 <select
                   {...register('category')}
-                  className="w-full h-10 px-3 py-2 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  className={ux.form.input}
                   disabled={enumsLoading}
                 >
                   <option value="">Select category</option>
@@ -232,96 +233,105 @@ export default function ActivityForm({ onNext, onSave, onBack, initialData = [] 
                   ))}
                 </select>
                 {errors.category && (
-                  <p className="mt-1 text-xs text-red-500 font-bold">{(errors.category as any).message}</p>
+                  <p className={ux.form.error}>{(errors.category as any).message}</p>
                 )}
               </div>
 
-              <div className="space-y-1.5">
-                <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+              <div className="space-y-2">
+                <label className={ux.form.label}>
                   Your Role <span className="text-slate-400 font-normal">(optional)</span>
                 </label>
                 <Input
                   placeholder="e.g., Team Captain, President"
                   {...register('role')}
-                  className="bg-white border-slate-200 focus:ring-2 focus:ring-blue-500/20"
+                  className={ux.form.input}
                 />
-                {errors.role && <p className="text-xs text-red-500 font-bold">{(errors.role as any).message}</p>}
+                {errors.role && <p className={ux.form.error}>{(errors.role as any).message}</p>}
               </div>
             </div>
 
             <div>
-              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500 mb-3">
+              <label className={cn(ux.form.label, "mb-3")}>
                 Grade Levels Participated <span className="text-red-500">*</span>
               </label>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {['ninth', 'tenth', 'eleventh', 'twelfth'].map((grade) => (
-                  <label key={grade} className="flex items-center space-x-2 p-2 rounded border border-slate-100 bg-white hover:border-blue-200 transition-colors cursor-pointer">
+                  <label key={grade} className="flex items-center space-x-2 p-3 rounded-xl border border-surface-muted bg-white hover:border-brand-200 transition-colors cursor-pointer shadow-sm">
                     <input
                       type="checkbox"
                       value={grade}
                       {...register('gradeLevels')}
-                      className="h-4 w-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500"
+                      className="h-4 w-4 text-brand-600 border-slate-300 rounded focus:ring-brand-500"
                     />
-                    <span className="text-xs uppercase font-bold text-slate-500 tracking-wide capitalize">{grade}</span>
+                    <span className="text-xs uppercase font-black text-slate-500 tracking-wide capitalize">{grade}</span>
                   </label>
                 ))}
               </div>
               {errors.gradeLevels && (
-                <p className="mt-1 text-xs text-red-500 font-bold">{(errors.gradeLevels as any).message}</p>
+                <p className={ux.form.error}>{(errors.gradeLevels as any).message}</p>
               )}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className={ux.form.label}>
                   Hours per Week <span className="text-red-500">*</span>
                 </label>
                 <Input
                   type="number"
                   placeholder="e.g., 5"
                   {...register('hoursPerWeek', { valueAsNumber: true })}
-                  className="bg-white border-slate-200 focus:ring-2 focus:ring-blue-500/20"
+                  className={ux.form.input}
                 />
-                {errors.hoursPerWeek && <p className="text-xs text-red-500 font-bold">{(errors.hoursPerWeek as any).message}</p>}
+                {errors.hoursPerWeek && <p className={ux.form.error}>{(errors.hoursPerWeek as any).message}</p>}
               </div>
 
-              <div className="space-y-1.5">
-                <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+              <div className="space-y-2">
+                <label className={ux.form.label}>
                   Weeks per Year <span className="text-red-500">*</span>
                 </label>
                 <Input
                   type="number"
                   placeholder="e.g., 30"
                   {...register('weeksPerYear', { valueAsNumber: true })}
-                  className="bg-white border-slate-200 focus:ring-2 focus:ring-blue-500/20"
+                  className={ux.form.input}
                 />
-                {errors.weeksPerYear && <p className="text-xs text-red-500 font-bold">{(errors.weeksPerYear as any).message}</p>}
+                {errors.weeksPerYear && <p className={ux.form.error}>{(errors.weeksPerYear as any).message}</p>}
               </div>
             </div>
 
             {totalHours > 0 && (
-              <p className="text-[10px] uppercase font-bold text-blue-600 tracking-wider">
+              <p className={cn(ux.text.accent, "bg-brand-50 inline-block px-3 py-1 rounded-full")}>
                 Total time commitment: {totalHours} hours
               </p>
             )}
 
-            <div className="space-y-1.5">
-              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
-                Description <span className="text-red-500">*</span>
-              </label>
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <label className={ux.form.label}>
+                  Description <span className="text-red-500">*</span>
+                </label>
+                <span className={cn(
+                  "text-[10px] font-bold",
+                  (watch('description')?.length || 0) > 150 ? "text-red-500" : "text-slate-400"
+                )}>
+                  {watch('description')?.length || 0}/150
+                </span>
+              </div>
               <textarea
                 {...register('description')}
                 rows={3}
+                maxLength={150}
                 placeholder="Describe your involvement, responsibilities, and achievements..."
-                className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                className={cn(ux.form.input, "min-h-[100px]")}
               />
               {errors.description && (
-                <p className="mt-1 text-xs text-red-500 font-bold">{(errors.description as any).message}</p>
+                <p className={ux.form.error}>{(errors.description as any).message}</p>
               )}
             </div>
 
-            <div className="flex gap-2">
-              <Button type="submit" className="flex-1">
+            <div className="flex gap-4">
+              <Button type="submit" className={cn(ux.button.primary, "flex-1")}>
                 {editIndex !== null ? 'Update Activity' : 'Add Activity'}
               </Button>
               <Button
@@ -332,6 +342,7 @@ export default function ActivityForm({ onNext, onSave, onBack, initialData = [] 
                   setEditIndex(null);
                 }}
                 variant="outline"
+                className={ux.button.outline}
               >
                 Cancel
               </Button>
@@ -341,14 +352,15 @@ export default function ActivityForm({ onNext, onSave, onBack, initialData = [] 
       </div>
 
       {/* Navigation */}
-      <div className="flex justify-between pt-6 border-t">
-        <Button type="button" onClick={onBack} variant="outline">
+      <div className="flex justify-between pt-6 border-t border-surface-muted">
+        <Button type="button" onClick={onBack} variant="outline" className={ux.button.outline}>
           ← Back
         </Button>
         <Button
           type="button"
           onClick={handleNext}
           disabled={activities.length < 3}
+          className={ux.button.primary}
         >
           Next →
         </Button>

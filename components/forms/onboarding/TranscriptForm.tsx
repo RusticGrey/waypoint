@@ -2,40 +2,62 @@
 
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { transcriptSchema, TranscriptInput } from '@/lib/validations/student';
+import { transcriptSchema } from '@/lib/validations/student';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useState, useMemo, useEffect } from 'react';
 import { cn } from '@/lib/utils';
+import { getEnumValues } from '@/lib/utils/enums';
+import { ux } from '@/lib/ux';
 
 interface Props {
   onNext: (data: any[], completionPercentage?: number) => void;
   onSave?: (data: any[], completionPercentage?: number) => void;
   onBack: () => void;
   initialData?: any[];
-  curriculum?: string;
   currentGrade?: string;
 }
 
-export default function TranscriptForm({ onNext, onSave, onBack, initialData = [], curriculum, currentGrade }: Props) {
+const gradeOrder = ['ninth', 'tenth', 'eleventh', 'twelfth'];
+const gradeLabels: Record<string, string> = {
+  ninth: '9th Grade',
+  tenth: '10th Grade',
+  eleventh: '11th Grade',
+  twelfth: '12th Grade',
+};
+
+export default function TranscriptForm({ onNext, onSave, onBack, initialData = [], currentGrade }: Props) {
+  const enums = getEnumValues();
   const [transcripts, setTranscripts] = useState<any[]>(initialData);
-  const [showForm, setShowForm] = useState(false);
-  const [editIndex, setEditIndex] = useState<number | null>(null);
-  const [availableCourses, setAvailableCourses] = useState<Array<{ subjectName: string }>>([]);
+  const [gradeSettings, setGradeSettings] = useState<Record<string, { curriculum: string; grading: string; otherName?: string }>>({});
+  const [showAddForm, setShowAddForm] = useState<string | null>(null);
+  const [availableCourses, setAvailableCourses] = useState<Record<string, any[]>>({});
   const [useCustomCourse, setUseCustomCourse] = useState(false);
 
-  // Fetch courses for curriculum
+  // Sync available courses if a grade has a curriculum but courses are not loaded
   useEffect(() => {
-    if (curriculum) {
-      fetch(`/api/subjects?curriculum=${curriculum}`)
-        .then(res => res.json())
-        .then(data => setAvailableCourses(data.subjects || []))
-        .catch(err => console.error('Failed to fetch courses:', err));
-    }
-  }, [curriculum]);
+    Object.entries(gradeSettings).forEach(([grade, settings]) => {
+      if (settings.curriculum && settings.curriculum !== 'Other' && !availableCourses[grade]) {
+        fetchCourses(grade, settings.curriculum);
+      }
+    });
+  }, [gradeSettings, availableCourses]);
+
+  useEffect(() => {
+    const settings: Record<string, { curriculum: string; grading: string; otherName?: string }> = {};
+    initialData.forEach(t => {
+      if (!settings[t.gradeLevel]) {
+        settings[t.gradeLevel] = {
+          curriculum: t.curriculumType || '',
+          grading: t.gradingSystemType || '',
+          otherName: t.otherCurriculumName || ''
+        };
+      }
+    });
+    setGradeSettings(settings);
+  }, []);
 
   const availableGrades = useMemo(() => {
-    const gradeOrder = ['ninth', 'tenth', 'eleventh', 'twelfth'];
     const currentIndex = gradeOrder.indexOf(currentGrade || 'twelfth');
     return gradeOrder.slice(0, currentIndex + 1);
   }, [currentGrade]);
@@ -47,22 +69,59 @@ export default function TranscriptForm({ onNext, onSave, onBack, initialData = [
     reset,
     watch,
     setValue,
+    trigger,
+    getValues
   } = useForm<any>({
     resolver: zodResolver(transcriptSchema),
+    mode: 'all',
     defaultValues: {
+      courseName: '',
+      gradeValue: '',
       honorsLevel: 'Standard',
       isBoardExam: false,
       semester: 'Full_Year',
     },
   });
 
-  const selectedCourse = watch('courseName');
+  const fetchCourses = async (grade: string, curriculum: string) => {
+    if (!curriculum || curriculum === 'Other') return;
+    try {
+      const res = await fetch(`/api/subjects?curriculum=${curriculum}`);
+      const data = await res.json();
+      setAvailableCourses(prev => ({ ...prev, [grade]: data.subjects || [] }));
+    } catch (err) {
+      console.error('Failed to fetch courses:', err);
+    }
+  };
 
-  const gradeLabels: Record<string, string> = {
-    ninth: '9th Grade',
-    tenth: '10th Grade',
-    eleventh: '11th Grade',
-    twelfth: '12th Grade',
+  const handleGradeSettingChange = (grade: string, field: string, value: string) => {
+    const newSettings = {
+      ...gradeSettings,
+      [grade]: {
+        ...(gradeSettings[grade] || { curriculum: '', grading: '' }),
+        [field]: value
+      }
+    };
+    setGradeSettings(newSettings);
+    
+    if (field === 'curriculum') {
+      fetchCourses(grade, value);
+    }
+
+    const updatedTranscripts = transcripts.map(t => {
+      if (t.gradeLevel === grade) {
+        return {
+          ...t,
+          curriculumType: field === 'curriculum' ? value : t.curriculumType,
+          gradingSystemType: field === 'grading' ? value : t.gradingSystemType,
+          otherCurriculumName: field === 'otherName' ? value : t.otherCurriculumName,
+        };
+      }
+      return t;
+    });
+    
+    setTranscripts(updatedTranscripts);
+    saveTranscripts(updatedTranscripts);
   };
 
   const saveTranscripts = async (newTranscripts: any[]) => {
@@ -78,71 +137,59 @@ export default function TranscriptForm({ onNext, onSave, onBack, initialData = [
         if (onSave) {
           onSave(newTranscripts, responseData.completionPercentage);
         }
-      } else {
-        console.error('Failed to save transcripts');
       }
     } catch (error) {
       console.error('Error saving transcripts:', error);
     }
   };
 
-  const onSubmitCourse = (data: TranscriptInput) => {
-    // Check for duplicates
-    const isDuplicate = transcripts.some(
-      (t, index) => 
-        index !== editIndex && // Ignore current item if editing
-        t.courseName === data.courseName && 
-        t.gradeLevel === data.gradeLevel && 
-        t.semester === data.semester
+  const onSubmitCourse = (data: any) => {
+    const grade = showAddForm!;
+    const settings = gradeSettings[grade] || { curriculum: '', grading: '' };
+
+    // DUPLICATE CHECK
+    const isDuplicate = transcripts.some(t => 
+      t.gradeLevel === grade && 
+      t.courseName.toLowerCase() === data.courseName.toLowerCase() &&
+      t.semester === data.semester
     );
 
     if (isDuplicate) {
-      alert(`A transcript for ${data.courseName} in ${gradeLabels[data.gradeLevel]} (${data.semester}) already exists.`);
+      alert(`The course "${data.courseName}" for ${data.semester.replace('_', ' ')} is already in your transcript for this grade.`);
       return;
     }
-
-    let updatedTranscripts;
-    if (editIndex !== null) {
-      updatedTranscripts = [...transcripts];
-      updatedTranscripts[editIndex] = data;
-      setEditIndex(null);
-    } else {
-      updatedTranscripts = [...transcripts, data];
-    }
     
+    const newCourse = {
+      ...data,
+      id: Math.random().toString(36).substr(2, 9),
+      gradeLevel: grade,
+      curriculumType: settings.curriculum || null,
+      gradingSystemType: settings.grading || null,
+      otherCurriculumName: settings.otherName || null,
+    };
+
+    const updatedTranscripts = [...transcripts, newCourse];
     setTranscripts(updatedTranscripts);
     saveTranscripts(updatedTranscripts);
     
-    reset();
-    setShowForm(false);
+    reset({
+        courseName: '',
+        gradeValue: '',
+        honorsLevel: 'Standard',
+        isBoardExam: false,
+        semester: 'Full_Year',
+    });
+    setShowAddForm(null);
     setUseCustomCourse(false);
   };
 
-  const editCourse = (index: number) => {
-    const course = transcripts[index];
-    reset(course);
-    setEditIndex(index);
-    setShowForm(true);
-    // If course name is not in available courses (custom), set custom mode
-    const isStandard = availableCourses.some(c => c.subjectName === course.courseName);
-    if (!isStandard && course.courseName) {
-      setUseCustomCourse(true);
-    }
-  };
-
-  const removeCourse = (index: number) => {
-    const updatedTranscripts = transcripts.filter((_, i) => i !== index);
+  const removeCourse = (id: string) => {
+    const updatedTranscripts = transcripts.filter(t => t.id !== id);
     setTranscripts(updatedTranscripts);
     saveTranscripts(updatedTranscripts);
-
-    if (editIndex === index) {
-      setEditIndex(null);
-      setShowForm(false);
-      reset();
-    }
   };
 
-  const handleNext = async () => {
+  const handleFinish = async () => {
     const response = await fetch('/api/onboarding/transcripts', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -155,253 +202,181 @@ export default function TranscriptForm({ onNext, onSave, onBack, initialData = [
     }
   };
 
-  const getGradeLabel = () => {
-    switch (curriculum) {
-      case 'CBSE':
-      case 'ICSE':
-      case 'State_Board':
-        return 'Marks (e.g., 95/100 or just 95)';
-      case 'IB':
-        return 'IB Score (1-7)';
-      case 'US_High_School':
-        return 'Letter Grade (e.g., A, B+, C)';
-      default:
-        return 'Grade';
-    }
-  };
-
   return (
-    <div className="space-y-6">
-      <div>
-        <p className="text-sm text-gray-600 mb-4">
-          Add courses you've completed in grades up to {gradeLabels[currentGrade || 'twelfth']}. Add at least 5 courses.
-        </p>
-
-        {transcripts.length > 0 && (
-          <div className="mb-6 space-y-2">
-            <h3 className="font-medium text-gray-900">Added Courses ({transcripts.length})</h3>
-            {transcripts.map((transcript, index) => (
-              <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded border">
-                <div>
-                  <p className="font-medium text-gray-900">{transcript.courseName}</p>
-                  <p className="text-sm text-gray-600">
-                    Grade: {transcript.gradeValue} | {gradeLabels[transcript.gradeLevel]} | {transcript.semester}
-                  </p>
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => editCourse(index)}
-                    className="text-blue-600 hover:text-blue-800 text-sm"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => removeCourse(index)}
-                    className="text-red-600 hover:text-red-800 text-sm"
-                  >
-                    Remove
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {!showForm && (
-          <Button
-            type="button"
-            onClick={() => {
-              setShowForm(true);
-              setEditIndex(null);
-              reset({
-                honorsLevel: 'Standard',
-                isBoardExam: false,
-                semester: 'Full_Year',
-                courseName: '',
-                gradeLevel: undefined,
-                gradeValue: ''
-              });
-            }}
-            variant="outline"
-            className="w-full"
-          >
-            + Add Course
-          </Button>
-        )}
-
-        {showForm && (
-          <form onSubmit={handleSubmit(onSubmitCourse)} className="space-y-6 p-6 border border-slate-200 rounded-lg bg-slate-50/50 animate-in fade-in zoom-in-95 duration-200">
-            <div className="space-y-1.5">
-              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
-                Course Name <span className="text-red-500">*</span>
-              </label>
-              {!useCustomCourse ? (
-                <div>
-                  <select
-                    {...register('courseName')}
-                    className="w-full h-10 px-3 py-2 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-                  >
-                    <option value="">Select a course</option>
-                    {availableCourses.map((course) => (
-                      <option key={course.subjectName} value={course.subjectName}>
-                        {course.subjectName}
-                      </option>
-                    ))}
-                  </select>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setUseCustomCourse(true);
-                      setValue('courseName', '');
-                    }}
-                    className="mt-2 text-[10px] uppercase font-bold text-blue-600 hover:text-blue-700 tracking-wider"
-                  >
-                    + Add custom course name
-                  </button>
-                </div>
-              ) : (
-                <div>
-                  <Input
-                    placeholder="Enter course name"
-                    {...register('courseName')}
-                    className="bg-white border-slate-200 focus:ring-2 focus:ring-blue-500/20"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setUseCustomCourse(false);
-                      setValue('courseName', '');
-                    }}
-                    className="mt-2 text-[10px] uppercase font-bold text-blue-600 hover:text-blue-700 tracking-wider"
-                  >
-                    ← Choose from standard courses
-                  </button>
-                </div>
-              )}
-              {errors.courseName && (
-                <p className="mt-1 text-xs text-red-500 font-bold">{(errors.courseName as any).message}</p>
-              )}
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
-                  Grade Level <span className="text-red-500">*</span>
-                </label>
-                <select
-                  {...register('gradeLevel')}
-                  className="w-full h-10 px-3 py-2 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-                >
-                  <option value="">Select grade</option>
-                  {availableGrades.map((grade) => (
-                    <option key={grade} value={grade}>{gradeLabels[grade]}</option>
-                  ))}
-                </select>
-                {errors.gradeLevel && (
-                  <p className="mt-1 text-xs text-red-500 font-bold">{(errors.gradeLevel as any).message}</p>
-                )}
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
-                  Semester <span className="text-red-500">*</span>
-                </label>
-                <select
-                  {...register('semester')}
-                  className="w-full h-10 px-3 py-2 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-                >
-                  <option value="Full_Year">Full Year</option>
-                  <option value="Fall">Fall Semester</option>
-                  <option value="Spring">Spring Semester</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
-                {getGradeLabel()} <span className="text-red-500">*</span>
-              </label>
-              <Input
-                placeholder={curriculum === 'CBSE' ? 'e.g., 95' : 'Your grade'}
-                {...register('gradeValue')}
-                className="bg-white border-slate-200 focus:ring-2 focus:ring-blue-500/20"
-              />
-              {errors.gradeValue && <p className="text-xs text-red-500 font-bold">{(errors.gradeValue as any).message}</p>}
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
-                  Honors Level
-                </label>
-                <select
-                  {...register('honorsLevel')}
-                  className="w-full h-10 px-3 py-2 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-                >
-                  <option value="Standard">Standard</option>
-                  <option value="Honors">Honors</option>
-                  <option value="AP">AP</option>
-                  <option value="IB_HL">IB Higher Level</option>
-                  <option value="IB_SL">IB Standard Level</option>
-                </select>
-              </div>
-
-              {(curriculum === 'CBSE' || curriculum === 'ICSE') && (
-                <div className="flex items-center pt-6">
-                  <input
-                    type="checkbox"
-                    id="isBoardExam"
-                    {...register('isBoardExam')}
-                    className="h-4 w-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500"
-                  />
-                  <label htmlFor="isBoardExam" className="ml-2 text-xs uppercase font-bold text-slate-500 tracking-wide">
-                    Board Exam (10th/12th)
-                  </label>
-                </div>
-              )}
-            </div>
-
-            <div className="flex gap-2">
-              <Button type="submit" className="flex-1">
-                {editIndex !== null ? 'Update Course' : 'Add Course'}
-              </Button>
-              <Button
-                type="button"
-                onClick={() => {
-                  setShowForm(false);
-                  reset();
-                  setUseCustomCourse(false);
-                  setEditIndex(null);
-                }}
-                variant="outline"
-              >
-                Cancel
-              </Button>
-            </div>
-          </form>
-        )}
+    <div className="space-y-10">
+      <div className="space-y-1">
+        <h3 className={ux.text.subheading}>Academic Transcripts</h3>
+        <p className={ux.text.body}>Enter your courses and grades for each year of high school.</p>
       </div>
 
-      <div className="flex justify-between pt-6 border-t">
-        <Button type="button" onClick={onBack} variant="outline">
-          ← Back
-        </Button>
+      {availableGrades.map((grade) => {
+        const settings = gradeSettings[grade] || { curriculum: '', grading: '' };
+        const gradeTranscripts = transcripts.filter(t => t.gradeLevel === grade);
+        
+        return (
+          <div key={grade} className={cn(ux.card.base, "p-6 space-y-6")}>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-surface-muted pb-4">
+              <h4 className={cn(ux.text.accent, "text-base")}>{gradeLabels[grade]}</h4>
+              
+              <div className="flex flex-wrap gap-3">
+                <select
+                  value={settings.curriculum}
+                  onChange={(e) => handleGradeSettingChange(grade, 'curriculum', e.target.value)}
+                  className="h-9 px-3 py-1 bg-surface-soft border border-slate-200 rounded-lg text-xs font-bold text-slate-700 outline-none focus:ring-2 focus:ring-brand-500/20 transition-all"
+                >
+                  <option value="">Select Curriculum</option>
+                  {enums.curriculumTypes.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+
+                <select
+                  value={settings.grading}
+                  onChange={(e) => handleGradeSettingChange(grade, 'grading', e.target.value)}
+                  className="h-9 px-3 py-1 bg-surface-soft border border-slate-200 rounded-lg text-xs font-bold text-slate-700 outline-none focus:ring-2 focus:ring-brand-500/20 transition-all"
+                >
+                  <option value="">Select Grading Scale</option>
+                  {enums.gradingSystemTypes.map(g => <option key={g} value={g}>{g.replace(/_/g, ' ')}</option>)}
+                </select>
+              </div>
+            </div>
+
+            {settings.curriculum === 'Other' && (
+              <Input
+                placeholder="Name of other curriculum"
+                value={settings.otherName || ''}
+                onChange={(e) => handleGradeSettingChange(grade, 'otherName', e.target.value)}
+                className="max-w-xs"
+              />
+            )}
+
+            {settings.curriculum && settings.grading ? (
+              <div className="space-y-4">
+                {gradeTranscripts.length > 0 && (
+                  <div className="overflow-x-auto rounded-xl border border-surface-muted">
+                    <table className="min-w-full divide-y divide-surface-muted">
+                      <thead className="bg-surface-soft">
+                        <tr>
+                          <th className={ux.text.accent}>Course</th>
+                          <th className={ux.text.accent}>Semester</th>
+                          <th className={ux.text.accent}>Grade</th>
+                          <th className={cn(ux.text.accent, "text-right")}>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-surface-muted">
+                        {gradeTranscripts.map((t) => (
+                          <tr key={t.id}>
+                            <td className="px-4 py-3 text-sm font-bold text-slate-900">{t.courseName}</td>
+                            <td className="px-4 py-3 text-xs text-slate-600 font-medium">{t.semester.replace('_', ' ')}</td>
+                            <td className="px-4 py-3 text-sm font-black text-brand-600">{t.gradeValue}</td>
+                            <td className="px-4 py-3 text-right text-xs">
+                              <button 
+                                type="button"
+                                onClick={() => removeCourse(t.id)} 
+                                className="text-red-500 hover:text-red-700 font-bold uppercase tracking-tight text-[10px]"
+                              >
+                                Remove
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+
+                {showAddForm === grade ? (
+                  <div className="p-6 border-2 border-dashed border-brand-200 rounded-xl bg-brand-50/30 space-y-4 animate-in fade-in zoom-in-95">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <label className={ux.form.label}>Subject Name</label>
+                        {!useCustomCourse ? (
+                          <select
+                            {...register('courseName', { required: 'Course name is required' })}
+                            onChange={(e) => {
+                                if (e.target.value === '___custom___') { 
+                                  setUseCustomCourse(true); 
+                                  setValue('courseName', ''); 
+                                } else {
+                                  setValue('courseName', e.target.value);
+                                }
+                            }}
+                            className={ux.form.input}
+                          >
+                            <option value="">Select Subject</option>
+                            {(availableCourses[grade] || []).map(c => <option key={c.subjectName} value={c.subjectName}>{c.subjectName}</option>)}
+                            <option value="___custom___">+ Add custom name...</option>
+                          </select>
+                        ) : (
+                          <Input {...register('courseName', { required: 'Course name is required' })} placeholder="Enter subject name" className={ux.form.input} />
+                        )}
+                        {errors.courseName && <p className={ux.form.error}>{errors.courseName.message as string}</p>}
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <label className={ux.form.label}>Grade / Score</label>
+                        <Input {...register('gradeValue', { required: 'Grade is required' })} placeholder="e.g. 95 or A" className={ux.form.input} />
+                        {errors.gradeValue && <p className={ux.form.error}>{errors.gradeValue.message as string}</p>}
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <div className="space-y-2">
+                            <label className={ux.form.label}>Semester</label>
+                            <select {...register('semester')} className={ux.form.input}>
+                                <option value="Full_Year">Full Year</option>
+                                <option value="Fall">Fall</option>
+                                <option value="Spring">Spring</option>
+                            </select>
+                        </div>
+                        <div className="space-y-2">
+                            <label className={ux.form.label}>Level</label>
+                            <select {...register('honorsLevel')} className={ux.form.input}>
+                                {enums.honorsLevels.map(l => <option key={l} value={l}>{l}</option>)}
+                            </select>
+                        </div>
+                        <div className="flex items-end pb-1">
+                            <Button 
+                              type="button"
+                              onClick={async () => {
+                                const isValid = await trigger(['courseName', 'gradeValue']);
+                                if (isValid) {
+                                  onSubmitCourse(getValues());
+                                }
+                              }}
+                              className={cn(ux.button.primary, "w-full")}
+                            >
+                              Save Course
+                            </Button>
+                        </div>
+                    </div>
+                  </div>
+                ) : (
+                  <Button
+                    variant="outline"
+                    onClick={() => { setShowAddForm(grade); setUseCustomCourse(false); reset(); }}
+                    className="w-full border-dashed border-2 py-8 hover:bg-brand-50 transition-colors border-brand-200 text-brand-600 font-bold"
+                  >
+                    + Add {gradeLabels[grade]} Course
+                  </Button>
+                )}
+              </div>
+            ) : (
+              <p className="text-sm text-slate-400 italic text-center py-4">Please select a curriculum and grading scale for this grade above.</p>
+            )}
+          </div>
+        );
+      })}
+
+      <div className="flex justify-between pt-6 border-t border-surface-muted">
+        <Button type="button" onClick={onBack} variant="outline" className={ux.button.outline}>← Back</Button>
         <Button
           type="button"
-          onClick={handleNext}
+          onClick={handleFinish}
           disabled={transcripts.length < 5}
+          className={ux.button.primary}
         >
           Next →
         </Button>
       </div>
-
-      {transcripts.length === 0 && (
-        <p className="text-sm text-gray-500 text-center">
-          Add at least one course to continue
-        </p>
-      )}
     </div>
   );
 }

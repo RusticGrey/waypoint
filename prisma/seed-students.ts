@@ -64,13 +64,6 @@ async function main() {
             personalProfile: {
               create: { currentSchool: school, schoolLocation: loc }
             },
-            academicProfile: {
-              create: { 
-                curriculumType: curriculum, 
-                gradingSystemType: grading, 
-                currentGpa: gpa 
-              }
-            }
           }
         }
       },

@@ -5,6 +5,7 @@ import { HostSelector } from '@/components/meetings/HostSelector';
 import { SimpleSlotPicker } from '@/components/meetings/SimpleSlotPicker';
 import { BookingModal } from '@/components/meetings/BookingModal';
 import { StudentMeetingList } from '@/components/meetings/StudentMeetingList';
+import { ux } from '@/lib/ux';
 
 interface StudentMeetingsClientProps {
   studentId: string;
@@ -19,11 +20,11 @@ export default function StudentMeetingsClient({ studentId }: StudentMeetingsClie
   };
 
   return (
-    <div className="p-8 space-y-8 max-w-7xl mx-auto">
+    <div className={ux.layout.page}>
       <section className="space-y-6">
-        <div className="space-y-2">
-          <h1 className="text-4xl font-bold text-gray-900">Meetings & Schedule</h1>
-          <p className="text-gray-600">View your sessions, manage bookings, and connect with counselors</p>
+        <div className={ux.layout.header}>
+          <h1 className={ux.text.heading}>Meetings & Schedule</h1>
+          <p className={ux.text.body}>View your sessions, manage bookings, and connect with counselors</p>
         </div>
 
         {/* Main Content: Meetings on Left, Booking on Right */}

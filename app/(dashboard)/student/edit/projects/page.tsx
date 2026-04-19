@@ -5,6 +5,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
+import { ux } from '@/lib/ux';
 
 interface Project {
   id: string;
@@ -153,15 +154,17 @@ export default function EditProjectsPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="mb-6 flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Edit Projects</h1>
-          <p className="text-gray-600 mt-1">Manage your research, internships, and projects</p>
+    <div className={ux.layout.page}>
+      <div className={ux.layout.header}>
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className={ux.text.heading}>Edit Projects</h1>
+            <p className={ux.text.body}>Manage your research, internships, and projects</p>
+          </div>
+          <Link href="/student/profile" className="text-blue-600 hover:text-blue-700 font-medium">
+            ← Back to Profile
+          </Link>
         </div>
-        <Link href="/student/profile" className="text-blue-600 hover:text-blue-700">
-          ← Back to Profile
-        </Link>
       </div>
 
       {error && (
@@ -189,12 +192,14 @@ export default function EditProjectsPage() {
               </h3>
               
               <div className="space-y-4">
-                <Input
-                  label="Project Title *"
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  required
-                />
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Project Title *</label>
+                  <Input
+                    value={formData.title}
+                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    required
+                  />
+                </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -212,35 +217,43 @@ export default function EditProjectsPage() {
                     </select>
                   </div>
 
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">Organization (optional)</label>
+                    <Input
+                      value={formData.organization}
+                      onChange={(e) => setFormData({ ...formData, organization: e.target.value })}
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Your Role (optional)</label>
                   <Input
-                    label="Organization (optional)"
-                    value={formData.organization}
-                    onChange={(e) => setFormData({ ...formData, organization: e.target.value })}
+                    value={formData.role}
+                    onChange={(e) => setFormData({ ...formData, role: e.target.value })}
                   />
                 </div>
 
-                <Input
-                  label="Your Role (optional)"
-                  value={formData.role}
-                  onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                />
-
                 <div className="grid grid-cols-2 gap-4">
-                  <Input
-                    label="Start Date *"
-                    type="date"
-                    value={formData.startDate}
-                    onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-                    required
-                  />
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">Start Date *</label>
+                    <Input
+                      type="date"
+                      value={formData.startDate}
+                      onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                      required
+                    />
+                  </div>
 
-                  <Input
-                    label="End Date"
-                    type="date"
-                    value={formData.endDate}
-                    onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-                    disabled={formData.isOngoing}
-                  />
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">End Date</label>
+                    <Input
+                      type="date"
+                      value={formData.endDate}
+                      onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+                      disabled={formData.isOngoing}
+                    />
+                  </div>
                 </div>
 
                 <label className="flex items-center">

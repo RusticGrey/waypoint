@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
 import { useEnums } from '@/lib/hooks/useEnums';
+import { cn } from '@/lib/utils';
+import { ux } from '@/lib/ux';
 
 interface Activity {
   id: string;
@@ -58,7 +60,6 @@ export default function EditActivitiesPage() {
       const res = await fetch('/api/student/activities');
       if (!res.ok) throw new Error('Failed to fetch activities');
       const data = await res.json();
-      console.log('Fetched Activity:', data);
       setActivities(data.activities || []);
     } catch (err) {
       console.error('Fetch error:', err);
@@ -78,8 +79,6 @@ export default function EditActivitiesPage() {
       
       const method = editingId ? 'PATCH' : 'POST';
 
-      console.log('Submitting:', method, url, formData);
-
       const res = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
@@ -88,12 +87,8 @@ export default function EditActivitiesPage() {
 
       if (!res.ok) {
         const errorData = await res.json();
-        console.error('API Error:', errorData);
         throw new Error(errorData.error || 'Failed to save activity');
       }
-
-      const result = await res.json();
-      console.log('Saved successfully:', result);
 
       resetForm();
       await fetchActivities();
@@ -139,15 +134,6 @@ export default function EditActivitiesPage() {
     }
   };
 
-  // const toggleGrade = (grade: string) => {
-  //   setFormData(prev => ({
-  //     ...prev,
-  //     grade_levels: prev.gradeLevels.includes(grade)
-  //       ? prev.gradeLevels.filter(g => g !== grade)
-  //       : [...prev.gradeLevels, grade]
-  //   }));
-  // };
-
   const resetForm = () => {
     setEditingId(null);
     setShowAdd(false);
@@ -179,15 +165,17 @@ export default function EditActivitiesPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="mb-6 flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Edit Activities</h1>
-          <p className="text-gray-600 mt-1">Add, edit, or remove your extracurricular activities</p>
+    <div className={ux.layout.page}>
+      <div className={ux.layout.header}>
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className={ux.text.heading}>Edit Activities</h1>
+            <p className={ux.text.body}>Add, edit, or remove your extracurricular activities</p>
+          </div>
+          <Link href="/student/profile" className="text-blue-600 hover:text-blue-700 font-medium">
+            ← Back to Profile
+          </Link>
         </div>
-        <Link href="/student/profile" className="text-blue-600 hover:text-blue-700">
-          ← Back to Profile
-        </Link>
       </div>
 
       {error && (
@@ -215,16 +203,18 @@ export default function EditActivitiesPage() {
               </h3>
               
               <div className="space-y-4">
-                <Input
-                  label="Activity Name *"
-                  value={formData.activityName}
-                  onChange={(e) => setFormData({ ...formData, activityName: e.target.value })}
-                  required
-                />
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Activity Name *</label>
+                  <Input
+                    value={formData.activityName}
+                    onChange={(e) => setFormData({ ...formData, activityName: e.target.value })}
+                    required
+                  />
+                </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-900 mb-1">
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-900">
                       Category *
                     </label>
                     <select
@@ -239,16 +229,18 @@ export default function EditActivitiesPage() {
                     </select>
                   </div>
 
-                  <Input
-                    label="Your Role (optional)"
-                    value={formData.role}
-                    onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                  />
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">Your Role (optional)</label>
+                    <Input
+                      value={formData.role}
+                      onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                    />
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-900 mb-1">
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-900">
                       Grade Level *
                     </label>
                     <select
@@ -265,47 +257,59 @@ export default function EditActivitiesPage() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <Input
-                    label="Hours per Week *"
-                    type="number"
-                    min="1"
-                    max="168"
-                    value={formData.hoursPerWeek}
-                    onChange={(e) => setFormData({ ...formData, hoursPerWeek: parseInt(e.target.value) })}
-                    required
-                  />
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">Hours per Week *</label>
+                    <Input
+                      type="number"
+                      min="1"
+                      max="168"
+                      value={formData.hoursPerWeek}
+                      onChange={(e) => setFormData({ ...formData, hoursPerWeek: parseInt(e.target.value) })}
+                      required
+                    />
+                  </div>
 
-                  <Input
-                    label="Weeks per Year *"
-                    type="number"
-                    min="1"
-                    max="52"
-                    value={formData.weeksPerYear}
-                    onChange={(e) => setFormData({ ...formData, weeksPerYear: parseInt(e.target.value) })}
-                    required
-                  />
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">Weeks per Year *</label>
+                    <Input
+                      type="number"
+                      min="1"
+                      max="52"
+                      value={formData.weeksPerYear}
+                      onChange={(e) => setFormData({ ...formData, weeksPerYear: parseInt(e.target.value) })}
+                      required
+                    />
+                  </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-900 mb-1">
-                    Description *
-                  </label>
+                  <div className="flex justify-between items-center mb-1">
+                    <label className="block text-sm font-medium text-gray-900">
+                      Description *
+                    </label>
+                    <span className={cn(
+                      "text-[10px] font-bold",
+                      formData.description.length > 150 ? "text-red-500" : "text-slate-400"
+                    )}>
+                      {formData.description.length}/150
+                    </span>
+                  </div>
                   <textarea
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     rows={4}
                     required
                     minLength={10}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
+                    maxLength={150}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
                   />
-                  <p className="text-xs text-gray-500 mt-1">Minimum 10 characters</p>
+                  <p className="text-xs text-gray-500 mt-1">Minimum 10 characters, maximum 150.</p>
                 </div>
 
                 <div className="flex gap-2">
                   <Button 
                     type="submit" 
                     className="flex-1"
-                    // disabled={loading || formData.gradeLevels.length === 0}
                   >
                     {loading ? 'Saving...' : editingId ? 'Update Activity' : 'Add Activity'}
                   </Button>

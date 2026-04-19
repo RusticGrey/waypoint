@@ -4,6 +4,8 @@ import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import Link from 'next/link';
+import { ux } from '@/lib/ux';
+import { getDerivedCurriculum } from '@/lib/api-helpers/profile';
 
 const gradeLabels: Record<string, string> = {
   ninth: '9th Grade',
@@ -23,7 +25,6 @@ export default async function ProfilePage() {
     where: { userId: session.user.id },
     include: {
       personalProfile: true,
-      academicProfile: true,
       transcripts: {
         orderBy: [
           { gradeLevel: 'asc' },
@@ -53,15 +54,20 @@ export default async function ProfilePage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="mb-6 flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900">My Complete Profile</h1>
-        <Link
-          href="/student"
-          className="text-blue-600 hover:text-blue-700 font-medium"
-        >
-          ← Back to Dashboard
-        </Link>
+    <div className={ux.layout.page}>
+      <div className={ux.layout.header}>
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className={ux.text.heading}>My Complete Profile</h1>
+            <p className={ux.text.body}>Review your academic and personal background</p>
+          </div>
+          <Link
+            href="/student"
+            className="text-blue-600 hover:text-blue-700 font-medium"
+          >
+            ← Back to Dashboard
+          </Link>
+        </div>
       </div>
 
       <div className="space-y-6">
@@ -108,39 +114,6 @@ export default async function ProfilePage() {
           </CardContent>
         </Card>
 
-        {/* Academic Background */}
-        <Card>
-          <CardHeader>
-            <div className="flex justify-between items-center">
-              <CardTitle>Academic Background</CardTitle>
-              <Link
-                href="/student/edit/academic"
-                className="text-sm text-blue-600 hover:text-blue-700 font-medium"
-              >
-                Edit →
-              </Link>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <dl className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <dt className="text-sm font-medium text-gray-500">Curriculum</dt>
-                <dd className="mt-1 text-sm text-gray-900">{student.academicProfile?.curriculumType}</dd>
-              </div>
-              <div>
-                <dt className="text-sm font-medium text-gray-500">Grading System</dt>
-                <dd className="mt-1 text-sm text-gray-900">
-                  {student.academicProfile?.gradingSystemType.replace(/_/g, ' ')}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-sm font-medium text-gray-500">Current GPA/CGPA</dt>
-                <dd className="mt-1 text-sm text-gray-900">{student.academicProfile?.currentGpa || '-'}</dd>
-              </div>
-            </dl>
-          </CardContent>
-        </Card>
-
         {/* Transcripts */}
         <Card>
           <CardHeader>
@@ -156,31 +129,54 @@ export default async function ProfilePage() {
           </CardHeader>
           <CardContent>
             {student.transcripts.length > 0 ? (
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead>
-                    <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Course</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Grade Level</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Semester</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Grade</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Level</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200">
-                    {student.transcripts.map((transcript) => (
-                      <tr key={transcript.id}>
-                        <td className="px-4 py-3 text-sm text-gray-900">{transcript.courseName}</td>
-                        <td className="px-4 py-3 text-sm text-gray-600">
-                          {gradeLabels[transcript.gradeLevel]}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-600">{transcript.semester}</td>
-                        <td className="px-4 py-3 text-sm font-medium text-gray-900">{transcript.gradeValue}</td>
-                        <td className="px-4 py-3 text-sm text-gray-600">{transcript.honorsLevel}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className="space-y-8">
+                {['ninth', 'tenth', 'eleventh', 'twelfth'].map((grade) => {
+                  const gradeTranscripts = student.transcripts.filter((t: any) => t.gradeLevel === grade);
+                  if (gradeTranscripts.length === 0) return null;
+
+                  return (
+                    <div key={grade} className="space-y-3">
+                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 bg-slate-50 p-3 rounded-lg border border-slate-100">
+                        <h4 className="text-sm font-black text-slate-700 uppercase tracking-tight">
+                          {gradeLabels[grade]}
+                        </h4>
+                        <div className="flex gap-4">
+                          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            Curriculum: <span className="text-brand-600">
+                              {(gradeTranscripts[0] as any).curriculumType}
+                              {(gradeTranscripts[0] as any).curriculumType === 'Other' && (gradeTranscripts[0] as any).otherCurriculumName && ` (${(gradeTranscripts[0] as any).otherCurriculumName})`}
+                            </span>
+                          </span>
+                          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            Scale: <span className="text-brand-600">{(gradeTranscripts[0] as any).gradingSystemType?.replace(/_/g, ' ')}</span>
+                          </span>
+                        </div>
+                      </div>
+                      <div className="overflow-x-auto">
+                        <table className="min-w-full divide-y divide-gray-200">
+                          <thead>
+                            <tr>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Course</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Semester</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Grade</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Level</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-gray-200">
+                            {gradeTranscripts.map((transcript: any) => (
+                              <tr key={transcript.id}>
+                                <td className="px-4 py-3 text-sm text-gray-900">{transcript.courseName}</td>
+                                <td className="px-4 py-3 text-sm text-gray-600">{transcript.semester.replace('_', ' ')}</td>
+                                <td className="px-4 py-3 text-sm font-medium text-gray-900">{transcript.gradeValue}</td>
+                                <td className="px-4 py-3 text-sm text-gray-600">{transcript.honorsLevel.replace('_', ' ')}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             ) : (
               <p className="text-gray-500 text-center py-4">No courses added yet</p>

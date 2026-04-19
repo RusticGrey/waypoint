@@ -31,8 +31,10 @@ export async function POST(req: Request) {
     const createdScores = await prisma.testScore.createMany({
       data: testScores.map((score) => ({
         testType: score.testType,
+        testName: score.testName,
         testDate: new Date(score.testDate),
         compositeScore: score.compositeScore,
+        comments: score.comments,
         mathScore: score.mathScore,
         englishScore: score.englishScore,
         scienceScore: score.scienceScore,
@@ -46,7 +48,6 @@ export async function POST(req: Request) {
       where: { userId: session.user.id },
       include: {
         personalProfile: true,
-        academicProfile: true,
         transcripts: true,
         activities: true,
         achievements: true,

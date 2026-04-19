@@ -62,7 +62,6 @@ model Student {
   counselorId          String?              @map("counselor_id")
   phase                StudentPhase         @default(Onboarding)
   notificationsEnabled Boolean              @default(true) @map("notifications_enabled")
-  academicProfile      AcademicProfile?
   achievements         Achievement[]
   activities           Activity[]
   changeLogs           ChangeLog[]
@@ -94,21 +93,13 @@ model PersonalProfile {
   parentName     String    @default("") @map("parent_name")
   parentPhone    String    @default("") @map("parent_phone")
   preferredName  String?   @map("preferred_name")
+  residency      String?
+  citizenship    String?
   student        Student   @relation(fields: [studentId], references: [userId], onDelete: Cascade)
 
   @@map("PersonalProfile")
 }
 
-model AcademicProfile {
-  studentId         String            @id @map("student_id")
-  curriculumType    CurriculumType    @map("curriculum_type")
-  gradingSystemType GradingSystemType @map("grading_system_type")
-  currentGpa        String?           @map("current_gpa")
-  createdAt         DateTime          @default(now()) @map("created_at")
-  student           Student           @relation(fields: [studentId], references: [userId], onDelete: Cascade)
-
-  @@map("AcademicProfile")
-}
 
 model Subject {
   id             String         @id @default(cuid())
@@ -120,17 +111,20 @@ model Subject {
 }
 
 model Transcript {
-  id          String      @id @default(cuid())
-  studentId   String      @map("student_id")
-  courseName  String      @map("course_name")
-  gradeLevel  GradeLevel  @map("grade_level")
-  semester    Semester
-  gradeValue  String      @map("grade_value")
-  honorsLevel HonorsLevel @default(Standard) @map("honors_level")
-  isBoardExam Boolean     @default(false) @map("is_board_exam")
-  createdAt   DateTime    @default(now()) @map("created_at")
-  updatedAt   DateTime    @updatedAt @map("updated_at")
-  student     Student     @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+  id                  String             @id @default(cuid())
+  studentId           String             @map("student_id")
+  courseName          String             @map("course_name")
+  gradeLevel          GradeLevel         @map("grade_level")
+  curriculumType      CurriculumType?    @map("curriculum_type")
+  otherCurriculumName String?            @map("other_curriculum_name")
+  gradingSystemType   GradingSystemType? @map("grading_system_type")
+  semester            Semester
+  gradeValue          String             @map("grade_value")
+  honorsLevel         HonorsLevel        @default(Standard) @map("honors_level")
+  isBoardExam         Boolean            @default(false) @map("is_board_exam")
+  createdAt           DateTime           @default(now()) @map("created_at")
+  updatedAt           DateTime           @updatedAt @map("updated_at")
+  student             Student            @relation(fields: [studentId], references: [userId], onDelete: Cascade)
 
   @@unique([studentId, courseName, gradeLevel, semester])
   @@map("Transcript")
@@ -235,13 +229,18 @@ model TestScore {
   id                  String   @id @default(cuid())
   studentId           String   @map("student_id")
   testType            String   @map("test_type")
+  testName            String?  @map("test_name")
   testDate            DateTime @map("test_date")
   compositeScore      Int      @map("composite_score")
+  comments            String?
   createdAt           DateTime @default(now()) @map("created_at")
   englishScore        Int?     @map("english_score")
   mathScore           Int?     @map("math_score")
   readingWritingScore Int?     @map("reading_writing_score")
   scienceScore        Int?     @map("science_score")
+  listeningScore      Int?     @map("listening_score")
+  speakingScore       Int?     @map("speaking_score")
+  writingScore        Int?     @map("writing_score")
   student             Student  @relation(fields: [studentId], references: [userId], onDelete: Cascade)
 
   @@map("TestScore")

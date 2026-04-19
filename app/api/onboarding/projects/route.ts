@@ -30,7 +30,7 @@ export async function POST(req: Request) {
       const createdProjects = await prisma.projectExperience.createMany({
         data: projects.map((project) => ({
           title: project.title,
-          experienceType: project.experienceType,
+          experienceType: project.experienceType as any,
           organization: project.organization,
           roleTitle: project.roleTitle,
           startDate: project.startDate ? new Date(project.startDate) : new Date(),
@@ -46,7 +46,6 @@ export async function POST(req: Request) {
         where: { userId: session.user.id },
         include: {
           personalProfile: true,
-          academicProfile: true,
           transcripts: true,
           activities: true,
           achievements: true,
@@ -70,7 +69,6 @@ export async function POST(req: Request) {
       where: { userId: session.user.id },
       include: {
         personalProfile: true,
-        academicProfile: true,
         transcripts: true,
         activities: true,
         achievements: true,

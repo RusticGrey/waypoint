@@ -13,12 +13,13 @@ interface TestScore {
   mathScore: number;
   scienceScore: number;
   readingWritingScore: number;
-  
-  // sectionScores: any;
+  englishScore: number;
+  comments: string;
+  testName: string;
 }
 
 interface TestScoreModalProps {
-  testScore?: TestScore;
+  testScore?: any;
   onClose: () => void;
   onSuccess: () => void;
 }
@@ -32,27 +33,28 @@ export default function TestScoreModal({
   const [error, setError] = useState('');
   const [formData, setFormData] = useState({
     testType: 'SAT',
+    testName: '',
     testDate: '',
     compositeScore: '',
     mathScore: '',
     readingWritingScore: '',
     englishScore: '',
     scienceScore: '',
-    // essayScore: '',
+    comments: '',
   });
 
   useEffect(() => {
     if (testScore) {
-      const sections = testScore.sectionScores || {};
       setFormData({
         testType: testScore.testType,
+        testName: testScore.testName || '',
         testDate: testScore.testDate.split('T')[0],
         compositeScore: testScore.compositeScore.toString(),
         mathScore: testScore.mathScore?.toString() || '',
         readingWritingScore: testScore.readingWritingScore?.toString() || '',
         englishScore: testScore.englishScore?.toString() || '',
         scienceScore: testScore.scienceScore?.toString() || '',
-        // essayScore: sections.essay?.toString() || '',
+        comments: testScore.comments || '',
       });
     }
   }, [testScore]);
@@ -74,13 +76,14 @@ export default function TestScoreModal({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           testType: formData.testType,
+          testName: formData.testType === 'Other' ? formData.testName : null,
           testDate: formData.testDate,
           compositeScore: parseInt(formData.compositeScore),
           mathScore: formData.mathScore ? parseInt(formData.mathScore) : null,
           readingWritingScore: formData.readingWritingScore ? parseInt(formData.readingWritingScore) : null,
           englishScore: formData.englishScore ? parseInt(formData.englishScore) : null,
           scienceScore: formData.scienceScore ? parseInt(formData.scienceScore) : null,
-          // essayScore: formData.essayScore ? parseInt(formData.essayScore) : null,
+          comments: formData.comments,
         }),
       });
 
@@ -116,103 +119,144 @@ export default function TestScoreModal({
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
-            <Select
-              label="Test Type *"
-              value={formData.testType}
-              onChange={(e) => setFormData({ 
-                ...formData, 
-                testType: e.target.value,
-                // mathScore: '',
-                // readingWritingScore: '',
-                // englishScore: '',
-                // scienceScore: '',
-              })}
-              required
-            >
-              <option value="SAT">SAT</option>
-              <option value="ACT">ACT</option>
-              <option value="AP">AP</option>
-              <option value="IB">IB</option>
-              <option value="Other">Other</option>
-            </Select>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">Test Type *</label>
+              <Select
+                value={formData.testType}
+                onChange={(e) => setFormData({ 
+                  ...formData, 
+                  testType: e.target.value,
+                })}
+                required
+              >
+                <option value="SAT">SAT</option>
+                <option value="ACT">ACT</option>
+                <option value="AP">AP</option>
+                <option value="IB">IB</option>
+                <option value="TOEFL">TOEFL</option>
+                <option value="IELTS">IELTS</option>
+                <option value="Duolingo">Duolingo</option>
+                <option value="Other">Other</option>
+              </Select>
+            </div>
 
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">Test Date *</label>
+              <Input
+                type="date"
+                value={formData.testDate}
+                onChange={(e) => setFormData({ ...formData, testDate: e.target.value })}
+                required
+              />
+            </div>
+          </div>
+
+          {formData.testType === 'Other' && (
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">Test Name *</label>
+              <Input
+                placeholder="Enter the name of the test"
+                value={formData.testName}
+                onChange={(e) => setFormData({ ...formData, testName: e.target.value })}
+                required
+              />
+            </div>
+          )}
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">
+              {formData.testType} Composite Score *
+            </label>
             <Input
-              label="Test Date *"
-              type="date"
-              value={formData.testDate}
-              onChange={(e) => setFormData({ ...formData, testDate: e.target.value })}
+              type="number"
+              min="0"
+              max={isSAT ? "1600" : isACT ? "36" : "2400"}
+              value={formData.compositeScore}
+              onChange={(e) => setFormData({ ...formData, compositeScore: e.target.value })}
               required
             />
           </div>
 
-          <Input
-            label={`${formData.testType} Composite Score *`}
-            type="number"
-            min="0"
-            max={isSAT ? "1600" : isACT ? "36" : "800"}
-            value={formData.compositeScore}
-            onChange={(e) => setFormData({ ...formData, compositeScore: e.target.value })}
-            required
-          />
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">Comments</label>
+            <textarea
+              className="w-full min-h-[80px] p-3 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+              placeholder="Additional details about the test..."
+              value={formData.comments}
+              onChange={(e) => setFormData({ ...formData, comments: e.target.value })}
+            />
+          </div>
 
           {isSAT && (
             <div className="grid grid-cols-2 gap-4">
-              <Input
-                label="Math (200-800)"
-                type="number"
-                min="200"
-                max="800"
-                value={formData.mathScore}
-                onChange={(e) => setFormData({ ...formData, mathScore: e.target.value })}
-              />
-              <Input
-                label="Reading & Writing (200-800)"
-                type="number"
-                min="200"
-                max="800"
-                value={formData.readingWritingScore}
-                onChange={(e) => setFormData({ ...formData, readingWritingScore: e.target.value })}
-              />
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Math (200-800)</label>
+                <Input
+                  type="number"
+                  min="200"
+                  max="800"
+                  value={formData.mathScore}
+                  onChange={(e) => setFormData({ ...formData, mathScore: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Reading & Writing (200-800)</label>
+                <Input
+                  type="number"
+                  min="200"
+                  max="800"
+                  value={formData.readingWritingScore}
+                  onChange={(e) => setFormData({ ...formData, readingWritingScore: e.target.value })}
+                />
+              </div>
             </div>
           )}
 
           {isACT && (
             <>
               <div className="grid grid-cols-2 gap-4">
-                <Input
-                  label="Math (1-36)"
-                  type="number"
-                  min="1"
-                  max="36"
-                  value={formData.mathScore}
-                  onChange={(e) => setFormData({ ...formData, mathScore: e.target.value })}
-                />
-                <Input
-                  label="English (1-36)"
-                  type="number"
-                  min="1"
-                  max="36"
-                  value={formData.englishScore}
-                  onChange={(e) => setFormData({ ...formData, englishScore: e.target.value })}
-                />
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Math (1-36)</label>
+                  <Input
+                    type="number"
+                    min="1"
+                    max="36"
+                    value={formData.mathScore}
+                    onChange={(e) => setFormData({ ...formData, mathScore: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">English (1-36)</label>
+                  <Input
+                    type="number"
+                    min="1"
+                    max="36"
+                    value={formData.englishScore}
+                    onChange={(e) => setFormData({ ...formData, englishScore: e.target.value })}
+                  />
+                </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <Input
-                  label="Reading (1-36)"
-                  type="number"
-                  min="1"
-                  max="36"
-                  value={formData.readingWritingScore}
-                  onChange={(e) => setFormData({ ...formData, readingWritingScore: e.target.value })}
-                />
-                <Input
-                  label="Science (1-36)"
-                  type="number"
-                  min="1"
-                  max="36"
-                  value={formData.scienceScore}
-                  onChange={(e) => setFormData({ ...formData, scienceScore: e.target.value })}
-                />
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Reading (1-36)</label>
+                  <Input
+                    type="number"
+                    min="1"
+                    max="36"
+                    value={formData.readingWritingScore}
+                    onChange={(e) => setFormData({ ...formData, readingWritingScore: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Science (1-36)</label>
+                  <Input
+                    type="number"
+                    min="1"
+                    max="36"
+                    value={formData.scienceScore}
+                    onChange={(e) => setFormData({ ...formData, scienceScore: e.target.value })}
+                  />
+                </div>
               </div>
             </>
           )}

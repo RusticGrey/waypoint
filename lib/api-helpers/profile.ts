@@ -9,6 +9,8 @@ export async function updateStudentProfileCompletion(
     // If completion is 100%, also move to Profile_Building phase if currently in Onboarding
     const updateData: any = { profileCompletionPct: profileCompletionPercentage };
     
+    // NOTE: Auto-advance disabled. Counselors must now manually approve transition from Onboarding to Profile Building.
+    /*
     if (profileCompletionPercentage === 100) {
       const currentStudent = await prisma.student.findUnique({
         where: { userId: studentId },
@@ -19,6 +21,7 @@ export async function updateStudentProfileCompletion(
         updateData.phase = 'Profile_Building';
       }
     }
+    */
 
     return await prisma.student.update({
       where: { userId: studentId },
@@ -74,4 +77,31 @@ export async function updateStudentPhase(userId: string, phase: 'Onboarding' | '
     console.error('Failed to update student phase:', error);
     throw error;
   }
+}
+
+/**
+ * Derives the graduating curriculum from the highest grade level transcripts.
+ */
+export function getDerivedCurriculum(student: any): { curriculumType: string; otherName?: string } | null {
+  if (!student.transcripts || student.transcripts.length === 0) return null;
+
+  const gradeWeights: Record<string, number> = {
+    twelfth: 4,
+    eleventh: 3,
+    tenth: 2,
+    ninth: 1,
+  };
+
+  // Sort transcripts by grade level weight descending
+  const sortedTranscripts = [...student.transcripts].sort((a, b) => {
+    return (gradeWeights[b.gradeLevel] || 0) - (gradeWeights[a.gradeLevel] || 0);
+  });
+
+  const bestTranscript = sortedTranscripts.find(t => t.curriculumType);
+  if (!bestTranscript) return null;
+
+  return {
+    curriculumType: bestTranscript.curriculumType,
+    otherName: bestTranscript.otherCurriculumName
+  };
 }

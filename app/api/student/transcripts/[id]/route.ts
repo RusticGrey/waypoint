@@ -16,12 +16,17 @@ export async function PATCH(
     
     const body = await req.json();
     
-    const transcript = await prisma.Transcript.update({
+    const updateData: any = { ...body };
+    if (updateData.curriculumType === '') updateData.curriculumType = null;
+    if (updateData.gradingSystemType === '') updateData.gradingSystemType = null;
+    if (updateData.otherCurriculumName === '') updateData.otherCurriculumName = null;
+
+    const transcript = await prisma.transcript.update({
       where: {
         id: params.id,
         studentId: session.user.id,
       },
-      data: body,
+      data: updateData,
     });
     
     return NextResponse.json(transcript);
@@ -42,7 +47,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    await prisma.Transcript.delete({
+    await prisma.transcript.delete({
       where: {
         id: params.id,
         studentId: session.user.id,

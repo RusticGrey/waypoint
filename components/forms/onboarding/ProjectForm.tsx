@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { ux } from '@/lib/ux';
 
 interface Props {
   onNext: (data: any[], completionPercentage?: number) => void;
@@ -272,40 +273,40 @@ export default function ProjectForm({ onNext, onSave, onBack, initialData = [] }
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-sm text-gray-600 mb-4">
+        <p className={ux.text.body}>
           Add projects, research, internships, and summer programs. These are optional but highly recommended.
         </p>
 
         {projects.length > 0 && (
-          <div className="mb-6 space-y-2">
-            <h3 className="font-medium text-gray-900">Added Projects & Experiences ({projects.length})</h3>
+          <div className="mb-8 mt-6 space-y-3">
+            <h3 className={cn(ux.text.accent, "text-sm")}>Added Projects & Experiences ({projects.length})</h3>
             {projects.map((project, index) => (
-              <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded border">
+              <div key={index} className="flex items-center justify-between p-4 bg-surface-soft rounded-xl border border-surface-muted shadow-sm">
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded">
+                    <span className="bg-purple-50 text-purple-700 border border-purple-200 font-bold uppercase tracking-wider text-[10px] rounded-full px-2.5 py-0.5">
                       {project.experienceType.replace('_', ' ')}
                     </span>
-                    <p className="font-medium text-gray-900">{project.title}</p>
+                    <p className="font-bold text-slate-900">{project.title}</p>
                   </div>
-                  <p className="text-sm text-gray-600 mt-1">
+                  <p className="text-xs text-slate-500 mt-2 font-medium">
                     {project.organization && `${project.organization} • `}
                     {project.startDate}
                     {project.isOngoing ? ' - Present' : project.endDate ? ` - ${project.endDate}` : ''}
                   </p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-4">
                   <button
                     type="button"
                     onClick={() => editProject(index)}
-                    className="text-blue-600 hover:text-blue-800 text-sm"
+                    className="text-brand-600 hover:text-brand-700 font-bold text-xs uppercase tracking-tight"
                   >
                     Edit
                   </button>
                   <button
                     type="button"
                     onClick={() => removeProject(index)}
-                    className="text-red-600 hover:text-red-800 text-sm"
+                    className="text-red-500 hover:text-red-600 font-bold text-xs uppercase tracking-tight"
                   >
                     Remove
                   </button>
@@ -341,7 +342,7 @@ export default function ProjectForm({ onNext, onSave, onBack, initialData = [] }
               setEndYear('');
             }}
             variant="outline"
-            className="w-full"
+            className={cn(ux.button.outline, "w-full border-dashed border-2 py-8 hover:bg-brand-50 transition-colors border-brand-200 text-brand-600 font-bold")}
           >
             + Add Project / Experience
           </Button>
@@ -350,15 +351,15 @@ export default function ProjectForm({ onNext, onSave, onBack, initialData = [] }
         {showForm && (
           <form 
             onSubmit={handleSubmit(onSubmitProject, (errors) => console.error("Project form errors:", errors))} 
-            className="space-y-6 p-6 border border-slate-200 rounded-lg bg-slate-50/50 animate-in fade-in zoom-in-95 duration-200"
+            className="space-y-6 p-6 border-2 border-dashed border-brand-200 rounded-xl bg-brand-50/30 animate-in fade-in zoom-in-95 duration-200"
           >
-            <div className="space-y-1.5">
-              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+            <div className="space-y-2">
+              <label className={ux.form.label}>
                 Experience Type <span className="text-red-500">*</span>
               </label>
               <select
                 {...register('experienceType')}
-                className="w-full h-10 px-3 py-2 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                className={ux.form.input}
               >
                 <option value="">Select type</option>
                 <option value="Academic_Project">Academic Project</option>
@@ -369,60 +370,60 @@ export default function ProjectForm({ onNext, onSave, onBack, initialData = [] }
                 <option value="Work_Experience">Work Experience</option>
               </select>
               {errors.experienceType && (
-                <p className="mt-1 text-xs text-red-500 font-bold">{(errors.experienceType as any).message}</p>
+                <p className={ux.form.error}>{(errors.experienceType as any).message}</p>
               )}
               {experienceType && (
-                <p className="mt-2 text-[10px] uppercase font-bold text-blue-600 tracking-wider">{getTypeDescription(experienceType)}</p>
+                <p className={cn(ux.text.accent, "mt-2 bg-brand-50 inline-block px-2 py-1 rounded")}>{getTypeDescription(experienceType)}</p>
               )}
             </div>
 
-            <div className="space-y-1.5">
-              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+            <div className="space-y-2">
+              <label className={ux.form.label}>
                 Project / Experience Title <span className="text-red-500">*</span>
               </label>
               <Input
                 placeholder="e.g., Machine Learning Internship, IB Extended Essay"
                 {...register('title')}
-                className="bg-white border-slate-200 focus:ring-2 focus:ring-blue-500/20"
+                className={ux.form.input}
               />
-              {errors.title && <p className="text-xs text-red-500 font-bold">{(errors.title as any).message}</p>}
+              {errors.title && <p className={ux.form.error}>{(errors.title as any).message}</p>}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className={ux.form.label}>
                   Organization <span className="text-slate-400 font-normal">(optional)</span>
                 </label>
                 <Input
                   placeholder="e.g., XYZ Company, IIT Delhi"
                   {...register('organization')}
-                  className="bg-white border-slate-200 focus:ring-2 focus:ring-blue-500/20"
+                  className={ux.form.input}
                 />
-                {errors.organization && <p className="text-xs text-red-500 font-bold">{(errors.organization as any).message}</p>}
+                {errors.organization && <p className={ux.form.error}>{(errors.organization as any).message}</p>}
               </div>
 
-              <div className="space-y-1.5">
-                <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+              <div className="space-y-2">
+                <label className={ux.form.label}>
                   Location <span className="text-slate-400 font-normal">(optional)</span>
                 </label>
                 <Input
                   placeholder="e.g., Bangalore, India or Remote"
                   {...register('location')}
-                  className="bg-white border-slate-200 focus:ring-2 focus:ring-blue-500/20"
+                  className={ux.form.input}
                 />
-                {errors.location && <p className="text-xs text-red-500 font-bold">{(errors.location as any).message}</p>}
+                {errors.location && <p className={ux.form.error}>{(errors.location as any).message}</p>}
               </div>
             </div>
 
             <div>
-              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500 mb-3">
+              <label className={ux.form.label}>
                 Start Date <span className="text-red-500">*</span>
               </label>
               <div className="grid grid-cols-2 gap-4">
                 <select
                   value={startMonth}
                   onChange={(e) => setStartMonth(e.target.value)}
-                  className="w-full h-10 px-3 py-2 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  className={ux.form.input}
                 >
                   <option value="">Month</option>
                   {MONTHS.map((month) => (
@@ -434,7 +435,7 @@ export default function ProjectForm({ onNext, onSave, onBack, initialData = [] }
                 <select
                   value={startYear}
                   onChange={(e) => setStartYear(e.target.value)}
-                  className="w-full h-10 px-3 py-2 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  className={ux.form.input}
                 >
                   <option value="">Year</option>
                   {years.map((year) => (
@@ -447,26 +448,26 @@ export default function ProjectForm({ onNext, onSave, onBack, initialData = [] }
             </div>
 
             <div>
-              <label className="flex items-center space-x-2 mb-4 p-2 rounded bg-white border border-slate-100 w-fit cursor-pointer">
+              <label className="flex items-center space-x-2 mb-4 p-3 rounded-xl border border-surface-muted bg-white w-fit cursor-pointer shadow-sm">
                 <input
                   type="checkbox"
                   id="isOngoing"
                   {...register('isOngoing')}
-                  className="h-4 w-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500"
+                  className="h-4 w-4 text-brand-600 border-slate-300 rounded focus:ring-brand-500"
                 />
-                <label htmlFor="isOngoing" className="text-xs uppercase font-bold text-slate-500 tracking-wide cursor-pointer">Currently ongoing</label>
+                <label htmlFor="isOngoing" className="text-xs uppercase font-black text-slate-500 tracking-wide cursor-pointer">Currently ongoing</label>
               </label>
 
               {!isOngoing && (
-                <div className="animate-in fade-in slide-in-from-top-1 duration-200">
-                  <label className="block text-xs uppercase tracking-wider font-bold text-slate-500 mb-3">
+                <div className="animate-in fade-in slide-in-from-top-1 duration-200 space-y-2">
+                  <label className={ux.form.label}>
                     End Date <span className="text-slate-400 font-normal">(optional)</span>
                   </label>
                   <div className="grid grid-cols-2 gap-4">
                     <select
                       value={endMonth}
                       onChange={(e) => setEndMonth(e.target.value)}
-                      className="w-full h-10 px-3 py-2 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                      className={ux.form.input}
                     >
                       <option value="">Month</option>
                       {MONTHS.map((month) => (
@@ -478,7 +479,7 @@ export default function ProjectForm({ onNext, onSave, onBack, initialData = [] }
                     <select
                       value={endYear}
                       onChange={(e) => setEndYear(e.target.value)}
-                      className="w-full h-10 px-3 py-2 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                      className={ux.form.input}
                     >
                       <option value="">Year</option>
                       {years.map((year) => (
@@ -493,99 +494,99 @@ export default function ProjectForm({ onNext, onSave, onBack, initialData = [] }
             </div>
 
             {(experienceType === 'Internship' || experienceType === 'Work_Experience') && (
-              <div className="space-y-1.5 animate-in fade-in slide-in-from-top-1 duration-200">
-                <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+              <div className="space-y-2 animate-in fade-in slide-in-from-top-1 duration-200">
+                <label className={ux.form.label}>
                   Your Role / Title <span className="text-slate-400 font-normal">(optional)</span>
                 </label>
                 <Input
                   placeholder="e.g., Software Development Intern"
                   {...register('roleTitle')}
-                  className="bg-white border-slate-200 focus:ring-2 focus:ring-blue-500/20"
+                  className={ux.form.input}
                 />
-                {errors.roleTitle && <p className="text-xs text-red-500 font-bold">{(errors.roleTitle as any).message}</p>}
+                {errors.roleTitle && <p className={ux.form.error}>{(errors.roleTitle as any).message}</p>}
               </div>
             )}
 
-            <div className="space-y-1.5">
-              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+            <div className="space-y-2">
+              <label className={ux.form.label}>
                 Description <span className="text-red-500">*</span>
               </label>
               <textarea
                 {...register('description')}
                 rows={4}
                 placeholder="What did you do? What did you learn? What were your responsibilities?"
-                className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                className={cn(ux.form.input, "min-h-[120px]")}
               />
               {errors.description && (
-                <p className="mt-1 text-xs text-red-500 font-bold">{(errors.description as any).message}</p>
+                <p className={ux.form.error}>{(errors.description as any).message}</p>
               )}
             </div>
 
-            <div className="space-y-1.5">
-              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+            <div className="space-y-2">
+              <label className={ux.form.label}>
                 Outcomes / Achievements <span className="text-slate-400 font-normal">(optional)</span>
               </label>
               <textarea
                 {...register('outcomes')}
                 rows={2}
                 placeholder="What did you produce or achieve?"
-                className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                className={cn(ux.form.input, "min-h-[80px]")}
               />
             </div>
 
-            <div className="space-y-1.5">
-              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+            <div className="space-y-2">
+              <label className={ux.form.label}>
                 Skills Learned <span className="text-slate-400 font-normal">(optional)</span>
               </label>
               <Input
                 placeholder="e.g., Python, Leadership, Research Methods"
                 {...register('skillsLearned')}
-                className="bg-white border-slate-200 focus:ring-2 focus:ring-blue-500/20"
+                className={ux.form.input}
               />
-              {errors.skillsLearned && <p className="text-xs text-red-500 font-bold">{(errors.skillsLearned as any).message}</p>}
+              {errors.skillsLearned && <p className={ux.form.error}>{(errors.skillsLearned as any).message}</p>}
             </div>
 
-            <div className="space-y-1.5">
-              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+            <div className="space-y-2">
+              <label className={ux.form.label}>
                 Project Link <span className="text-slate-400 font-normal">(optional)</span>
               </label>
               <Input
                 placeholder="https://..."
                 {...register('projectLink')}
-                className="bg-white border-slate-200 focus:ring-2 focus:ring-blue-500/20"
+                className={ux.form.input}
               />
-              {errors.projectLink && <p className="text-xs text-red-500 font-bold">{(errors.projectLink as any).message}</p>}
+              {errors.projectLink && <p className={ux.form.error}>{(errors.projectLink as any).message}</p>}
             </div>
 
             {(experienceType === 'Research' || experienceType === 'Internship') && (
-              <div className="border-t border-slate-100 pt-6 animate-in fade-in slide-in-from-top-1 duration-200">
-                <h4 className="text-[10px] uppercase font-black text-slate-400 tracking-widest mb-4">Mentor Information (optional)</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">Mentor Name</label>
+              <div className="border-t border-surface-muted pt-6 animate-in fade-in slide-in-from-top-1 duration-200">
+                <h4 className={cn(ux.text.accent, "mb-4")}>Mentor Information (optional)</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className={ux.form.label}>Mentor Name</label>
                     <Input
                       placeholder="e.g., Dr. Anjali Sharma"
                       {...register('mentorName')}
-                      className="bg-white border-slate-200 focus:ring-2 focus:ring-blue-500/20"
+                      className={ux.form.input}
                     />
-                    {errors.mentorName && <p className="text-xs text-red-500 font-bold">{(errors.mentorName as any).message}</p>}
+                    {errors.mentorName && <p className={ux.form.error}>{(errors.mentorName as any).message}</p>}
                   </div>
 
-                  <div className="space-y-1.5">
-                    <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">Mentor Email</label>
+                  <div className="space-y-2">
+                    <label className={ux.form.label}>Mentor Email</label>
                     <Input
                       placeholder="for potential recommendation letters"
                       {...register('mentorEmail')}
-                      className="bg-white border-slate-200 focus:ring-2 focus:ring-blue-500/20"
+                      className={ux.form.input}
                     />
-                    {errors.mentorEmail && <p className="text-xs text-red-500 font-bold">{(errors.mentorEmail as any).message}</p>}
+                    {errors.mentorEmail && <p className={ux.form.error}>{(errors.mentorEmail as any).message}</p>}
                   </div>
                 </div>
               </div>
             )}
 
-            <div className="flex gap-2">
-              <Button type="submit" className="flex-1">
+            <div className="flex gap-4">
+              <Button type="submit" className={cn(ux.button.primary, "flex-1")}>
                 {editIndex !== null ? 'Update Project' : 'Add Project'}
               </Button>
               <Button
@@ -600,6 +601,7 @@ export default function ProjectForm({ onNext, onSave, onBack, initialData = [] }
                   setEditIndex(null);
                 }}
                 variant="outline"
+                className={ux.button.outline}
               >
                 Cancel
               </Button>
@@ -608,14 +610,15 @@ export default function ProjectForm({ onNext, onSave, onBack, initialData = [] }
         )}
       </div>
 
-      <div className="flex justify-between pt-6 border-t">
-        <Button type="button" onClick={onBack} variant="outline">
+      <div className="flex justify-between pt-6 border-t border-surface-muted">
+        <Button type="button" onClick={onBack} variant="outline" className={ux.button.outline}>
           ← Back
         </Button>
         <Button
           type="button"
           onClick={handleFinish}
           disabled={isSubmitting}
+          className={ux.button.primary}
         >
           {isSubmitting ? 'Completing...' : 'Complete Onboarding →'}
         </Button>

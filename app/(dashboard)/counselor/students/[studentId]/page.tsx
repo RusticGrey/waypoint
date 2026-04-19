@@ -49,7 +49,6 @@ export default async function CounselorStudentViewer({
         },
       },
       personalProfile: true,
-      academicProfile: true,
       transcripts: {
         orderBy: [
           { gradeLevel: 'asc' },
@@ -120,7 +119,7 @@ export default async function CounselorStudentViewer({
   //   redirect('/counselor');
   // }
 
-  const analysis = analyzeProfileStrength(student);
+  const analysis = analyzeProfileStrength(student as any);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -135,7 +134,7 @@ export default async function CounselorStudentViewer({
           <p className="text-gray-600 mt-1">{student.user.email}</p>
           {student.counselor && (
             <p className="text-sm text-gray-500 mt-1">
-              Counselor: {student.counselor.firstName} {student.counselor.lastName}
+              Counselor: {student.counselor.user.firstName} {student.counselor.user.lastName}
             </p>
           )}
         </div>

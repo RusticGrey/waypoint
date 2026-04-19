@@ -1,9 +1,5 @@
 interface Student {
   currentGrade: string;
-  academicProfile?: {
-    currentGpa?: number;
-    curriculumType: string;
-  };
   transcripts: any[];
   activities?: any[];
   achievements?: any[];
@@ -63,17 +59,57 @@ export function analyzeProfileStrength(student: Student): StrengthAnalysis {
 
 function calculateAcademicScore(student: Student): number {
   let score = 0;
+  const transcripts = student.transcripts || [];
   
-  const gpa = student.academicProfile?.currentGpa;
-  if (gpa) {
-    if (gpa >= 3.9) score += 40;
-    else if (gpa >= 3.7) score += 35;
-    else if (gpa >= 3.5) score += 30;
-    else if (gpa >= 3.3) score += 25;
-    else score += 20;
+  if (transcripts.length === 0) return 0;
+  
+  // Calculate grade quality from transcripts based on grading system
+  let gradeQualityScore = 0;
+  let gradeCount = 0;
+  
+  transcripts.forEach(t => {
+    const gradeValue = t.gradeValue;
+    const gradingSystem = t.gradingSystemType;
+    
+    if (!gradeValue || !gradingSystem) return;
+    
+    let normalizedScore = 0;
+    
+    // Normalize different grading systems to 0-100 scale
+    if (gradingSystem === 'Marks_Out_Of_100' || gradingSystem === 'Percentage') {
+      normalizedScore = parseFloat(gradeValue) || 0;
+    } else if (gradingSystem === 'IB_Scale') {
+      const ibGrade = parseFloat(gradeValue) || 0;
+      normalizedScore = (ibGrade / 7) * 100; // IB is out of 7
+    } else if (gradingSystem === 'Letter_Grade') {
+      const gradeMap: { [key: string]: number } = {
+        'A+': 97, 'A': 93, 'A-': 90,
+        'B+': 87, 'B': 83, 'B-': 80,
+        'C+': 77, 'C': 73, 'C-': 70,
+        'D+': 67, 'D': 63, 'D-': 60,
+        'F': 50
+      };
+      normalizedScore = gradeMap[gradeValue.toUpperCase()] || 0;
+    }
+    
+    if (normalizedScore > 0) {
+      gradeQualityScore += normalizedScore;
+      gradeCount++;
+    }
+  });
+  
+  // Average grade quality converted to 40-point scale
+  if (gradeCount > 0) {
+    const avgGrade = gradeQualityScore / gradeCount;
+    if (avgGrade >= 95) score += 40;
+    else if (avgGrade >= 90) score += 35;
+    else if (avgGrade >= 85) score += 30;
+    else if (avgGrade >= 80) score += 25;
+    else if (avgGrade >= 75) score += 20;
+    else score += 15;
   }
   
-  const transcripts = student.transcripts || [];
+  // Course rigor scoring
   const apCount = transcripts.filter(t => t.honorsLevel === 'AP').length;
   const ibCount = transcripts.filter(t => t.honorsLevel?.includes('IB')).length;
   const honorsCount = transcripts.filter(t => t.honorsLevel === 'Honors').length;
@@ -81,6 +117,7 @@ function calculateAcademicScore(student: Student): number {
   const rigorScore = Math.min(30, (apCount * 3) + (ibCount * 3) + (honorsCount * 2));
   score += rigorScore;
   
+  // Course count/breadth scoring
   const courseCount = transcripts.length;
   if (courseCount >= 20) score += 30;
   else if (courseCount >= 15) score += 25;

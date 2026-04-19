@@ -23,12 +23,12 @@ export async function GET(req: Request) {
       where: { userId: session.user.id },
       include: {
         personalProfile: true,
-        academicProfile: true,
+        transcripts: true,
       },
     });
 
-    // Onboarding is complete if both profiles exist
-    const isComplete = !!(student?.personalProfile && student?.academicProfile);
+    // Onboarding is complete if personal profile and at least one transcript exists
+    const isComplete = !!(student?.personalProfile && student?.transcripts && student.transcripts.length > 0);
 
     return NextResponse.json({ isComplete });
   } catch (error) {

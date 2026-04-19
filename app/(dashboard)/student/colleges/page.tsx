@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { ux } from '@/lib/ux';
 
 interface College {
   id: string;
@@ -137,10 +138,10 @@ export default function CollegesPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Target Colleges</h1>
-        <p className="text-gray-600 mt-1">Build your college list with Safety, Match, and Reach schools</p>
+    <div className={ux.layout.page}>
+      <div className={ux.layout.header}>
+        <h1 className={ux.text.heading}>Target Colleges</h1>
+        <p className={ux.text.body}>Build your college list with Safety, Match, and Reach schools</p>
       </div>
 
       {/* Add College Card */}
@@ -151,15 +152,17 @@ export default function CollegesPage() {
         <CardContent>
           <div className="space-y-4">
             <div className="grid md:grid-cols-2 gap-4">
-              <Input
-                label="Search Colleges"
-                type="text"
-                placeholder="Search by name..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Search Colleges</label>
+                <Input
+                  type="text"
+                  placeholder="Search by name..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
               
-              <div>
+              <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-900 mb-1">
                   Filter by Country
                 </label>

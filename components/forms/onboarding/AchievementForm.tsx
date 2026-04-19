@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
+import { ux } from '@/lib/ux';
 
 interface Props {
   onNext: (data: any[], completionPercentage?: number) => void;
@@ -203,42 +204,42 @@ export default function AchievementForm({ onNext, onSave, onBack, initialData = 
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-sm text-gray-600 mb-4">
+        <p className={ux.text.body}>
           Showcase your awards, competition results, leadership roles, and social impact. Add at least 2 achievements.
         </p>
 
         {/* List of added achievements */}
         {achievements.length > 0 && (
-          <div className="mb-6 space-y-2">
-            <h3 className="font-medium text-gray-900">Added Achievements ({achievements.length})</h3>
+          <div className="mb-8 mt-6 space-y-3">
+            <h3 className={cn(ux.text.accent, "text-sm")}>Added Achievements ({achievements.length})</h3>
             {achievements.map((achievement, index) => (
-              <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded border">
+              <div key={index} className="flex items-center justify-between p-4 bg-surface-soft rounded-xl border border-surface-muted shadow-sm">
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
+                    <span className={ux.badge.brand}>
                       {achievement.achievementType.replace('_', ' ')}
                     </span>
-                    <p className="font-medium text-gray-900">{achievement.title}</p>
+                    <p className="font-bold text-slate-900">{achievement.title}</p>
                   </div>
-                  <p className="text-sm text-gray-600 mt-1">
+                  <p className="text-xs text-slate-500 mt-2 font-medium">
                     {achievement.organization && `${achievement.organization} • `}
-                    {achievement.gradeLevel}
+                    <span className="capitalize">{achievement.gradeLevel} Grade</span>
                     {achievement.dateAchieved && ` • ${new Date(achievement.dateAchieved).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`}
-                    {achievement.recognitionLevel && ` • ${achievement.recognitionLevel}`}
+                    {achievement.recognitionLevel && ` • ${achievement.recognitionLevel} Level`}
                   </p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-4">
                   <button
                     type="button"
                     onClick={() => editAchievement(index)}
-                    className="text-blue-600 hover:text-blue-800 text-sm"
+                    className="text-brand-600 hover:text-brand-700 font-bold text-xs uppercase tracking-tight"
                   >
                     Edit
                   </button>
                   <button
                     type="button"
                     onClick={() => removeAchievement(index)}
-                    className="text-red-600 hover:text-red-800 text-sm"
+                    className="text-red-500 hover:text-red-600 font-bold text-xs uppercase tracking-tight"
                   >
                     Remove
                   </button>
@@ -268,7 +269,7 @@ export default function AchievementForm({ onNext, onSave, onBack, initialData = 
               setSelectedYear('');
             }}
             variant="outline"
-            className="w-full"
+            className={cn(ux.button.outline, "w-full border-dashed border-2 py-8 hover:bg-brand-50 transition-colors border-brand-200 text-brand-600 font-bold")}
           >
             + Add Achievement
           </Button>
@@ -278,15 +279,15 @@ export default function AchievementForm({ onNext, onSave, onBack, initialData = 
         {showForm && (
           <form 
             onSubmit={handleSubmit(onSubmitAchievement, (errors) => console.error("Form errors:", errors))} 
-            className="space-y-6 p-6 border border-slate-200 rounded-lg bg-slate-50/50 animate-in fade-in zoom-in-95 duration-200"
+            className="space-y-6 p-6 border-2 border-dashed border-brand-200 rounded-xl bg-brand-50/30 animate-in fade-in zoom-in-95 duration-200"
           >
-            <div className="space-y-1.5">
-              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+            <div className="space-y-2">
+              <label className={ux.form.label}>
                 Achievement Type <span className="text-red-500">*</span>
               </label>
               <select
                 {...register('achievementType')}
-                className="w-full h-10 px-3 py-2 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                className={ux.form.input}
               >
                 <option value="">Select type</option>
                 <option value="Award_Honor">Award / Honor</option>
@@ -296,45 +297,45 @@ export default function AchievementForm({ onNext, onSave, onBack, initialData = 
                 <option value="Extracurricular">Extracurricular</option>
               </select>
               {errors.achievementType && (
-                <p className="mt-1 text-xs text-red-500 font-bold">{(errors.achievementType as any).message}</p>
+                <p className={ux.form.error}>{(errors.achievementType as any).message}</p>
               )}
               {achievementType && (
-                <p className="mt-2 text-[10px] uppercase font-bold text-blue-600 tracking-wider">{getTypeDescription(achievementType)}</p>
+                <p className={cn(ux.text.accent, "mt-2 bg-brand-50 inline-block px-2 py-1 rounded")}>{getTypeDescription(achievementType)}</p>
               )}
             </div>
 
-            <div className="space-y-1.5">
-              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+            <div className="space-y-2">
+              <label className={ux.form.label}>
                 Achievement Title <span className="text-red-500">*</span>
               </label>
               <Input
                 placeholder="e.g., National Merit Scholar, State Science Fair 1st Place"
                 {...register('title')}
-                className="bg-white border-slate-200 focus:ring-2 focus:ring-blue-500/20"
+                className={ux.form.input}
               />
-              {errors.title && <p className="text-xs text-red-500 font-bold">{(errors.title as any).message}</p>}
+              {errors.title && <p className={ux.form.error}>{(errors.title as any).message}</p>}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className={ux.form.label}>
                   Organization <span className="text-slate-400 font-normal">(optional)</span>
                 </label>
                 <Input
                   placeholder="e.g., National Merit Corporation"
                   {...register('organization')}
-                  className="bg-white border-slate-200 focus:ring-2 focus:ring-blue-500/20"
+                  className={ux.form.input}
                 />
-                {errors.organization && <p className="text-xs text-red-500 font-bold">{(errors.organization as any).message}</p>}
+                {errors.organization && <p className={ux.form.error}>{(errors.organization as any).message}</p>}
               </div>
 
-              <div className="space-y-1.5">
-                <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+              <div className="space-y-2">
+                <label className={ux.form.label}>
                   Grade Level <span className="text-red-500">*</span>
                 </label>
                 <select
                   {...register('gradeLevel')}
-                  className="w-full h-10 px-3 py-2 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  className={ux.form.input}
                 >
                   <option value="">Select grade</option>
                   <option value="ninth">9th Grade</option>
@@ -343,20 +344,20 @@ export default function AchievementForm({ onNext, onSave, onBack, initialData = 
                   <option value="twelfth">12th Grade</option>
                 </select>
                 {errors.gradeLevel && (
-                  <p className="mt-1 text-xs text-red-500 font-bold">{(errors.gradeLevel as any).message}</p>
+                  <p className={ux.form.error}>{(errors.gradeLevel as any).message}</p>
                 )}
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className={ux.form.label}>
                   Month Achieved <span className="text-slate-400 font-normal">(optional)</span>
                 </label>
                 <select
                   value={selectedMonth}
                   onChange={(e) => setSelectedMonth(e.target.value)}
-                  className="w-full h-10 px-3 py-2 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  className={ux.form.input}
                 >
                   <option value="">Select month</option>
                   {MONTHS.map((month) => (
@@ -367,14 +368,14 @@ export default function AchievementForm({ onNext, onSave, onBack, initialData = 
                 </select>
               </div>
 
-              <div className="space-y-1.5">
-                <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+              <div className="space-y-2">
+                <label className={ux.form.label}>
                   Year Achieved <span className="text-slate-400 font-normal">(optional)</span>
                 </label>
                 <select
                   value={selectedYear}
                   onChange={(e) => setSelectedYear(e.target.value)}
-                  className="w-full h-10 px-3 py-2 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  className={ux.form.input}
                 >
                   <option value="">Select year</option>
                   {years.map((year) => (
@@ -386,13 +387,13 @@ export default function AchievementForm({ onNext, onSave, onBack, initialData = 
               </div>
             </div>
 
-            <div className="space-y-1.5">
-              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+            <div className="space-y-2">
+              <label className={ux.form.label}>
                 Recognition Level <span className="text-red-500">*</span>
               </label>
               <select
                 {...register('recognitionLevel')}
-                className="w-full h-10 px-3 py-2 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                className={ux.form.input}
               >
                 <option value="">Select level</option>
                 <option value="School">School</option>
@@ -405,53 +406,53 @@ export default function AchievementForm({ onNext, onSave, onBack, initialData = 
               </select>
               
               {errors.recognitionLevel && (
-                <p className="mt-1 text-xs text-red-500 font-bold">{(errors.recognitionLevel as any).message}</p>
+                <p className={ux.form.error}>{(errors.recognitionLevel as any).message}</p>
               )}
             </div>
 
-            <div className="space-y-1.5">
-              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+            <div className="space-y-2">
+              <label className={ux.form.label}>
                 Description <span className="text-red-500">*</span>
               </label>
               <textarea
                 {...register('description')}
                 rows={3}
                 placeholder="Describe the achievement and your role..."
-                className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                className={cn(ux.form.input, "min-h-[100px]")}
               />
               {errors.description && (
-                <p className="mt-1 text-xs text-red-500 font-bold">{(errors.description as any).message}</p>
+                <p className={ux.form.error}>{(errors.description as any).message}</p>
               )}
             </div>
 
             {achievementType === 'Social_Impact' && (
-              <div className="space-y-1.5">
-                <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+              <div className="space-y-2">
+                <label className={ux.form.label}>
                   Measurable Impact <span className="text-slate-400 font-normal">(optional)</span>
                 </label>
                 <Input
                   placeholder="e.g., 500 families served, ₹50,000 raised"
                   {...register('metrics')}
-                  className="bg-white border-slate-200 focus:ring-2 focus:ring-blue-500/20"
+                  className={ux.form.input}
                 />
-                {errors.metrics && <p className="text-xs text-red-500 font-bold">{(errors.metrics as any).message}</p>}
+                {errors.metrics && <p className={ux.form.error}>{(errors.metrics as any).message}</p>}
               </div>
             )}
 
-            <div className="space-y-1.5">
-              <label className="block text-xs uppercase tracking-wider font-bold text-slate-500">
+            <div className="space-y-2">
+              <label className={ux.form.label}>
                 Verification Link <span className="text-slate-400 font-normal">(optional)</span>
               </label>
               <Input
                 placeholder="https://..."
                 {...register('verifiableLink')}
-                className="bg-white border-slate-200 focus:ring-2 focus:ring-blue-500/20"
+                className={ux.form.input}
               />
-              {errors.verifiableLink && <p className="text-xs text-red-500 font-bold">{(errors.verifiableLink as any).message}</p>}
+              {errors.verifiableLink && <p className={ux.form.error}>{(errors.verifiableLink as any).message}</p>}
             </div>
 
-            <div className="flex gap-2">
-              <Button type="submit" className="flex-1">
+            <div className="flex gap-4">
+              <Button type="submit" className={cn(ux.button.primary, "flex-1")}>
                 {editIndex !== null ? 'Update Achievement' : 'Add Achievement'}
               </Button>
               <Button
@@ -464,6 +465,7 @@ export default function AchievementForm({ onNext, onSave, onBack, initialData = 
                   setEditIndex(null);
                 }}
                 variant="outline"
+                className={ux.button.outline}
               >
                 Cancel
               </Button>
@@ -473,14 +475,15 @@ export default function AchievementForm({ onNext, onSave, onBack, initialData = 
       </div>
 
       {/* Navigation */}
-      <div className="flex justify-between pt-6 border-t">
-        <Button type="button" onClick={onBack} variant="outline">
+      <div className="flex justify-between pt-6 border-t border-surface-muted">
+        <Button type="button" onClick={onBack} variant="outline" className={ux.button.outline}>
           ← Back
         </Button>
         <Button
           type="button"
           onClick={handleNext}
           disabled={achievements.length < 2}
+          className={ux.button.primary}
         >
           Next →
         </Button>

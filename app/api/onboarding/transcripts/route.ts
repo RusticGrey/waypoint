@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { CurriculumType } from '@prisma/client';
 import { transcriptSchema } from '@/lib/validations/student';
 import { z } from 'zod';
 import { calculateProfileCompletion } from '@/lib/utils/profile-completion';
@@ -22,6 +23,30 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { transcripts } = transcriptsArraySchema.parse(body);
 
+    // Add any new courseNames to the global Subject table
+    for (const t of transcripts) {
+      if (t.curriculumType && t.courseName) {
+        try {
+          await prisma.subject.upsert({
+            where: {
+              subjectName_curriculumType: {
+                subjectName: t.courseName,
+                curriculumType: t.curriculumType as CurriculumType,
+              }
+            },
+            update: {}, // Do nothing if it exists
+            create: {
+              subjectName: t.courseName,
+              curriculumType: t.curriculumType as CurriculumType,
+            }
+          });
+        } catch (e) {
+          // Ignore errors (e.g. unique constraint race conditions)
+          console.error('Failed to upsert subject:', e);
+        }
+      }
+    }
+
     // Deduplicate transcripts based on unique constraint fields
     const uniqueTranscriptsMap = new Map();
     transcripts.forEach((t) => {
@@ -38,12 +63,15 @@ export async function POST(req: Request) {
     const createdTranscripts = await prisma.transcript.createMany({
       data: uniqueTranscripts.map((transcript) => ({
         courseName: transcript.courseName,
-        gradeLevel: transcript.gradeLevel,
-        semester: transcript.semester,
+        gradeLevel: transcript.gradeLevel as any,
+        semester: transcript.semester as any,
         gradeValue: transcript.gradeValue,
         credits: transcript.credits,
-        honorsLevel: transcript.honorsLevel,
+        honorsLevel: transcript.honorsLevel as any,
         isBoardExam: transcript.isBoardExam,
+        curriculumType: (transcript.curriculumType && transcript.curriculumType !== '') ? transcript.curriculumType as any : null,
+        otherCurriculumName: transcript.otherCurriculumName || null,
+        gradingSystemType: (transcript.gradingSystemType && transcript.gradingSystemType !== '') ? transcript.gradingSystemType as any : null,
         studentId: session.user.id,
       })),
     });
@@ -53,7 +81,6 @@ export async function POST(req: Request) {
       where: { userId: session.user.id },
       include: {
         personalProfile: true,
-        academicProfile: true,
         transcripts: true,
         activities: true,
         achievements: true,
