@@ -19,21 +19,23 @@ export async function seedIntelligence(pOverride?: PrismaClient) {
     return;
   }
 
-  // Find all delta files and sort them by timestamp
+  // Find all intelligence files (Handle both legacy base file and new versioned deltas)
   const files = fs.readdirSync(seedsDir)
-    .filter(f => f.startsWith('intelligence-delta-') && f.endsWith('.json'))
+    .filter(f => (f.startsWith('intelligence-delta-') || f === 'intelligence-data.json') && f.endsWith('.json'))
     .sort((a, b) => {
+      if (a === 'intelligence-data.json') return -1;
+      if (b === 'intelligence-data.json') return 1;
       const tsA = parseInt(a.split('-')[2]);
       const tsB = parseInt(b.split('-')[2]);
       return tsA - tsB;
     });
 
   if (files.length === 0) {
-    console.log('✨ No delta files found. Skipping intelligence seed.');
+    console.log('✨ No intelligence data files found. Skipping seed.');
     return;
   }
 
-  console.log(`📂 Found ${files.length} delta file(s). Processing...`);
+  console.log(`📂 Found ${files.length} intelligence file(s). Processing...`);
 
   for (const file of files) {
     console.log(`📄 Applying delta: ${file}`);
