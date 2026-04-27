@@ -130,18 +130,41 @@ Return ONLY valid JSON.`,
 ];
 
 export async function seedTemplates() {
-  console.log('Seeding extraction templates...');
+  console.log('Seeding extraction templates (RankingSourcePrompt)...');
+  
+  // 1. Resolve the correct RankingSource IDs first
+  const usNews = await prisma.rankingSource.findUnique({ where: { name: 'us_news' } });
+  if (!usNews) {
+    console.warn("⚠️ US News ranking source not found. Please seed ranking sources first.");
+    return;
+  }
+
+  const p = prisma as any;
+  const promptModel = p.rankingSourcePrompt || p.RankingSourcePrompt;
+
+  if (!promptModel) {
+    console.warn("⚠️ RankingSourcePrompt model not found in Prisma client.");
+    return;
+  }
+
   for (const template of templates) {
-    await prisma.extractionTemplate.upsert({
+    await promptModel.upsert({
       where: {
-        section_sourceType_version: {
-          section: template.section,
-          sourceType: template.sourceType,
+        rankingSourceId_version: {
+          rankingSourceId: usNews.id,
           version: 1,
         },
       },
-      update: template,
-      create: template,
+      update: {
+        promptText: template.promptTemplate,
+        isActive: true
+      },
+      create: {
+        rankingSourceId: usNews.id,
+        promptText: template.promptTemplate,
+        version: 1,
+        isActive: true
+      },
     });
   }
   console.log('Extraction templates seeded ✓');

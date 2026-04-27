@@ -52,7 +52,11 @@ async function main() {
     timestamp: Date.now(),
     glossary,
     sources,
-    rankingData,
+    // ENHANCED PAYLOAD: Include college names for ID resolution in other environments
+    rankingData: rankingData.map(r => {
+      const c = colleges.find(col => col.id === r.collegeId);
+      return { ...r, collegeName: c ? c.name : null };
+    }),
     colleges
   };
 

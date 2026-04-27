@@ -94,12 +94,19 @@ export async function seedIntelligence(pOverride?: PrismaClient) {
       });
     }
 
-    // 4. Seed Verified Ranking Data
+    // 4. Seed Verified Ranking Data (RESOLVE LOCAL IDs)
     for (const ranking of data.rankingData) {
+      // NATURAL KEY RESOLUTION: Map name to local environment ID
+      let localCollegeId = ranking.collegeId;
+      if (ranking.collegeName) {
+        const localCol = await p.college.findUnique({ where: { name: ranking.collegeName } });
+        if (localCol) localCollegeId = localCol.id;
+      }
+
       await p.collegeRankingData.upsert({
         where: {
           collegeId_rankingSourceId_academicYear: {
-            collegeId: ranking.collegeId,
+            collegeId: localCollegeId,
             rankingSourceId: ranking.rankingSourceId,
             academicYear: ranking.academicYear
           }
@@ -116,7 +123,7 @@ export async function seedIntelligence(pOverride?: PrismaClient) {
         },
         create: {
           id: ranking.id,
-          collegeId: ranking.collegeId,
+          collegeId: localCollegeId,
           rankingSourceId: ranking.rankingSourceId,
           academicYear: ranking.academicYear,
           acceptance_rate: ranking.acceptance_rate,
