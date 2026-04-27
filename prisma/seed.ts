@@ -72,8 +72,10 @@ async function main() {
   const c2 = await seedCounselor('lavanya.rajesh@waypoint.edu', 'Lavanya', 'Rajesh', false);
   console.log(`✅ Counselor Created: ${c2.firstName} ${c2.lastName}`);
 
-  // 3. Seed Extraction Templates
-  // This must run after core users but can be before intelligence deltas
+  // 3. Seed College Intelligence (Deltas)
+  await seedIntelligence(prisma);
+
+  // 4. Seed Extraction Templates
   await seedTemplates();
   await seedGenericTemplate();
 
