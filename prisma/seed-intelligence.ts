@@ -41,17 +41,17 @@ export async function seedIntelligence(pOverride?: PrismaClient) {
     console.log(`📄 Applying delta: ${file}`);
     const data = JSON.parse(fs.readFileSync(path.join(seedsDir, file), 'utf8'));
 
-    // 1. Seed Colleges (Upsert ensures new colleges are created)
+    // 1. Seed Colleges (UPSERT BY NAME to prevent ID conflicts between environments)
     for (const college of data.colleges) {
       await p.college.upsert({
-        where: { id: college.id },
+        where: { name: college.name },
         update: {
           aliases: college.aliases,
           country: college.country,
-          name: college.name
         },
         create: {
-          id: college.id,
+          // If the college is brand new, use the name as ID to keep it human-readable and consistent
+          id: college.id || college.name.toLowerCase().replace(/[^a-z0-9]/g, '-'),
           name: college.name,
           aliases: college.aliases,
           country: college.country,
@@ -109,11 +109,19 @@ export async function seedIntelligence(pOverride?: PrismaClient) {
         if (localCol) localCollegeId = localCol.id;
       }
 
+      // SOURCE RESOLUTION: Map source name to local environment ID
+      let localSourceId = ranking.rankingSourceId;
+      const sourceInfo = data.sources.find((s: any) => s.id === ranking.rankingSourceId);
+      if (sourceInfo) {
+        const localSource = await p.rankingSource.findUnique({ where: { name: sourceInfo.name } });
+        if (localSource) localSourceId = localSource.id;
+      }
+
       await p.collegeRankingData.upsert({
         where: {
           collegeId_rankingSourceId_academicYear: {
             collegeId: localCollegeId,
-            rankingSourceId: ranking.rankingSourceId,
+            rankingSourceId: localSourceId,
             academicYear: ranking.academicYear
           }
         },
@@ -130,7 +138,7 @@ export async function seedIntelligence(pOverride?: PrismaClient) {
         create: {
           id: ranking.id,
           collegeId: localCollegeId,
-          rankingSourceId: ranking.rankingSourceId,
+          rankingSourceId: localSourceId,
           academicYear: ranking.academicYear,
           acceptance_rate: ranking.acceptance_rate,
           rankings: ranking.rankings,
