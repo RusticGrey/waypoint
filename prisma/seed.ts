@@ -72,22 +72,22 @@ async function main() {
   const c2 = await seedCounselor('lavanya.rajesh@waypoint.edu', 'Lavanya', 'Rajesh', false);
   console.log(`✅ Counselor Created: ${c2.firstName} ${c2.lastName}`);
 
-  // 3. Seed College Intelligence (Deltas)
-  // This must run before templates to ensure RankingSources exist
-  await seedIntelligence(prisma);
-
-  // 4. Seed Extraction Templates
+  // 3. Seed Extraction Templates
+  // This must run after core users but can be before intelligence deltas
   await seedTemplates();
   await seedGenericTemplate();
 
-  console.log('🎉 Core seeding complete.');
+  console.log('🎉 Core infrastructure seeding complete.');
 }
 
-main()
-  .catch((e) => {
-    console.error('❌ Seed error:', e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+// Only execute main if this file is run directly
+if (require.main === module) {
+  main()
+    .catch((e) => {
+      console.error('❌ Seed error:', e);
+      process.exit(1);
+    })
+    .finally(async () => {
+      await prisma.$disconnect();
+    });
+}

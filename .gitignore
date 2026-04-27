@@ -45,6 +45,9 @@ next-env.d.ts
 .env.production
 .env.*.local
 
+# Beacon AI Sync State
+scripts/.sync-state.json
+
 # Development
 .DS_Store
 *.log

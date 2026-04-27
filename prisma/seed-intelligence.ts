@@ -9,9 +9,13 @@ export async function seedIntelligence(pOverride?: PrismaClient) {
   const p = pOverride || prisma;
   console.log('🧠 Seeding College Intelligence Data (Deltas)...');
   
-  const seedsDir = path.join(__dirname, 'seeds');
+  // Vercel-friendly absolute path resolution
+  const seedsDir = path.resolve(process.cwd(), 'prisma', 'seeds');
+  console.log(`📂 Checking for deltas in: ${seedsDir}`);
+
   if (!fs.existsSync(seedsDir)) {
-    console.warn(`⚠️ No seeds directory found at ${seedsDir}.`);
+    console.warn(`⚠️ Seeds directory not found at ${seedsDir}. Creating it...`);
+    fs.mkdirSync(seedsDir, { recursive: true });
     return;
   }
 
