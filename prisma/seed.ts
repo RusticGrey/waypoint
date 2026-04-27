@@ -72,12 +72,13 @@ async function main() {
   const c2 = await seedCounselor('lavanya.rajesh@waypoint.edu', 'Lavanya', 'Rajesh', false);
   console.log(`✅ Counselor Created: ${c2.firstName} ${c2.lastName}`);
 
-  // 3. Seed Extraction Templates
+  // 3. Seed College Intelligence (Deltas)
+  // This must run before templates to ensure RankingSources exist
+  await seedIntelligence(prisma);
+
+  // 4. Seed Extraction Templates
   await seedTemplates();
   await seedGenericTemplate();
-
-  // 4. Seed College Intelligence (Deltas)
-  await seedIntelligence(prisma);
 
   console.log('🎉 Core seeding complete.');
 }

@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 export async function seedGenericTemplate() {
-  console.log('🌱 Seeding Generic Extraction Template...');
+  console.log('🌱 Seeding Generic Extraction Template (RankingSourcePrompt)...');
 
   const genericPrompt = `
     Extract all structured facts from this college document. 
@@ -32,25 +32,36 @@ export async function seedGenericTemplate() {
     }
   `;
 
-  await (prisma as any).extractionTemplate.upsert({
+  const p = prisma as any;
+  const promptModel = p.rankingSourcePrompt || p.RankingSourcePrompt;
+
+  if (!promptModel) {
+    console.warn("⚠️ RankingSourcePrompt model not found in Prisma client.");
+    return;
+  }
+
+  // Ensure "Generic" source exists for this template
+  const genericSource = await prisma.rankingSource.upsert({
+    where: { name: 'all' },
+    update: { displayName: 'Generic Source' },
+    create: { name: 'all', displayName: 'Generic Source', baseUrl: '', isActive: true }
+  });
+
+  await promptModel.upsert({
     where: { 
-      section_sourceType_version: {
-        section: 'generic',
-        sourceType: 'all',
+      rankingSourceId_version: {
+        rankingSourceId: genericSource.id,
         version: 1
       }
     },
     update: {
-      promptTemplate: genericPrompt,
+      promptText: genericPrompt,
       isActive: true
     },
     create: {
-      name: 'Generic Fact Extractor',
-      section: 'generic',
-      sourceType: 'all',
+      rankingSourceId: genericSource.id,
+      promptText: genericPrompt,
       version: 1,
-      promptTemplate: genericPrompt,
-      outputSchema: {},
       isActive: true
     }
   });
