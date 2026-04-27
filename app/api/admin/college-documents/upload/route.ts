@@ -6,12 +6,9 @@ import { GeminiExtractor } from '@/lib/scraping/llm/geminiExtractor';
 import crypto from 'crypto';
 const pdf = require('pdf-parse');
 
-// Configure segments for parsing large PDF buffers
-export const config = {
-  api: {
-    bodyParser: false, // Handle manual body parsing if needed for large PDFs
-  },
-};
+// Next.js 14 Route Segment Config
+export const dynamic = 'force-dynamic';
+export const maxDuration = 60; // Increase timeout for large file processing if needed
 
 export async function POST(req: NextRequest) {
   try {

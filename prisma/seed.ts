@@ -6,6 +6,7 @@ import { PrismaClient, UserRole } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { seedTemplates } from "./seed-templates";
 import { seedGenericTemplate } from "./seed-generic-template";
+import { seedIntelligence } from "./seed-intelligence";
 
 const prisma = new PrismaClient();
 
@@ -74,6 +75,9 @@ async function main() {
   // 3. Seed Extraction Templates
   await seedTemplates();
   await seedGenericTemplate();
+
+  // 4. Seed College Intelligence (Deltas)
+  await seedIntelligence(prisma);
 
   console.log('🎉 Core seeding complete.');
 }

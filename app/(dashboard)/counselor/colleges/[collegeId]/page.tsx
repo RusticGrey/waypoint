@@ -28,6 +28,8 @@ export default function CollegeDetailPage() {
   const [activeTab, setActiveTab] = useState<Tab>('overview');
   const [activeSubTab, setActiveSubTab] = useState<string>('');
 
+  const isProduction = process.env.NODE_ENV === 'production';
+
   useEffect(() => {
     fetchCollege();
     fetchRankingSources();
@@ -128,8 +130,8 @@ export default function CollegeDetailPage() {
         <div className="flex p-1 bg-slate-100/50 rounded-2xl w-fit border border-slate-200 shadow-inner">
           {[
             { id: 'overview', label: 'Overview', icon: LayoutDashboard },
-            { id: 'documents', label: 'Knowledge Repository', icon: Database },
-          ].map((tab) => (
+            ...(!isProduction ? [{ id: 'documents', label: 'Knowledge Repository', icon: Database }] : []),
+          ].map((tab: any) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as Tab)}
@@ -314,31 +316,33 @@ export default function CollegeDetailPage() {
             </CardContent>
           </Card>
 
-          {/* Metadata Management */}
-          <div className="mt-12 pt-8 border-t border-slate-100">
-            <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-300 mb-8 ml-1">Configuration & Metadata</h3>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              <div className="lg:col-span-2">
-                <CollegeMetadataEditor college={college} onUpdate={fetchCollege} />
-              </div>
-              <div className="bg-slate-50 rounded-3xl p-8 border border-slate-100 flex flex-col justify-center">
-                <div className="space-y-6 text-center lg:text-left">
-                  <div>
-                    <h4 className="text-[10px] font-black text-slate-900 uppercase tracking-widest mb-2">Data Quality Assurance</h4>
-                    <p className="text-xs text-slate-500 font-medium leading-relaxed">
-                      All insights displayed in the hub are derived via multimodal vision models and verified by counselor-level audits.
-                    </p>
-                  </div>
-                  <div className="pt-4 flex items-center gap-4 justify-center lg:justify-start">
-                     <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center border border-slate-200 shadow-sm">
-                        <CheckCircle2 className="w-6 h-6 text-green-500" />
-                     </div>
-                     <span className="text-[10px] font-black uppercase text-slate-400 tracking-tight">Verified Archive Status</span>
+          {/* Metadata Management - Hidden in Production */}
+          {!isProduction && (
+            <div className="mt-12 pt-8 border-t border-slate-100">
+              <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-300 mb-8 ml-1">Configuration & Metadata</h3>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-2">
+                  <CollegeMetadataEditor college={college} onUpdate={fetchCollege} />
+                </div>
+                <div className="bg-slate-50 rounded-3xl p-8 border border-slate-100 flex flex-col justify-center">
+                  <div className="space-y-6 text-center lg:text-left">
+                    <div>
+                      <h4 className="text-[10px] font-black text-slate-900 uppercase tracking-widest mb-2">Data Quality Assurance</h4>
+                      <p className="text-xs text-slate-500 font-medium leading-relaxed">
+                        All insights displayed in the hub are derived via multimodal vision models and verified by counselor-level audits.
+                      </p>
+                    </div>
+                    <div className="pt-4 flex items-center gap-4 justify-center lg:justify-start">
+                       <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center border border-slate-200 shadow-sm">
+                          <CheckCircle2 className="w-6 h-6 text-green-500" />
+                       </div>
+                       <span className="text-[10px] font-black uppercase text-slate-400 tracking-tight">Verified Archive Status</span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       )}
 

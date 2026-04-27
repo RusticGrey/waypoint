@@ -1,0 +1,3249 @@
+{
+  "glossary": [],
+  "sources": [
+    {
+      "id": "cmo9ib50k0000h0knncp62cav",
+      "name": "us_news",
+      "displayName": "US News",
+      "baseUrl": "https://www.usnews.com/best-colleges",
+      "isActive": true,
+      "createdAt": "2026-04-22T03:42:14.564Z",
+      "updatedAt": "2026-04-22T03:42:14.564Z"
+    }
+  ],
+  "rankingData": [
+    {
+      "id": "cmog4ajf2001328uu5grfonlf",
+      "collegeId": "massachusetts-institute-of-technology",
+      "rankingSourceId": "cmo9ib50k0000h0knncp62cav",
+      "academicYear": "of",
+      "acceptance_rate": null,
+      "rankings": {
+        "admissions_engine": {
+          "deadlines": {
+            "transfer_fall": "March 15",
+            "early_decision": null,
+            "regular_decision": "Jan. 1"
+          },
+          "source_page": "Admissions page 1, 2, 3, 4, 5, 8, 9, 10; Overview page 2",
+          "acceptance_rate": 0.05,
+          "entrance_exam_policies": {
+            "test_policy": "Required to be considered for admission",
+            "ap_scores_accepted": [
+              5
+            ],
+            "ib_higher_level_accepted": [
+              7
+            ]
+          },
+          "middle_50_percentile_stats": {
+            "sat_math": {
+              "p25": 780,
+              "p75": 800
+            },
+            "avg_hs_gpa": null,
+            "act_composite": {
+              "p25": 34,
+              "p75": 36
+            },
+            "sat_reading_writing": {
+              "p25": 740,
+              "p75": 780
+            }
+          },
+          "admissions_factor_weighting": {
+            "important": [
+              "Rigor of secondary school record",
+              "GPA",
+              "Standardized test scores",
+              "Application essay",
+              "Recommendations",
+              "Interview",
+              "Extracurricular activities",
+              "Talent/ability"
+            ],
+            "considered": [
+              "Class rank",
+              "Geographical residence",
+              "Volunteer work"
+            ],
+            "not_considered": [
+              "State residency",
+              "Religious affiliation/commitment",
+              "Work experience",
+              "Applicant's interest level"
+            ],
+            "very_important": [
+              "Character/personal qualities"
+            ]
+          }
+        },
+        "financial_profile": {
+          "source_page": "Tuition & Financial Aid page 1, 2",
+          "sticker_price_total": 86660,
+          "net_price_by_income_bracket": [
+            {
+              "avg_cost": 5347,
+              "income_range": "$0-$30,000"
+            },
+            {
+              "avg_cost": -2251,
+              "income_range": "$30,001-$48,000"
+            },
+            {
+              "avg_cost": 1918,
+              "income_range": "$48,001-$75,000"
+            },
+            {
+              "avg_cost": 13035,
+              "income_range": "$75,001-$110,000"
+            },
+            {
+              "avg_cost": 44726,
+              "income_range": "$110,001+"
+            }
+          ]
+        },
+        "international_context": {
+          "source_page": "Student Life page 2; Admissions page 12, 13; Academics page 11",
+          "top_countries_represented": [
+            {
+              "country": "China",
+              "percentage": 0.12
+            },
+            {
+              "country": "India",
+              "percentage": 0.04
+            },
+            {
+              "country": "Thailand",
+              "percentage": 0.04
+            },
+            {
+              "country": "Brazil",
+              "percentage": 0.03
+            },
+            {
+              "country": "Saudi Arabia",
+              "percentage": 0.03
+            },
+            {
+              "country": "Ukraine",
+              "percentage": 0.03
+            }
+          ],
+          "intl_student_retention_rate": 1,
+          "english_proficiency_minimums": {
+            "IELTS": 7,
+            "TOEFL": 90
+          },
+          "percent_international_undergrad": 0.117
+        },
+        "institutional_identity": {
+          "name": "Massachusetts Institute of Technology",
+          "type": "Private",
+          "setting": "Urban",
+          "location": {
+            "city": "Cambridge",
+            "state": "MA",
+            "address": "77 Massachusetts Avenue, Cambridge, MA, 02139",
+            "country": null
+          },
+          "source_page": "Overview page 1, Campus Life page 2, 6",
+          "campus_size_acres": 168
+        },
+        "rankings_comprehensive": {
+          "best_value": 4,
+          "source_page": "Rankings page 1, 2; Overview page 1, 2",
+          "most_innovative": 2,
+          "overall_national": 2,
+          "subject_and_specialty_rankings": [
+            {
+              "rank": 1,
+              "department": "Engineering",
+              "sub_specialties": [
+                {
+                  "name": "Aerospace /Aeronautical / Astronautical",
+                  "rank": 1
+                },
+                {
+                  "name": "Biomedical",
+                  "rank": 5
+                },
+                {
+                  "name": "Chemical",
+                  "rank": 1
+                },
+                {
+                  "name": "Civil",
+                  "rank": 6
+                },
+                {
+                  "name": "Computer",
+                  "rank": 1
+                },
+                {
+                  "name": "Electrical / Electronic / Communications",
+                  "rank": 2
+                },
+                {
+                  "name": "Environmental / Environmental Health",
+                  "rank": 9
+                },
+                {
+                  "name": "Industrial / Manufacturing",
+                  "rank": 16
+                },
+                {
+                  "name": "Materials",
+                  "rank": 1
+                },
+                {
+                  "name": "Mechanical",
+                  "rank": 1
+                }
+              ]
+            },
+            {
+              "rank": 1,
+              "department": "Business",
+              "sub_specialties": [
+                {
+                  "name": "Accounting",
+                  "rank": 47
+                },
+                {
+                  "name": "Analytics",
+                  "rank": 2
+                },
+                {
+                  "name": "Entrepreneurship",
+                  "rank": 2
+                },
+                {
+                  "name": "Finance",
+                  "rank": 4
+                },
+                {
+                  "name": "Management",
+                  "rank": 8
+                },
+                {
+                  "name": "Management Information Systems",
+                  "rank": 2
+                },
+                {
+                  "name": "Marketing",
+                  "rank": 18
+                },
+                {
+                  "name": "Production / Operation Management",
+                  "rank": 1
+                },
+                {
+                  "name": "Quantitative Analysis",
+                  "rank": 1
+                },
+                {
+                  "name": "Supply Chain Management / Logistics",
+                  "rank": 4
+                }
+              ]
+            },
+            {
+              "rank": 1,
+              "department": "Computer Science",
+              "sub_specialties": [
+                {
+                  "name": "Artificial Intelligence",
+                  "rank": 1
+                },
+                {
+                  "name": "Biocomputing/Bioinformatics/Biotechnology",
+                  "rank": 1
+                },
+                {
+                  "name": "Computer Systems",
+                  "rank": 1
+                },
+                {
+                  "name": "Cybersecurity",
+                  "rank": 3
+                },
+                {
+                  "name": "Data Analytics/Science",
+                  "rank": 3
+                },
+                {
+                  "name": "Game/Simulation Development",
+                  "rank": 4
+                },
+                {
+                  "name": "Mobile/Web Applications",
+                  "rank": 4
+                },
+                {
+                  "name": "Programming Languages",
+                  "rank": 2
+                },
+                {
+                  "name": "Software Engineering",
+                  "rank": 2
+                },
+                {
+                  "name": "Theory",
+                  "rank": 1
+                }
+              ]
+            },
+            {
+              "rank": 2,
+              "department": "Economics",
+              "sub_specialties": []
+            }
+          ]
+        },
+        "academic_roi_and_outcomes": {
+          "source_page": "Academics page 1, 4; Rankings page 4; Campus Life page 2, 6",
+          "graduation_rate_4yr": 0.83,
+          "student_faculty_ratio": "3:1",
+          "major_performance_data": [
+            {
+              "major_name": "Computer Science",
+              "grad_percentage": 0.26,
+              "median_starting_salary": 220064
+            },
+            {
+              "major_name": "Mathematics, General",
+              "grad_percentage": 0.13,
+              "median_starting_salary": 226193
+            },
+            {
+              "major_name": "Mechanical Engineering",
+              "grad_percentage": 0.08,
+              "median_starting_salary": 106765
+            },
+            {
+              "major_name": "Electrical and Electronics Engineering",
+              "grad_percentage": 0.05,
+              "median_starting_salary": 190731
+            },
+            {
+              "major_name": "Physics, General",
+              "grad_percentage": 0.05,
+              "median_starting_salary": 126258
+            }
+          ],
+          "faculty_research_impact": {
+            "bibliometric_rank": 1,
+            "citation_impact_score": 2.41
+          },
+          "freshman_retention_rate": 0.99,
+          "median_salary_6yrs_post_grad": 131633
+        },
+        "supplementary_admissions_insights": {
+          "other_notable_data": {
+            "honors_college": "No",
+            "degrees_offered": [
+              "Bachelor's",
+              "Master's",
+              "Doctorate - research/scholarship"
+            ],
+            "honors_programs": "No",
+            "alumni_giving_rate": 0.212,
+            "athletic_association": "NCAA III",
+            "yellow_ribbon_program": "Yes",
+            "pre_professional_programs": [
+              "Pre-law",
+              "pre-dentistry",
+              "pre-medicine",
+              "pre-veterinary science",
+              "pre-optometry",
+              "pre-pharmacy",
+              "other"
+            ],
+            "yellow_ribbon_access_policy": "Provides funding to all eligible students",
+            "yellow_ribbon_funding_policy": "Limits or caps funding on tuition that remains after Post-9/11 GI Bill",
+            "cooperative_education_programs": [
+              "Computer Science",
+              "Engineering"
+            ],
+            "percent_students_live_on_campus": 0.92,
+            "classes_fewer_than_20_students_percentage": 0.678,
+            "number_of_countries_represented_by_international_students": 113
+          },
+          "specialized_facilities": [
+            "day care",
+            "health service",
+            "nondisabled tutoring",
+            "placement service",
+            "women's center",
+            "24-hour emergency telephones",
+            "24-hour foot and vehicle patrols",
+            "Controlled dormitory access (key, security card, etc.)",
+            "Late night transport/escort service",
+            "Lighted pathways/sidewalks",
+            "Single rooms available to students with specific learning disabilities",
+            "English lab"
+          ],
+          "campus_culture_indicators": [
+            "rigorous",
+            "no grade inflation",
+            "grit and determination",
+            "thrives on solving some of the most p...",
+            "World Class Education and Research",
+            "challenges each student and recognizes their exceptional abilities",
+            "Simply amazing life altering university unmatched by any",
+            "no intro needed. It's every bit as rigorous & extraordinary as you've heard.",
+            "Everyone admitted is an outstanding student; no legacy/ development admits. More money gets you nothing!",
+            "No student graduates without having mastered 2 rigorous courses in physics",
+            "Amazing school, even better people",
+            "academics are top notch, and humbling for a high school \"superstar\"",
+            "best part of MIT is the people. No legacies, no donor admits-just smart kids who deserve to be there. And they are, in large, accepting and non-judgement",
+            "If you're an engineer or scientist at heart, you can't go wrong with MIT.",
+            "MIT really prepares you to make astonishing contributions to the planet."
+          ],
+          "unique_academic_opportunities": [
+            "Cooperative (work-study plan) program (7% participation)",
+            "Undergraduate research/creative projects (92% participation)",
+            "Senior capstone or culminating academic experience (89% participation)",
+            "First-year experiences (85% participation)",
+            "Writing in the disciplines (100% participation)",
+            "Cooperative education programs: Computer Science, Engineering",
+            "Pre-law, pre-dentistry, pre-medicine, pre-veterinary science, pre-optometry, pre-pharmacy, other pre-professional programs"
+          ]
+        }
+      },
+      "cost_of_attendance": null,
+      "admissions_data": null,
+      "fieldsPresent": [
+        "institutional_identity",
+        "rankings_comprehensive",
+        "admissions_engine",
+        "academic_roi_and_outcomes",
+        "financial_profile",
+        "international_context",
+        "supplementary_admissions_insights"
+      ],
+      "extractionMethod": "LLM",
+      "llmModelUsed": "gemini-2.5-flash",
+      "scraped_at": "2026-04-26T18:44:15.142Z",
+      "approvedAt": "2026-04-26T18:45:13.120Z",
+      "approvedByUserId": "eca9ae55-403c-4af4-be68-b9202c68512e"
+    },
+    {
+      "id": "cmog4tbks001j28uu9l535t10",
+      "collegeId": "university-of-chicago",
+      "rankingSourceId": "cmo9ib50k0000h0knncp62cav",
+      "academicYear": "chicago",
+      "acceptance_rate": null,
+      "rankings": {
+        "admissions_engine": {
+          "deadlines": {
+            "transfer_fall": null,
+            "early_decision": null,
+            "regular_decision": null
+          },
+          "source_page": "Admissions page 1, 3, 5, 6, 8, 9, 10",
+          "acceptance_rate": 0.04,
+          "entrance_exam_policies": {
+            "test_policy": "test-optional",
+            "ap_scores_accepted": [
+              4,
+              5
+            ],
+            "ib_higher_level_accepted": [
+              7
+            ]
+          },
+          "middle_50_percentile_stats": {
+            "sat_math": {
+              "p25": 770,
+              "p75": 800
+            },
+            "avg_hs_gpa": null,
+            "act_composite": {
+              "p25": 34,
+              "p75": 35
+            },
+            "sat_reading_writing": {
+              "p25": 740,
+              "p75": 780
+            }
+          },
+          "admissions_factor_weighting": {
+            "important": [],
+            "considered": [
+              "Class rank",
+              "GPA",
+              "Standardized test scores",
+              "First-generation college student",
+              "Alumni/alumnae relations",
+              "Geographical residence",
+              "State residency",
+              "Religious affiliation/commitment",
+              "Volunteer work",
+              "Work experience"
+            ],
+            "not_considered": [
+              "Interview",
+              "Applicant's interest level"
+            ],
+            "very_important": [
+              "Rigor of secondary school record",
+              "Application essay",
+              "Recommendations",
+              "Extracurricular activities",
+              "Talent/ability",
+              "Character/personal qualities"
+            ]
+          }
+        },
+        "financial_profile": {
+          "source_page": "Tuition page 1, 2",
+          "sticker_price_total": 93633,
+          "net_price_by_income_bracket": [
+            {
+              "avg_cost": 958,
+              "income_range": "$0-$30,000"
+            },
+            {
+              "avg_cost": 1595,
+              "income_range": "$30,001-$48,000"
+            },
+            {
+              "avg_cost": 3596,
+              "income_range": "$48,001-$75,000"
+            },
+            {
+              "avg_cost": 13531,
+              "income_range": "$75,001-$110,000"
+            },
+            {
+              "avg_cost": 47835,
+              "income_range": "$110,001+"
+            }
+          ]
+        },
+        "international_context": {
+          "source_page": "Student Body page 3, Admissions page 12, Academics page 9",
+          "top_countries_represented": null,
+          "intl_student_retention_rate": 0.99,
+          "english_proficiency_minimums": {
+            "IELTS": null,
+            "TOEFL": null
+          },
+          "percent_international_undergrad": 0.176
+        },
+        "institutional_identity": {
+          "name": "University of Chicago",
+          "type": "Private",
+          "setting": null,
+          "location": {
+            "city": "Chicago",
+            "state": "IL",
+            "address": "5801 S. Ellis Avenue, Chicago, IL, 60637",
+            "country": null
+          },
+          "source_page": "Overview page 1, Campus page 3, Campus page 8",
+          "campus_size_acres": 217
+        },
+        "rankings_comprehensive": {
+          "best_value": 8,
+          "source_page": "Rankings page 1, Admissions page 3, Overview page 1",
+          "most_innovative": 48,
+          "overall_national": 6,
+          "subject_and_specialty_rankings": [
+            {
+              "rank": 25,
+              "department": "Computer Science",
+              "sub_specialties": []
+            },
+            {
+              "rank": 12,
+              "department": "Data Analytics/Science",
+              "sub_specialties": []
+            },
+            {
+              "rank": 19,
+              "department": "Psychology Programs",
+              "sub_specialties": []
+            },
+            {
+              "rank": 2,
+              "department": "Economics",
+              "sub_specialties": []
+            },
+            {
+              "rank": 44,
+              "department": "Undergraduate Research/Creative Projects",
+              "sub_specialties": []
+            },
+            {
+              "rank": 1,
+              "department": "Best Colleges for Veterans",
+              "sub_specialties": []
+            },
+            {
+              "rank": 58,
+              "department": "Best Undergraduate Teaching",
+              "sub_specialties": []
+            },
+            {
+              "rank": 204,
+              "department": "Top Performers on Social Mobility",
+              "sub_specialties": []
+            }
+          ]
+        },
+        "academic_roi_and_outcomes": {
+          "source_page": "Rankings page 2, 3, Academics page 1, 2, 5, 8, 9, Campus Life page 7",
+          "graduation_rate_4yr": 0.87,
+          "student_faculty_ratio": "5:1",
+          "major_performance_data": [
+            {
+              "major_name": "Computer Science",
+              "grad_percentage": null,
+              "median_starting_salary": 227147
+            },
+            {
+              "major_name": "English Language and Literature, General",
+              "grad_percentage": null,
+              "median_starting_salary": 54643
+            },
+            {
+              "major_name": "Biology, General",
+              "grad_percentage": null,
+              "median_starting_salary": 68610
+            },
+            {
+              "major_name": "Mathematics",
+              "grad_percentage": null,
+              "median_starting_salary": 146679
+            },
+            {
+              "major_name": "Statistics",
+              "grad_percentage": null,
+              "median_starting_salary": 147558
+            }
+          ],
+          "faculty_research_impact": {
+            "bibliometric_rank": 11,
+            "citation_impact_score": 2.09
+          },
+          "freshman_retention_rate": 0.99,
+          "median_salary_6yrs_post_grad": 80870
+        },
+        "supplementary_admissions_insights": {
+          "other_notable_data": {
+            "Asian students": 0.19,
+            "Black students": 0.07,
+            "White students": 0.3,
+            "Application fee": 75,
+            "Total enrollment": 16221,
+            "Unknown students": 0.03,
+            "Hispanic students": 0.17,
+            "Degree-seeking men": 0.54,
+            "Percent of need met": 1,
+            "Athletic Association": "NCAA III",
+            "Degree-seeking women": 0.46,
+            "Faculty salaries rank": 2,
+            "Out-of-State Students": 0.85,
+            "School has a waitlist": "Yes",
+            "Students 25 and older": 0.01,
+            "Faculty resources rank": 2,
+            "AP tests may be used for": "Placement only",
+            "American Indian students": 0,
+            "Financial resources rank": 8,
+            "IB exams may be used for": "Placement only",
+            "Transfer Acceptance rate": 0.09,
+            "Citations Per Publication": 20,
+            "Early action plan offered": "Yes",
+            "Live on-campus_percentage": 0.58,
+            "Pacific Islander students": 0,
+            "Predicted graduation rate": 0.97,
+            "Total graduate enrollment": 8702,
+            "Two or more races students": 0.07,
+            "Common Application Accepted": "Yes",
+            "Early decision plan offered": "Yes",
+            "Non-degree-seeking students": 0.002,
+            "School employment available": "Yes",
+            "Housing Available to Students": "Yes",
+            "Average 6-year graduation rate": 0.96,
+            "Collegiate athletic conference": "University Athletic Association",
+            "Total Undergraduate Enrollment": 7519,
+            "Awarded Pell Grants (2023-2024)": 0.17,
+            "Faculty ethnic diversity - Asian": 0.16,
+            "Faculty ethnic diversity - Black": 0.04,
+            "Faculty ethnic diversity - White": 0.59,
+            "Peer assessment score (out of 5)": 4.6,
+            "Average age of all undergraduates": 20,
+            "Average age of full-time students": 20,
+            "Full-time degree-seeking students": 7497,
+            "Part-time degree-seeking students": 6,
+            "Disabled-student housing available": "Yes",
+            "Faculty ethnic diversity - Unknown": 0.08,
+            "ACT Math 25th-75th percentile range": {
+              "p25": 33,
+              "p75": 35
+            },
+            "Classes with fewer than 20 students": 0.778,
+            "Faculty ethnic diversity - Hispanic": 0.04,
+            "Median monthly federal loan payment": 159,
+            "Percent of faculty who are full-time": 0.955,
+            "International students (demographics)": 0.18,
+            "Residence hall breakdown - Apartments": 0.14,
+            "ACT English 25th-75th percentile range": {
+              "p25": 34,
+              "p75": 36
+            },
+            "ACT Reading 25th-75th percentile range": {
+              "p25": 34,
+              "p75": 36
+            },
+            "ACT Science 25th-75th percentile range": {
+              "p25": 33,
+              "p75": 36
+            },
+            "Residence hall breakdown - Another form": 0.04,
+            "Residence hall breakdown - Double units": 0.42,
+            "Residence hall breakdown - Single units": 0.38,
+            "Faculty ethnic diversity - International": 0.07,
+            "Total Papers published between 2020-2024": 35180,
+            "Average first-year student retention rate": 0.99,
+            "First-generation new students (fall 2024)": 0.11,
+            "First-year students submitting ACT scores": 0.27,
+            "First-year students submitting SAT scores": 0.49,
+            "Faculty ethnic diversity - American Indian": 0,
+            "Total Undergraduate Enrollment (fall 2024)": 7519,
+            "Faculty ethnic diversity - Pacific Islander": 0,
+            "Median federal loan debt for grad borrowers": 15000,
+            "Faculty ethnic diversity - Two or more races": 0.02,
+            "Full-time faculty gender distribution - Male": 0.612,
+            "Part-time faculty gender distribution - Male": 0.637,
+            "First-year students submitting high school GPA": 0.63,
+            "Full-time faculty gender distribution - Female": 0.388,
+            "Full-time faculty with Ph.D or terminal degree": 0.98,
+            "Part-time faculty gender distribution - Female": 0.363,
+            "Part-time faculty with Ph.D or terminal degree": 0.74,
+            "Residence hall breakdown - Triple units/suites": 0.02,
+            "College grads earning more than a HS grad (score)": 90,
+            "4-Year Graduation Rate of First Generation Students": 0.81,
+            "5-Year Graduation Rate of First Generation Students": 0.91,
+            "6-Year Graduation Rate of First Generation Students": 0.95,
+            "Average Total Indebtedness of 2024 Graduating Class": 36216,
+            "First-year Students in top 10% of high school class": 0.96,
+            "First-year Students in top 25% of high school class": 0.99,
+            "Transfer students may earn advanced standing credit": "Yes",
+            "Alcohol permitted on campus for students of legal age": "Yes",
+            "Average federal indebtedness of 2024 graduating class": 14075,
+            "Average need-based financial aid package (first-year)": 82308,
+            "Graduating students who borrowed (federal loans, 2024)": 0.09,
+            "Application fee waived for students with financial need": "Yes",
+            "Average need-based self-help aid award (undergraduates)": 2690,
+            "International undergraduates receiving institutional aid": 267,
+            "Publication share in the Top 5% of Journals by CiteScore": 0.25,
+            "Publication share in the Top 25% of Journals by CiteScore": 0.7,
+            "Graduating students who have borrowed (any loan type, 2024)": 0.11,
+            "6-year graduation rate of students who received a Pell Grant": 0.92,
+            "Enrolled students who are veterans or active service members": 0.011,
+            "Average need based self-help award (full-time undergraduates)": 2690,
+            "Average need-based self-help aid awarded to first-year students": 2271,
+            "6-year graduation rate of students who did not receive a Pell Grant": 0.96,
+            "Average need based financial aid package (full-time undergraduates)": 78883,
+            "Students who received need-based financial aid (first-year students)": 0.33,
+            "Students who received need-based self-help aid (first-year students)": 0.16,
+            "Students determined to have financial need (full-time undergraduates)": 0.35,
+            "Average need-based scholarship or grant awarded to first-year students": 78383,
+            "Campus housing available for all unmarried students regardless of year": "Yes",
+            "Maximum credits per term a student can take for full-time tuition price": 400,
+            "Minimum credits per term a student can take for full-time tuition price": 300,
+            "Average need based scholarship or grant award (full-time undergraduates)": 72859,
+            "Juniors required to live in school-owned, -operated or -affiliated housing": "No",
+            "Seniors required to live in school-owned, -operated or -affiliated housing": "No",
+            "Sophomores required to live in school-owned, -operated or -affiliated housing": "Yes",
+            "Students whose need was fully met (first-time, full-time first-year students)": 0.99,
+            "Median federal loan debt among borrowers who completed their undergraduate degree": 15000,
+            "Average amount of institutional financial aid awarded to international undergraduates": 65118,
+            "First-year Students required to live in school-owned, -operated or -affiliated housing": "Yes",
+            "Students determined to have financial need (first-time, full-time first-year students)": 0.33,
+            "Students who received need-based financial aid (first-time, full-time first-year students)": 0.33,
+            "Students who applied for need-based financial aid (first-time, full-time first-year students)": 0.45,
+            "Average Credits Needed to Graduate for Full-time First-year bachelor's degree seeking students": 4200
+          },
+          "specialized_facilities": [
+            "Nondevelopmental tutoring",
+            "Health service",
+            "Health insurance",
+            "Campus safety and security services (24-hour foot and vehicle patrols)",
+            "Late night transport/escort service",
+            "24-hour emergency telephones",
+            "Lighted pathways/sidewalks",
+            "Controlled dormitory access (key, security card, etc.)",
+            "Special housing for disabled students",
+            "Writing labs",
+            "Early syllabus for LD students",
+            "Exams on tape or computer for LD students",
+            "Extended time for tests for LD students",
+            "Note-taking services for LD students",
+            "Oral tests for LD students",
+            "Academic counseling services for LD students",
+            "Psychological counseling services for LD students",
+            "Individual tutoring for LD students",
+            "Group tutoring for LD students",
+            "Adaptive equipment for physically disabled students",
+            "Braille services for physically disabled students",
+            "Interpreters for hearing-impaired students",
+            "Reader services for physically disabled students",
+            "Special housing for physically disabled students",
+            "Special transportation for physically disabled students",
+            "Talking books for physically disabled students",
+            "Tape recorders for physically disabled students",
+            "Tutors for physically disabled students",
+            "Career support or OPT advising for international students",
+            "Cultural dining options for international students",
+            "ESL program/classes for international students",
+            "Housing offered during all school holidays for international students",
+            "International student organization",
+            "Special counselors/advisors for international students",
+            "Special orientation (1-6 days) for international students"
+          ],
+          "campus_culture_indicators": [
+            "A liberal arts college amidst a world-renowned research university",
+            "Dynamic education that encourages academic exploration, free expression, and open discussion in a supportive and transformative environment",
+            "Rigorous academic environment",
+            "High-performance academic environment",
+            "Elite academic powerhouse, superb career support",
+            "Go here if you want to be the smartest person in any room",
+            "Academics and intellectual life here are unparalleled",
+            "Inspiring professors, warm community of students, challenging courses, wonderful campus",
+            "Phenomenal Experience Overall",
+            "The Best Years (social life, friends)",
+            "Life changing"
+          ],
+          "unique_academic_opportunities": [
+            "Accelerated Medical Scholars Program",
+            "Joint BA/MA in Digital Studies of Language, Culture, and History",
+            "Joint BA/MA in International Relations",
+            "Joint BA/MA in Middle Eastern Studies",
+            "Joint BA/MA in Social Work, Social Policy, and Social Administration",
+            "Cross-registration",
+            "Double major",
+            "Dual enrollment",
+            "English as a Second Language (ESL)",
+            "Exchange student program (domestic)",
+            "First-year experiences",
+            "Senior capstone or culminating academic experience",
+            "Writing in the disciplines",
+            "Undergraduate research/creative projects",
+            "Qualified undergraduate students may take graduate-level classes",
+            "Pre-law, pre-medicine, other"
+          ]
+        }
+      },
+      "cost_of_attendance": null,
+      "admissions_data": null,
+      "fieldsPresent": [
+        "institutional_identity",
+        "rankings_comprehensive",
+        "admissions_engine",
+        "academic_roi_and_outcomes",
+        "financial_profile",
+        "international_context",
+        "supplementary_admissions_insights"
+      ],
+      "extractionMethod": "LLM",
+      "llmModelUsed": "gemini-2.5-flash",
+      "scraped_at": "2026-04-26T18:58:51.447Z",
+      "approvedAt": "2026-04-26T18:59:39.128Z",
+      "approvedByUserId": "eca9ae55-403c-4af4-be68-b9202c68512e"
+    },
+    {
+      "id": "cmog6r8xv001z28uu39ybu4qu",
+      "collegeId": "duke-university",
+      "rankingSourceId": "cmo9ib50k0000h0knncp62cav",
+      "academicYear": "us_news",
+      "acceptance_rate": null,
+      "rankings": {
+        "admissions_engine": {
+          "deadlines": {
+            "transfer_fall": "Jan. 3",
+            "early_decision": null,
+            "regular_decision": null
+          },
+          "source_page": "Document 6, page 1; Document 6, page 2; Document 6, page 8; Document 7, page 3",
+          "acceptance_rate": 0.06,
+          "entrance_exam_policies": {
+            "test_policy": "test-optional",
+            "ap_scores_accepted": null,
+            "ib_higher_level_accepted": null
+          },
+          "middle_50_percentile_stats": {
+            "sat_math": {
+              "p25": 760,
+              "p75": 800
+            },
+            "avg_hs_gpa": null,
+            "act_composite": {
+              "p25": 34,
+              "p75": 35
+            },
+            "sat_reading_writing": {
+              "p25": 740,
+              "p75": 770
+            }
+          },
+          "admissions_factor_weighting": {
+            "important": null,
+            "considered": null,
+            "not_considered": null,
+            "very_important": null
+          }
+        },
+        "financial_profile": {
+          "source_page": "Document 4, page 1; Document 4, page 2",
+          "sticker_price_total": 93554,
+          "net_price_by_income_bracket": [
+            {
+              "avg_cost": 3931,
+              "income_range": "$0-$30,000"
+            },
+            {
+              "avg_cost": 2025,
+              "income_range": "$30,001-$48,000"
+            },
+            {
+              "avg_cost": 10076,
+              "income_range": "$48,001-$75,000"
+            },
+            {
+              "avg_cost": 17506,
+              "income_range": "$75,001-$110,000"
+            },
+            {
+              "avg_cost": 49945,
+              "income_range": "$110,001+"
+            }
+          ]
+        },
+        "international_context": {
+          "source_page": "Document 1, page 2; Document 2, page 7; Document 6, page 10; Document 6, page 11",
+          "top_countries_represented": null,
+          "intl_student_retention_rate": null,
+          "english_proficiency_minimums": {
+            "IELTS": null,
+            "TOEFL": null
+          },
+          "percent_international_undergrad": 0.105
+        },
+        "institutional_identity": {
+          "name": "Duke University",
+          "type": "Private",
+          "setting": null,
+          "location": {
+            "city": "Durham",
+            "state": "NC",
+            "address": "2138 Campus Drive, Box 90586, Durham, NC 27708",
+            "country": "USA"
+          },
+          "source_page": "Document 7, page 1; Document 5, page 6",
+          "campus_size_acres": 8693
+        },
+        "rankings_comprehensive": {
+          "best_value": 14,
+          "source_page": "Document 3, page 1; Document 3, page 2; Document 7, page 1; Document 7, page 2",
+          "most_innovative": 11,
+          "overall_national": 7,
+          "subject_and_specialty_rankings": [
+            {
+              "rank": 7,
+              "department": "National Universities",
+              "sub_specialties": []
+            },
+            {
+              "rank": 14,
+              "department": "Best Value Schools",
+              "sub_specialties": []
+            },
+            {
+              "rank": 17,
+              "department": "Undergraduate Engineering Programs",
+              "sub_specialties": []
+            },
+            {
+              "rank": 3,
+              "department": "Biomedical",
+              "sub_specialties": []
+            },
+            {
+              "rank": 29,
+              "department": "Civil",
+              "sub_specialties": []
+            },
+            {
+              "rank": 19,
+              "department": "Computer",
+              "sub_specialties": []
+            },
+            {
+              "rank": 16,
+              "department": "Electrical / Electronic / Communications",
+              "sub_specialties": []
+            },
+            {
+              "rank": 12,
+              "department": "Environmental / Environmental Health",
+              "sub_specialties": []
+            },
+            {
+              "rank": 20,
+              "department": "Mechanical",
+              "sub_specialties": []
+            },
+            {
+              "rank": 24,
+              "department": "Computer Science",
+              "sub_specialties": []
+            },
+            {
+              "rank": 21,
+              "department": "Artificial Intelligence",
+              "sub_specialties": []
+            },
+            {
+              "rank": 1,
+              "department": "Nursing",
+              "sub_specialties": []
+            },
+            {
+              "rank": 11,
+              "department": "Psychology Programs",
+              "sub_specialties": []
+            },
+            {
+              "rank": 14,
+              "department": "Economics",
+              "sub_specialties": []
+            },
+            {
+              "rank": 2,
+              "department": "Writing in the Disciplines",
+              "sub_specialties": []
+            },
+            {
+              "rank": 14,
+              "department": "Study Abroad",
+              "sub_specialties": []
+            },
+            {
+              "rank": 11,
+              "department": "Learning Communities",
+              "sub_specialties": []
+            },
+            {
+              "rank": 5,
+              "department": "Undergraduate Research/Creative Projects",
+              "sub_specialties": []
+            },
+            {
+              "rank": 3,
+              "department": "Service Learning",
+              "sub_specialties": []
+            },
+            {
+              "rank": 19,
+              "department": "First-Year Experiences",
+              "sub_specialties": []
+            },
+            {
+              "rank": 16,
+              "department": "Senior Capstone",
+              "sub_specialties": []
+            },
+            {
+              "rank": 13,
+              "department": "Co-ops/Internships",
+              "sub_specialties": []
+            },
+            {
+              "rank": 7,
+              "department": "Best Undergraduate Teaching",
+              "sub_specialties": []
+            },
+            {
+              "rank": 11,
+              "department": "Most Innovative Schools",
+              "sub_specialties": []
+            },
+            {
+              "rank": 104,
+              "department": "Top Performers on Social Mobility",
+              "sub_specialties": []
+            }
+          ]
+        },
+        "academic_roi_and_outcomes": {
+          "source_page": "Document 2, page 1; Document 2, page 2; Document 3, page 3; Document 3, page 4; Document 7, page 1; Document 7, page 4; Document 7, page 5; Document 7, page 6",
+          "graduation_rate_4yr": 0.87,
+          "student_faculty_ratio": "5:1",
+          "major_performance_data": [
+            {
+              "major_name": "Natural Resources Conservation and Research",
+              "grad_percentage": null,
+              "median_starting_salary": 78003
+            },
+            {
+              "major_name": "Computer Science",
+              "grad_percentage": null,
+              "median_starting_salary": 201846
+            },
+            {
+              "major_name": "International and Comparative Education",
+              "grad_percentage": null,
+              "median_starting_salary": 66024
+            },
+            {
+              "major_name": "Biomedical/Medical Engineering",
+              "grad_percentage": null,
+              "median_starting_salary": 115268
+            },
+            {
+              "major_name": "Computer Engineering",
+              "grad_percentage": null,
+              "median_starting_salary": 174619
+            }
+          ],
+          "faculty_research_impact": {
+            "bibliometric_rank": 21,
+            "citation_impact_score": 2.01
+          },
+          "freshman_retention_rate": 0.97,
+          "median_salary_6yrs_post_grad": 85792
+        },
+        "supplementary_admissions_insights": {
+          "other_notable_data": {
+            "total_applicants": 51795,
+            "housing_available": true,
+            "applicants_accepted": 2957,
+            "athletic_association": "NCAA I",
+            "number_of_sororities": 18,
+            "first_year_enrollment": 1740,
+            "number_of_fraternities": 17,
+            "total_faculty_full_time": 1857,
+            "total_faculty_part_time": 97,
+            "housing_required_juniors": true,
+            "housing_required_seniors": false,
+            "total_graduate_enrollment": 10976,
+            "average_debt_at_graduation": 27515,
+            "general_education_required": true,
+            "total_enrollment_fall_2024": 17499,
+            "alcohol_permitted_on_campus": true,
+            "firearm_campus_carry_policy": "Banned",
+            "housing_required_first_year": true,
+            "housing_required_sophomores": true,
+            "faculty_gender_male_percentage": 0.464,
+            "faculty_gender_female_percentage": 0.536,
+            "pell_grant_recipients_percentage": 0.19,
+            "financial_aid_met_need_percentage": 1,
+            "international_student_sat_required": true,
+            "median_federal_loan_debt_undergrad": 13000,
+            "gender_distribution_male_percentage": 0.463,
+            "residence_hall_apartments_percentage": 0.18,
+            "gender_distribution_female_percentage": 0.537,
+            "student_demographics_asian_percentage": 0.22,
+            "student_demographics_black_percentage": 0.09,
+            "student_demographics_white_percentage": 0.35,
+            "qualified_undergrads_take_grad_classes": true,
+            "residence_hall_double_units_percentage": 0.66,
+            "residence_hall_single_units_percentage": 0.12,
+            "full_time_degree_seeking_undergraduates": 6418,
+            "student_demographics_unknown_percentage": 0.05,
+            "student_demographics_hispanic_percentage": 0.11,
+            "total_undergraduate_enrollment_fall_2024": 6523,
+            "classes_fewer_than_20_students_percentage": 0.714,
+            "faculty_ethnic_diversity_asian_percentage": 0.16,
+            "faculty_ethnic_diversity_black_percentage": 0.06,
+            "faculty_ethnic_diversity_white_percentage": 0.69,
+            "faculty_ethnic_diversity_unknown_percentage": 0,
+            "students_received_need_based_aid_first_year": 0.44,
+            "average_federal_indebtedness_2024_grad_class": 13244,
+            "average_private_indebtedness_2024_grad_class": 63176,
+            "faculty_ethnic_diversity_hispanic_percentage": 0.04,
+            "residence_hall_triple_units_suites_percentage": 0.04,
+            "student_demographics_international_percentage": 0.11,
+            "average_need_based_scholarship_grant_first_year": 70439,
+            "graduating_students_borrowed_any_loan_type_2023": 0.25,
+            "graduating_students_borrowed_private_loans_2024": 0.06,
+            "student_demographics_american_indian_percentage": 0,
+            "full_time_faculty_phd_terminal_degree_percentage": 0.95,
+            "part_time_faculty_phd_terminal_degree_percentage": 0.62,
+            "student_demographics_pacific_islander_percentage": 0,
+            "faculty_ethnic_diversity_international_percentage": 0.03,
+            "student_demographics_two_or_more_races_percentage": 0.07,
+            "average_institutional_aid_international_undergrads": 88274,
+            "average_institutional_indebtedness_2024_grad_class": 3307,
+            "international_students_receiving_institutional_aid": 190,
+            "student_demographics_degree_seeking_men_percentage": 0.46,
+            "average_non_need_based_scholarship_grant_first_year": 85600,
+            "faculty_ethnic_diversity_american_indian_percentage": 0,
+            "faculty_ethnic_diversity_pacific_islander_percentage": 0,
+            "student_demographics_degree_seeking_women_percentage": 0.54,
+            "faculty_ethnic_diversity_two_or_more_races_percentage": 0.01,
+            "international_student_application_deadline_financial_aid": "Feb. 1"
+          },
+          "specialized_facilities": [
+            "women's center",
+            "placement service",
+            "health service",
+            "health insurance",
+            "24-hour emergency telephones",
+            "24-hour foot and vehicle patrols",
+            "late night transport/escort service",
+            "lighted pathways/sidewalks",
+            "student patrols",
+            "controlled dormitory access (key, security card, etc.)"
+          ],
+          "campus_culture_indicators": [
+            "rigorous",
+            "collaborative",
+            "grit-focused",
+            "top-tier academics",
+            "unmatched prestige",
+            "great food",
+            "great location",
+            "special pride and spirit in sport",
+            "life-changing experience",
+            "empowering environment",
+            "talented and committed classmates",
+            "professional world focus"
+          ],
+          "unique_academic_opportunities": [
+            "Co-ops",
+            "Capstones",
+            "Undergraduate Research/Creative Projects",
+            "Service Learning",
+            "First-Year Experiences",
+            "Senior Capstone"
+          ]
+        }
+      },
+      "cost_of_attendance": null,
+      "admissions_data": null,
+      "fieldsPresent": [
+        "institutional_identity",
+        "rankings_comprehensive",
+        "admissions_engine",
+        "academic_roi_and_outcomes",
+        "financial_profile",
+        "international_context",
+        "supplementary_admissions_insights"
+      ],
+      "extractionMethod": "LLM",
+      "llmModelUsed": "gemini-2.5-flash",
+      "scraped_at": "2026-04-26T19:53:13.985Z",
+      "approvedAt": "2026-04-26T19:54:27.584Z",
+      "approvedByUserId": "eca9ae55-403c-4af4-be68-b9202c68512e"
+    },
+    {
+      "id": "cmog754zu002f28uubvjj4gdn",
+      "collegeId": "cornell-university",
+      "rankingSourceId": "cmo9ib50k0000h0knncp62cav",
+      "academicYear": "us_news",
+      "acceptance_rate": null,
+      "rankings": {
+        "admissions_engine": {
+          "deadlines": {
+            "transfer_fall": "Fall",
+            "early_decision": "Nov. 1",
+            "regular_decision": "Jan. 2"
+          },
+          "source_page": "Doc 1, Part 1, Page 2, 3; Doc 6, Part 1, Page 4; Doc 7, Part 1, Page 1, 2, 3, 5, 6, 8, 9, 10",
+          "acceptance_rate": 0.08,
+          "entrance_exam_policies": {
+            "test_policy": "Required",
+            "ap_scores_accepted": [
+              "4",
+              "5"
+            ],
+            "ib_higher_level_accepted": [
+              "6",
+              "7"
+            ]
+          },
+          "middle_50_percentile_stats": {
+            "sat_math": {
+              "p25": 770,
+              "p75": 800
+            },
+            "avg_hs_gpa": null,
+            "act_composite": {
+              "p25": 33,
+              "p75": 35
+            },
+            "sat_reading_writing": {
+              "p25": 730,
+              "p75": 770
+            }
+          },
+          "admissions_factor_weighting": {
+            "important": [
+              "Class rank",
+              "GPA"
+            ],
+            "considered": [
+              "Standardized test scores",
+              "First-generation college student",
+              "Alumni/alumnae relations",
+              "Geographical residence",
+              "State residency",
+              "Volunteer work",
+              "Work experience"
+            ],
+            "not_considered": [
+              "Interview",
+              "Religious affiliation/commitment"
+            ],
+            "very_important": [
+              "Rigor of secondary school record",
+              "Application essay",
+              "Recommendations",
+              "Extracurricular activities",
+              "Talent/ability",
+              "Character/personal qualities"
+            ]
+          }
+        },
+        "financial_profile": {
+          "source_page": "Doc 1, Part 1, Page 2, 4; Doc 5, Part 1, Page 1, 2",
+          "sticker_price_total": 92150,
+          "net_price_by_income_bracket": [
+            {
+              "avg_cost": 4375,
+              "income_range": "$0-$30,000"
+            },
+            {
+              "avg_cost": 5017,
+              "income_range": "$30,001-$48,000"
+            },
+            {
+              "avg_cost": 8006,
+              "income_range": "$48,001-$75,000"
+            },
+            {
+              "avg_cost": 20728,
+              "income_range": "$75,001-$110,000"
+            },
+            {
+              "avg_cost": 48783,
+              "income_range": "$110,001+"
+            }
+          ]
+        },
+        "international_context": {
+          "source_page": "Doc 1, Part 1, Page 6; Doc 2, Part 1, Page 3; Doc 3, Part 1, Page 8; Doc 7, Part 1, Page 11, 12",
+          "top_countries_represented": [
+            {
+              "country": "China",
+              "percentage": 0.354
+            },
+            {
+              "country": "Canada",
+              "percentage": 0.1
+            },
+            {
+              "country": "India",
+              "percentage": 0.083
+            },
+            {
+              "country": "South Korea",
+              "percentage": 0.079
+            },
+            {
+              "country": "Ghana",
+              "percentage": 0.026
+            },
+            {
+              "country": "Thailand",
+              "percentage": 0.02
+            }
+          ],
+          "intl_student_retention_rate": 0.96,
+          "english_proficiency_minimums": {
+            "IELTS": 7,
+            "TOEFL": 100
+          },
+          "percent_international_undergrad": 0.095
+        },
+        "institutional_identity": {
+          "name": "Cornell University",
+          "type": "Private",
+          "setting": "Rural",
+          "location": {
+            "city": "Ithaca",
+            "state": "NY",
+            "address": "Ithaca, NY, 14853",
+            "country": "USA"
+          },
+          "source_page": "Doc 1, Part 1, Page 1, 2",
+          "campus_size_acres": 745
+        },
+        "rankings_comprehensive": {
+          "best_value": 23,
+          "source_page": "Doc 1, Part 1, Page 1, 2; Doc 6, Part 1, Page 1, 2, 3",
+          "most_innovative": 23,
+          "overall_national": 12,
+          "subject_and_specialty_rankings": [
+            {
+              "rank": 8,
+              "department": "Business Programs",
+              "sub_specialties": []
+            },
+            {
+              "rank": 10,
+              "department": "Undergraduate Engineering Programs",
+              "sub_specialties": []
+            },
+            {
+              "rank": 16,
+              "department": "Aerospace /Aeronautical / Astronautical",
+              "sub_specialties": []
+            },
+            {
+              "rank": 12,
+              "department": "Biomedical",
+              "sub_specialties": []
+            },
+            {
+              "rank": 15,
+              "department": "Chemical",
+              "sub_specialties": []
+            },
+            {
+              "rank": 12,
+              "department": "Civil",
+              "sub_specialties": []
+            },
+            {
+              "rank": 10,
+              "department": "Computer",
+              "sub_specialties": []
+            },
+            {
+              "rank": 11,
+              "department": "Electrical / Electronic / Communications",
+              "sub_specialties": []
+            },
+            {
+              "rank": 11,
+              "department": "Environmental / Environmental Health",
+              "sub_specialties": []
+            },
+            {
+              "rank": 12,
+              "department": "Industrial / Manufacturing",
+              "sub_specialties": []
+            },
+            {
+              "rank": 8,
+              "department": "Materials",
+              "sub_specialties": []
+            },
+            {
+              "rank": 10,
+              "department": "Mechanical",
+              "sub_specialties": []
+            },
+            {
+              "rank": 26,
+              "department": "Accounting",
+              "sub_specialties": []
+            },
+            {
+              "rank": 13,
+              "department": "Analytics",
+              "sub_specialties": []
+            },
+            {
+              "rank": 11,
+              "department": "Finance",
+              "sub_specialties": []
+            },
+            {
+              "rank": 21,
+              "department": "Management",
+              "sub_specialties": []
+            },
+            {
+              "rank": 16,
+              "department": "Marketing",
+              "sub_specialties": []
+            },
+            {
+              "rank": 17,
+              "department": "Production / Operation Management",
+              "sub_specialties": []
+            },
+            {
+              "rank": 8,
+              "department": "Quantitative Analysis",
+              "sub_specialties": []
+            },
+            {
+              "rank": 7,
+              "department": "Computer Science",
+              "sub_specialties": []
+            },
+            {
+              "rank": 9,
+              "department": "Artificial Intelligence",
+              "sub_specialties": []
+            },
+            {
+              "rank": 11,
+              "department": "Computer Systems",
+              "sub_specialties": []
+            },
+            {
+              "rank": 9,
+              "department": "Cybersecurity",
+              "sub_specialties": []
+            },
+            {
+              "rank": 5,
+              "department": "Programming Languages",
+              "sub_specialties": []
+            },
+            {
+              "rank": 6,
+              "department": "Software Engineering",
+              "sub_specialties": []
+            },
+            {
+              "rank": 6,
+              "department": "Theory",
+              "sub_specialties": []
+            }
+          ]
+        },
+        "academic_roi_and_outcomes": {
+          "source_page": "Doc 1, Part 1, Page 1, 4, 5, 7; Doc 3, Part 1, Page 1, 2, 8; Doc 6, Part 1, Page 3, 4",
+          "graduation_rate_4yr": 0.87,
+          "student_faculty_ratio": "9:1",
+          "major_performance_data": [
+            {
+              "major_name": "Computer and Information Sciences and Support Services",
+              "grad_percentage": 0.18,
+              "median_starting_salary": 140860
+            },
+            {
+              "major_name": "Business, Management, Marketing, and Related Support Services",
+              "grad_percentage": 0.14,
+              "median_starting_salary": 98785
+            },
+            {
+              "major_name": "Engineering",
+              "grad_percentage": 0.13,
+              "median_starting_salary": 115100
+            },
+            {
+              "major_name": "Agricultural / Animal / Plant / Veterinary Science and Related Fields",
+              "grad_percentage": 0.11,
+              "median_starting_salary": 56857
+            },
+            {
+              "major_name": "Biological and Biomedical Sciences",
+              "grad_percentage": 0.1,
+              "median_starting_salary": 69997
+            },
+            {
+              "major_name": "Agriculture, General",
+              "grad_percentage": null,
+              "median_starting_salary": 56857
+            },
+            {
+              "major_name": "Agricultural Business and Management",
+              "grad_percentage": null,
+              "median_starting_salary": 130690
+            },
+            {
+              "major_name": "Animal Sciences",
+              "grad_percentage": null,
+              "median_starting_salary": 51670
+            },
+            {
+              "major_name": "Food Science and Technology",
+              "grad_percentage": null,
+              "median_starting_salary": 84555
+            },
+            {
+              "major_name": "Plant Sciences",
+              "grad_percentage": null,
+              "median_starting_salary": 50679
+            }
+          ],
+          "faculty_research_impact": {
+            "bibliometric_rank": 13,
+            "citation_impact_score": 1.96
+          },
+          "freshman_retention_rate": 0.98,
+          "median_salary_6yrs_post_grad": 87830
+        },
+        "supplementary_admissions_insights": {
+          "source_page": "Doc 1, Part 1, Page 7, 8, 9; Doc 3, Part 1, Page 1, 5, 6; Doc 4, Part 1, Page 2, 3",
+          "other_notable_data": {},
+          "specialized_facilities": [
+            "day care",
+            "health insurance",
+            "health service",
+            "nondevelopmental tutoring",
+            "placement service",
+            "women's center",
+            "24-hour emergency telephones",
+            "24-hour foot and vehicle patrols",
+            "Controlled dormitory access (key, security card, etc.)",
+            "Late night transport/escort service",
+            "Lighted pathways/sidewalks"
+          ],
+          "campus_culture_indicators": [
+            "rigorous",
+            "collaborative",
+            "world-class faculty",
+            "challenging",
+            "stimulating",
+            "highly intelligent group",
+            "academics were challenging but also inspiring",
+            "nice and well rounded",
+            "great teachers",
+            "wonderful food",
+            "best education, best people, best time",
+            "Incredibly Fun School",
+            "learned social skills",
+            "network",
+            "think outside the box",
+            "entrepreneurship",
+            "Best Engineering Experience Possible. Truly.",
+            "courses are tough",
+            "great camaraderie and a sense of unified purpose",
+            "campus is also STUNNING!",
+            "superior education to the other Ivies because they do not grade inflate - courses are actually harder",
+            "student satisfaction"
+          ],
+          "unique_academic_opportunities": [
+            "Cooperative (work-study plan) program",
+            "First-year experiences",
+            "Service learning",
+            "Senior capstone or culminating academic experience",
+            "Writing in the disciplines",
+            "Undergraduate research/creative projects",
+            "Learning communities"
+          ]
+        }
+      },
+      "cost_of_attendance": null,
+      "admissions_data": null,
+      "fieldsPresent": [
+        "institutional_identity",
+        "rankings_comprehensive",
+        "admissions_engine",
+        "academic_roi_and_outcomes",
+        "financial_profile",
+        "international_context",
+        "supplementary_admissions_insights"
+      ],
+      "extractionMethod": "LLM",
+      "llmModelUsed": "gemini-2.5-flash",
+      "scraped_at": "2026-04-26T20:04:02.019Z",
+      "approvedAt": "2026-04-26T20:11:21.647Z",
+      "approvedByUserId": "eca9ae55-403c-4af4-be68-b9202c68512e"
+    },
+    {
+      "id": "cmohh3475002x28uupxds1yb5",
+      "collegeId": "cmohgv4zu002g28uub8rp8kag",
+      "rankingSourceId": "cmo9ib50k0000h0knncp62cav",
+      "academicYear": "2025",
+      "acceptance_rate": null,
+      "rankings": {
+        "admissions_engine": {
+          "deadlines": {
+            "transfer_fall": "April 5",
+            "early_decision": null,
+            "regular_decision": "Jan. 5"
+          },
+          "source_page": "Doc 4.1 (Admissions), Doc 4.3 (Admissions Requirements), Doc 4.4 (Academic Factors Considered), Doc 4.6 (Applications), Doc 4.10 (Fall 2024 First-year SAT Scores), Doc 4.11 (Fall 2024 First-year SAT/ACT Scores), Doc 4.13 (Transfer Students)",
+          "acceptance_rate": 0.42,
+          "entrance_exam_policies": {
+            "test_policy": "test-optional",
+            "ap_scores_accepted": [
+              "3",
+              "4",
+              "5"
+            ],
+            "ib_higher_level_accepted": [
+              "3",
+              "4",
+              "5",
+              "6",
+              "7"
+            ]
+          },
+          "middle_50_percentile_stats": {
+            "sat_math": {
+              "p25": 700,
+              "p75": 790
+            },
+            "avg_hs_gpa": null,
+            "act_composite": {
+              "p25": 30,
+              "p75": 34
+            },
+            "sat_reading_writing": {
+              "p25": 680,
+              "p75": 750
+            }
+          },
+          "admissions_factor_weighting": {
+            "important": [
+              "Application essay",
+              "Extracurricular activities",
+              "Talent/ability",
+              "Character/personal qualities",
+              "First-generation college student"
+            ],
+            "considered": [
+              "Standardized test scores",
+              "Geographical residence",
+              "State residency",
+              "Volunteer work",
+              "Work experience"
+            ],
+            "not_considered": [
+              "Class rank",
+              "Recommendations",
+              "Interview",
+              "Alumni/alumnae relations",
+              "Religious affiliation/commitment"
+            ],
+            "very_important": [
+              "Rigor of secondary school record",
+              "GPA"
+            ]
+          }
+        },
+        "financial_profile": {
+          "source_page": "Doc 1.1 (Tuition & Financial Aid), Doc 1.2 (Tuition & Expenses), Doc 1.3 (Tuition & Expenses continued)",
+          "sticker_price_total": 54982,
+          "net_price_by_income_bracket": [
+            {
+              "avg_cost": 3881,
+              "income_range": "$0-$30,000"
+            },
+            {
+              "avg_cost": 8562,
+              "income_range": "$30,001-$48,000"
+            },
+            {
+              "avg_cost": 11920,
+              "income_range": "$48,001-$75,000"
+            },
+            {
+              "avg_cost": 22833,
+              "income_range": "$75,001-$110,000"
+            },
+            {
+              "avg_cost": 28710,
+              "income_range": "$110,001+"
+            }
+          ]
+        },
+        "international_context": {
+          "source_page": "Doc 4.15 (International Students Deadlines & Requirements), Doc 4.16 (TOEFL), Doc 6.3 (Student Demographics)",
+          "top_countries_represented": null,
+          "intl_student_retention_rate": null,
+          "english_proficiency_minimums": {
+            "IELTS": null,
+            "TOEFL": 79
+          },
+          "percent_international_undergrad": 0.139
+        },
+        "institutional_identity": {
+          "name": "University of Illinois Urbana-Champaign",
+          "type": "Public",
+          "setting": null,
+          "location": {
+            "city": "Champaign",
+            "state": "IL",
+            "address": "601 East John St., Champaign, IL 61820",
+            "country": "USA"
+          },
+          "source_page": "Doc 2.2 (Campus Info & Regulations), Doc 2.6 (Campus Map), Doc 2.2 (Overview)",
+          "campus_size_acres": 1783
+        },
+        "rankings_comprehensive": {
+          "best_value": 161,
+          "source_page": "Doc 3.1 (Rankings), Doc 3.2 (Rankings continued)",
+          "most_innovative": 42,
+          "overall_national": 36,
+          "subject_and_specialty_rankings": [
+            {
+              "rank": 5,
+              "department": "Engineering",
+              "sub_specialties": [
+                {
+                  "name": "Aerospace /Aeronautical / Astronautical",
+                  "rank": 7
+                },
+                {
+                  "name": "Biological / Agricultural",
+                  "rank": 2
+                },
+                {
+                  "name": "Biomedical",
+                  "rank": 14
+                },
+                {
+                  "name": "Chemical",
+                  "rank": 8
+                },
+                {
+                  "name": "Civil",
+                  "rank": 4
+                },
+                {
+                  "name": "Computer",
+                  "rank": 5
+                },
+                {
+                  "name": "Electrical / Electronic / Communications",
+                  "rank": 5
+                },
+                {
+                  "name": "Environmental / Environmental Health",
+                  "rank": 3
+                },
+                {
+                  "name": "Industrial / Manufacturing",
+                  "rank": 9
+                },
+                {
+                  "name": "Materials",
+                  "rank": 5
+                },
+                {
+                  "name": "Mechanical",
+                  "rank": 4
+                }
+              ]
+            },
+            {
+              "rank": 12,
+              "department": "Business Programs",
+              "sub_specialties": [
+                {
+                  "name": "Accounting",
+                  "rank": 1
+                },
+                {
+                  "name": "Analytics",
+                  "rank": 19
+                },
+                {
+                  "name": "Finance",
+                  "rank": 15
+                },
+                {
+                  "name": "Insurance",
+                  "rank": 9
+                },
+                {
+                  "name": "Management",
+                  "rank": 12
+                },
+                {
+                  "name": "Management Information Systems",
+                  "rank": 17
+                },
+                {
+                  "name": "Marketing",
+                  "rank": 9
+                },
+                {
+                  "name": "Supply Chain Management / Logistics",
+                  "rank": 18
+                }
+              ]
+            },
+            {
+              "rank": 7,
+              "department": "Computer Science",
+              "sub_specialties": [
+                {
+                  "name": "Artificial Intelligence",
+                  "rank": 6
+                },
+                {
+                  "name": "Computer Systems",
+                  "rank": 4
+                },
+                {
+                  "name": "Cybersecurity",
+                  "rank": 7
+                },
+                {
+                  "name": "Data Analytics/Science",
+                  "rank": 9
+                },
+                {
+                  "name": "Mobile/Web Applications",
+                  "rank": 4
+                },
+                {
+                  "name": "Programming Languages",
+                  "rank": 6
+                },
+                {
+                  "name": "Software Engineering",
+                  "rank": 3
+                },
+                {
+                  "name": "Theory",
+                  "rank": 10
+                }
+              ]
+            },
+            {
+              "rank": 8,
+              "department": "Psychology Programs",
+              "sub_specialties": []
+            },
+            {
+              "rank": 27,
+              "department": "Economics",
+              "sub_specialties": []
+            },
+            {
+              "rank": 19,
+              "department": "Best Colleges for Veterans",
+              "sub_specialties": []
+            },
+            {
+              "rank": 12,
+              "department": "Top Public Schools",
+              "sub_specialties": []
+            },
+            {
+              "rank": 144,
+              "department": "Top Performers on Social Mobility",
+              "sub_specialties": []
+            }
+          ]
+        },
+        "academic_roi_and_outcomes": {
+          "source_page": "Doc 5.1 (Academics), Doc 5.5 (Cost), Doc 5.6 (Popular Majors & Faculty Research Impact), Doc 5.13 (Faculty & Classes), Doc 5.14 (Graduation & Retention), Doc 6.9 (Reviews)",
+          "graduation_rate_4yr": 0.73,
+          "student_faculty_ratio": "20:1",
+          "major_performance_data": [
+            {
+              "major_name": "Engineering",
+              "grad_percentage": 0.2,
+              "median_starting_salary": 97866
+            },
+            {
+              "major_name": "Business, Management, Marketing, and Related Support Services",
+              "grad_percentage": 0.12,
+              "median_starting_salary": 95310
+            },
+            {
+              "major_name": "Social Sciences",
+              "grad_percentage": 0.08,
+              "median_starting_salary": 52379
+            },
+            {
+              "major_name": "Computer and Information Sciences and Support Services",
+              "grad_percentage": 0.07,
+              "median_starting_salary": 170405
+            },
+            {
+              "major_name": "Psychology",
+              "grad_percentage": 0.07,
+              "median_starting_salary": 63866
+            }
+          ],
+          "faculty_research_impact": {
+            "bibliometric_rank": 55,
+            "citation_impact_score": 1.68
+          },
+          "freshman_retention_rate": 0.94,
+          "median_salary_6yrs_post_grad": 64802
+        },
+        "supplementary_admissions_insights": {
+          "source_page": "Doc 2.1 (Campus Life), Doc 2.3 (Health, Safety & Counseling Services), Doc 5.11 (Academic Programs & Offerings), Doc 5.12 (Study Abroad), Doc 6.8 (Campus Life - Housing and Dorms), Doc 6.9 (Reviews), Doc 6.10 (Reviews), Doc 6.11 (Reviews), Doc 6.12 (Reviews)",
+          "other_notable_data": {},
+          "specialized_facilities": [
+            "Day care",
+            "Health service",
+            "Nondevelopmental tutoring",
+            "Placement service",
+            "Women's center",
+            "Financial services",
+            "24-hour foot and vehicle patrols",
+            "Late night transport/escort service",
+            "24-hour emergency telephones",
+            "Lighted pathways/sidewalks",
+            "Student patrols",
+            "Controlled dormitory access (key, security card, etc.)",
+            "Coed dorms",
+            "Women's dorms",
+            "Sorority housing",
+            "Fraternity housing",
+            "Apartments for married students",
+            "Apartment for single students",
+            "Special housing for disabled students",
+            "Special housing for international students",
+            "Cooperative housing",
+            "Wellness housing"
+          ],
+          "campus_culture_indicators": [
+            "World-class, top university",
+            "Super bright students make classes extremely competitive",
+            "Outstanding faculty",
+            "Strong network of graduates for career opportunities",
+            "Professors have amazing accomplishments",
+            "Good value for money",
+            "Best experience imaginable",
+            "Focus on learning skills and making friends",
+            "Unparalleled educational facilities and social experiences for finance students",
+            "World Class Education and Research",
+            "Engineering education prepares students for careers",
+            "Good school with many opportunities",
+            "Some classes are pointless (BUS101) but most are incredibly helpful",
+            "Expansive opportunities",
+            "Engineering background and research lab opportunities help distinguish students for medical school",
+            "Professors from elite universities (Harvard, Yale)",
+            "Academics are truly great",
+            "Students carefully select classes and professors they like",
+            "Great experience and incredible opportunities for undergrad and grad studies"
+          ],
+          "unique_academic_opportunities": [
+            "Cooperative education programs: Computer Science, Engineering, Chemical Science",
+            "Internships",
+            "Study abroad",
+            "Cross-registration",
+            "Distance learning",
+            "Double major",
+            "Service learning",
+            "Undergraduate research/creative projects",
+            "Senior capstone or culminating academic experience",
+            "First-year experiences",
+            "Learning communities",
+            "Pre-professional programs: Pre-law, pre-dentistry, pre-medicine, pre-veterinary science, pre-optometry, pre-pharmacy"
+          ]
+        }
+      },
+      "cost_of_attendance": null,
+      "admissions_data": null,
+      "fieldsPresent": [
+        "institutional_identity",
+        "rankings_comprehensive",
+        "admissions_engine",
+        "academic_roi_and_outcomes",
+        "financial_profile",
+        "international_context",
+        "supplementary_admissions_insights"
+      ],
+      "extractionMethod": "LLM",
+      "llmModelUsed": "gemini-2.5-flash",
+      "scraped_at": "2026-04-27T17:30:09.922Z",
+      "approvedAt": "2026-04-27T17:31:37.875Z",
+      "approvedByUserId": "eca9ae55-403c-4af4-be68-b9202c68512e"
+    },
+    {
+      "id": "cmofzkedb00034h95bnf7la0z",
+      "collegeId": "carnegie-mellon-university",
+      "rankingSourceId": "cmo9ib50k0000h0knncp62cav",
+      "academicYear": "2025-2026",
+      "acceptance_rate": null,
+      "rankings": {
+        "admissions_engine": {
+          "deadlines": {
+            "transfer_fall": "Feb. 15",
+            "early_decision": "Nov. 1",
+            "regular_decision": "Jan. 1"
+          },
+          "source_page": "USNews EDUCATION page 1 (Admissions), USNews EDUCATION page 3 (Admissions), USNews EDUCATION page 4 (Admissions), USNews EDUCATION page 5 (Admissions), USNews EDUCATION page 6 (Admissions), USNews EDUCATION page 7 (Admissions), USNews EDUCATION page 10 (Admissions), USNews EDUCATION page 11 (Admissions), USNews EDUCATION page 12 (Admissions), USNews EDUCATION page 13 (Admissions)",
+          "acceptance_rate": 0.12,
+          "entrance_exam_policies": {
+            "test_policy": "test-optional",
+            "ap_scores_accepted": [
+              4,
+              5
+            ],
+            "ib_higher_level_accepted": [
+              6,
+              7
+            ]
+          },
+          "middle_50_percentile_stats": {
+            "sat_math": {
+              "p25": 770,
+              "p75": 800
+            },
+            "avg_hs_gpa": 3.9,
+            "act_composite": {
+              "p25": 34,
+              "p75": 35
+            },
+            "sat_reading_writing": {
+              "p25": 730,
+              "p75": 770
+            }
+          },
+          "admissions_factor_weighting": {
+            "important": [
+              "Application essay",
+              "Recommendations",
+              "First-generation college student"
+            ],
+            "considered": [
+              "Standardized test scores",
+              "Geographical residence",
+              "Work experience"
+            ],
+            "not_considered": [
+              "Interview",
+              "Alumni/alumnae relations",
+              "State residency",
+              "Religious affiliation/commitment",
+              "Applicant's interest level"
+            ],
+            "very_important": [
+              "Rigor of secondary school record",
+              "Class rank",
+              "GPA",
+              "Extracurricular activities",
+              "Talent/ability",
+              "Character/personal qualities",
+              "Volunteer work"
+            ]
+          }
+        },
+        "financial_profile": {
+          "source_page": "USNews EDUCATION page 1 (Financial Aid), USNews EDUCATION page 2 (Financial Aid), USNews EDUCATION page 4 (Cost)",
+          "sticker_price_total": 88886,
+          "net_price_by_income_bracket": [
+            {
+              "avg_cost": 12082,
+              "income_range": "$0-$30,000"
+            },
+            {
+              "avg_cost": 15139,
+              "income_range": "$30,001-$48,000"
+            },
+            {
+              "avg_cost": 16532,
+              "income_range": "$48,001-$75,000"
+            },
+            {
+              "avg_cost": 24893,
+              "income_range": "$75,001-$110,000"
+            },
+            {
+              "avg_cost": 52012,
+              "income_range": "$110,001+"
+            }
+          ]
+        },
+        "international_context": {
+          "source_page": "USNews EDUCATION page 3 (Student Body), USNews EDUCATION page 6 (Student Population), USNews EDUCATION page 8 (Academics), USNews EDUCATION page 16 (Admissions)",
+          "top_countries_represented": [
+            {
+              "country": "China",
+              "percentage": 0.39
+            },
+            {
+              "country": "India",
+              "percentage": 0.1
+            },
+            {
+              "country": "Qatar",
+              "percentage": 0.1
+            },
+            {
+              "country": "Canada",
+              "percentage": 0.07
+            },
+            {
+              "country": "South Korea",
+              "percentage": 0.06
+            },
+            {
+              "country": "Singapore",
+              "percentage": 0.03
+            }
+          ],
+          "intl_student_retention_rate": 0.98,
+          "english_proficiency_minimums": {
+            "IELTS": 7.5,
+            "TOEFL": 102
+          },
+          "percent_international_undergrad": 0.233
+        },
+        "institutional_identity": {
+          "name": "Carnegie Mellon University",
+          "type": "Private",
+          "setting": null,
+          "location": {
+            "city": "Pittsburgh",
+            "state": "PA",
+            "address": "5000 Forbes Avenue, Pittsburgh, PA, 15213",
+            "country": null
+          },
+          "source_page": "USNews EDUCATION page 1 (Admissions), USNews EDUCATION page 1 (Academics), USNews EDUCATION page 2 (Admissions)",
+          "campus_size_acres": 122
+        },
+        "rankings_comprehensive": {
+          "best_value": 25,
+          "source_page": "USNews EDUCATION page 1 (Rankings), USNews EDUCATION page 2 (Rankings)",
+          "most_innovative": 4,
+          "overall_national": 20,
+          "subject_and_specialty_rankings": [
+            {
+              "rank": 8,
+              "department": "Undergraduate Engineering Programs",
+              "sub_specialties": [
+                {
+                  "name": "Biomedical",
+                  "rank": 21
+                },
+                {
+                  "name": "Chemical",
+                  "rank": 11
+                },
+                {
+                  "name": "Civil",
+                  "rank": 9
+                },
+                {
+                  "name": "Computer",
+                  "rank": 2
+                },
+                {
+                  "name": "Electrical / Electronic / Communications",
+                  "rank": 7
+                },
+                {
+                  "name": "Environmental / Environmental Health",
+                  "rank": 6
+                },
+                {
+                  "name": "Materials",
+                  "rank": 7
+                },
+                {
+                  "name": "Mechanical",
+                  "rank": 9
+                }
+              ]
+            },
+            {
+              "rank": 6,
+              "department": "Business Programs",
+              "sub_specialties": [
+                {
+                  "name": "Accounting",
+                  "rank": 37
+                },
+                {
+                  "name": "Analytics",
+                  "rank": 1
+                },
+                {
+                  "name": "Entrepreneurship",
+                  "rank": 17
+                },
+                {
+                  "name": "Finance",
+                  "rank": 10
+                },
+                {
+                  "name": "Management",
+                  "rank": 23
+                },
+                {
+                  "name": "Management Information Systems",
+                  "rank": 1
+                },
+                {
+                  "name": "Marketing",
+                  "rank": 32
+                },
+                {
+                  "name": "Production / Operation Management",
+                  "rank": 3
+                },
+                {
+                  "name": "Quantitative Analysis",
+                  "rank": 3
+                },
+                {
+                  "name": "Supply Chain Management / Logistics",
+                  "rank": 14
+                }
+              ]
+            },
+            {
+              "rank": 2,
+              "department": "Computer Science",
+              "sub_specialties": [
+                {
+                  "name": "Artificial Intelligence",
+                  "rank": 1
+                },
+                {
+                  "name": "Biocomputing/Bioinformatics/Biotechnology",
+                  "rank": 4
+                },
+                {
+                  "name": "Computer Systems",
+                  "rank": 3
+                },
+                {
+                  "name": "Cybersecurity",
+                  "rank": 1
+                },
+                {
+                  "name": "Data Analytics/Science",
+                  "rank": 4
+                },
+                {
+                  "name": "Game/Simulation Development",
+                  "rank": 4
+                },
+                {
+                  "name": "Mobile/Web Applications",
+                  "rank": 1
+                },
+                {
+                  "name": "Programming Languages",
+                  "rank": 1
+                },
+                {
+                  "name": "Software Engineering",
+                  "rank": 1
+                },
+                {
+                  "name": "Theory",
+                  "rank": 3
+                }
+              ]
+            },
+            {
+              "rank": 11,
+              "department": "Psychology Programs",
+              "sub_specialties": []
+            },
+            {
+              "rank": 21,
+              "department": "Economics",
+              "sub_specialties": []
+            },
+            {
+              "rank": 4,
+              "department": "Undergraduate Research/Creative Projects",
+              "sub_specialties": []
+            },
+            {
+              "rank": 39,
+              "department": "First-Year Experiences",
+              "sub_specialties": []
+            },
+            {
+              "rank": 5,
+              "department": "Senior Capstone",
+              "sub_specialties": []
+            },
+            {
+              "rank": 8,
+              "department": "Co-ops/Internships",
+              "sub_specialties": []
+            },
+            {
+              "rank": 16,
+              "department": "Best Undergraduate Teaching",
+              "sub_specialties": []
+            },
+            {
+              "rank": 136,
+              "department": "Top Performers on Social Mobility",
+              "sub_specialties": []
+            }
+          ]
+        },
+        "academic_roi_and_outcomes": {
+          "source_page": "USNews EDUCATION page 1 (Academics), USNews EDUCATION page 2 (Academics), USNews EDUCATION page 4 (Academics), USNews EDUCATION page 5 (Academics), USNews EDUCATION page 7 (Student Life), USNews EDUCATION page 8 (Academics)",
+          "graduation_rate_4yr": 0.81,
+          "student_faculty_ratio": "6:1",
+          "major_performance_data": [
+            {
+              "major_name": "Computer Science",
+              "grad_percentage": 0.13,
+              "median_starting_salary": 251632
+            },
+            {
+              "major_name": "Business Administration and Management, General",
+              "grad_percentage": 0.12,
+              "median_starting_salary": 159088
+            },
+            {
+              "major_name": "Electrical and Electronics Engineering",
+              "grad_percentage": 0.11,
+              "median_starting_salary": 183814
+            },
+            {
+              "major_name": "Systems Science and Theory",
+              "grad_percentage": 0.1,
+              "median_starting_salary": 133740
+            },
+            {
+              "major_name": "Mechanical Engineering",
+              "grad_percentage": 0.06,
+              "median_starting_salary": 115666
+            },
+            {
+              "major_name": "Architecture",
+              "grad_percentage": null,
+              "median_starting_salary": 75908
+            },
+            {
+              "major_name": "Chemical Engineering",
+              "grad_percentage": null,
+              "median_starting_salary": 122523
+            },
+            {
+              "major_name": "Civil Engineering",
+              "grad_percentage": null,
+              "median_starting_salary": 106890
+            }
+          ],
+          "faculty_research_impact": {
+            "bibliometric_rank": 24,
+            "citation_impact_score": 2.23
+          },
+          "freshman_retention_rate": 0.97,
+          "median_salary_6yrs_post_grad": 105360
+        },
+        "supplementary_admissions_insights": {
+          "other_notable_data": null,
+          "specialized_facilities": null,
+          "campus_culture_indicators": [
+            "academically rigorous school due to both the coursework and the culture",
+            "coursework is very technical",
+            "culture of the school is to push yourself to your limits, which helps students learn",
+            "working VERY HARD at her studies, while meeting and studying along side intelligent, focused, equally hard working, dedicated, passionate, and friendly peers",
+            "ECE is challenging, but is doable if you organize your time",
+            "TOP and it challenges you to the limit, specially on technical degrees (CS, Data Science, Data Analytics). The curriculum is extremely rigorous and demanding, it requires a non-stop working to succeed.",
+            "You are going to work really hard when you are there but in the end it was definitely worth it.",
+            "Tepper School of Business is outstanding and very highly ranked nationally.",
+            "Scottish heritage in the Kiltie Band and the Pipes and Drums band",
+            "students double major and minor in interdisciplinary topics",
+            "curriculum is challenging, and it took some time to get used to the rhythm.",
+            "Very difficult and competitive, yet rewarding. Most coursework is very math/quantitative based.",
+            "students here are anything but cut-throat? I soon came to realize that contrary to belief, the students here are anything but that and are, in fact, incredibly helpful and understanding."
+          ],
+          "unique_academic_opportunities": [
+            "Cooperative (work-study plan) program",
+            "3/2 program to Master of Arts Management",
+            "Bachelor's in Logic and Computation and Master's in Logic, Computation & Methodology",
+            "Bachelors and Masters in Civil and Environmental Engineering",
+            "Bachelors and Masters in Electrical and Computer Engineering",
+            "Bachelors in English and Masters of Arts in Professional Writing",
+            "Double major"
+          ]
+        }
+      },
+      "cost_of_attendance": null,
+      "admissions_data": null,
+      "fieldsPresent": [
+        "institutional_identity",
+        "rankings_comprehensive",
+        "admissions_engine",
+        "academic_roi_and_outcomes",
+        "financial_profile",
+        "international_context",
+        "supplementary_admissions_insights"
+      ],
+      "extractionMethod": "LLM",
+      "llmModelUsed": "Gemini 1.5 Flash",
+      "scraped_at": "2026-04-26T17:00:24.157Z",
+      "approvedAt": "2026-04-26T17:01:37.672Z",
+      "approvedByUserId": "eca9ae55-403c-4af4-be68-b9202c68512e"
+    },
+    {
+      "id": "cmog2vore000l28uuls3zqlv8",
+      "collegeId": "california-institute-of-technology",
+      "rankingSourceId": "cmo9ib50k0000h0knncp62cav",
+      "academicYear": "of",
+      "acceptance_rate": null,
+      "rankings": {
+        "admissions_engine": {
+          "deadlines": {
+            "early_action": "Nov. 1",
+            "transfer_fall": "Feb. 15",
+            "early_decision": null,
+            "regular_decision": "Jan. 3"
+          },
+          "source_page": "USNews Education - Admissions",
+          "acceptance_rate": 0.03,
+          "entrance_exam_policies": {
+            "test_policy": "Required",
+            "ap_scores_accepted": null,
+            "ib_higher_level_accepted": null
+          },
+          "middle_50_percentile_stats": {
+            "sat_math": {
+              "p25": null,
+              "p75": null
+            },
+            "avg_hs_gpa": null,
+            "act_composite": {
+              "p25": null,
+              "p75": null
+            },
+            "sat_reading_writing": {
+              "p25": null,
+              "p75": null
+            }
+          },
+          "admissions_factor_weighting": {
+            "important": [
+              "Class rank",
+              "GPA",
+              "Extracurricular activities"
+            ],
+            "considered": [
+              "Talent/ability",
+              "First-generation college student",
+              "Geographical residence",
+              "Volunteer work",
+              "Work experience"
+            ],
+            "not_considered": [
+              "Interview",
+              "Alumni/alumnae relations",
+              "State residency",
+              "Religious affiliation/commitment",
+              "Applicant's interest level"
+            ],
+            "very_important": [
+              "Rigor of secondary school record",
+              "Standardized test scores",
+              "Application essay",
+              "Recommendations",
+              "Character/personal qualities"
+            ]
+          }
+        },
+        "financial_profile": {
+          "source_page": "USNews Education - Tuition & Financial Aid",
+          "sticker_price_total": 90822,
+          "net_price_by_income_bracket": [
+            {
+              "avg_cost": -1012,
+              "income_range": "$0-$30,000"
+            },
+            {
+              "avg_cost": 1721,
+              "income_range": "$30,001-$48,000"
+            },
+            {
+              "avg_cost": 4367,
+              "income_range": "$48,001-$75,000"
+            },
+            {
+              "avg_cost": 14886,
+              "income_range": "$75,001-$110,000"
+            },
+            {
+              "avg_cost": 48070,
+              "income_range": "$110,001+"
+            }
+          ]
+        },
+        "international_context": {
+          "source_page": "USNews Education - Student Body, Admissions, Academics",
+          "top_countries_represented": [
+            {
+              "country": "China",
+              "percentage": 0.15
+            },
+            {
+              "country": "India",
+              "percentage": 0.13
+            },
+            {
+              "country": "Canada",
+              "percentage": 0.09
+            }
+          ],
+          "intl_student_retention_rate": 0.91,
+          "english_proficiency_minimums": {
+            "IELTS": 7,
+            "TOEFL": 100
+          },
+          "percent_international_undergrad": 0.141
+        },
+        "institutional_identity": {
+          "name": "California Institute of Technology",
+          "type": "Private",
+          "setting": "Suburban",
+          "location": {
+            "city": "Pasadena",
+            "state": "CA",
+            "address": "1200 E. California Boulevard, Pasadena, CA, 91125",
+            "country": "USA"
+          },
+          "source_page": "USNews Education - Overview",
+          "campus_size_acres": 124
+        },
+        "rankings_comprehensive": {
+          "best_value": 6,
+          "source_page": "USNews Education - Rankings",
+          "most_innovative": 7,
+          "overall_national": 11,
+          "subject_and_specialty_rankings": [
+            {
+              "rank": 5,
+              "department": "Engineering Programs (doctorate)",
+              "sub_specialties": []
+            },
+            {
+              "rank": 4,
+              "department": "Aerospace /Aeronautical / Astronautical",
+              "sub_specialties": []
+            },
+            {
+              "rank": 25,
+              "department": "Biomedical",
+              "sub_specialties": []
+            },
+            {
+              "rank": 9,
+              "department": "Chemical",
+              "sub_specialties": []
+            },
+            {
+              "rank": 11,
+              "department": "Computer",
+              "sub_specialties": []
+            },
+            {
+              "rank": 6,
+              "department": "Electrical / Electronic / Communications",
+              "sub_specialties": []
+            },
+            {
+              "rank": 10,
+              "department": "Materials",
+              "sub_specialties": []
+            },
+            {
+              "rank": 7,
+              "department": "Mechanical",
+              "sub_specialties": []
+            },
+            {
+              "rank": 9,
+              "department": "Computer Science",
+              "sub_specialties": []
+            },
+            {
+              "rank": 10,
+              "department": "Artificial Intelligence",
+              "sub_specialties": []
+            },
+            {
+              "rank": 13,
+              "department": "Computer Systems",
+              "sub_specialties": []
+            },
+            {
+              "rank": 12,
+              "department": "Data Analytics/Science",
+              "sub_specialties": []
+            },
+            {
+              "rank": 14,
+              "department": "Theory",
+              "sub_specialties": []
+            },
+            {
+              "rank": 14,
+              "department": "Economics",
+              "sub_specialties": []
+            },
+            {
+              "rank": 2,
+              "department": "Undergraduate Research/Creative Projects",
+              "sub_specialties": []
+            },
+            {
+              "rank": 173,
+              "department": "Top Performers on Social Mobility",
+              "sub_specialties": []
+            }
+          ]
+        },
+        "academic_roi_and_outcomes": {
+          "source_page": "USNews Education - Academics",
+          "graduation_rate_4yr": 0.77,
+          "student_faculty_ratio": "3:1",
+          "major_performance_data": [
+            {
+              "major_name": "Computer Science",
+              "grad_percentage": 0.4,
+              "median_starting_salary": 232903
+            },
+            {
+              "major_name": "Mechanical Engineering",
+              "grad_percentage": 0.16,
+              "median_starting_salary": null
+            },
+            {
+              "major_name": "Physics, General",
+              "grad_percentage": 0.09,
+              "median_starting_salary": null
+            },
+            {
+              "major_name": "Electrical and Electronics Engineering",
+              "grad_percentage": 0.06,
+              "median_starting_salary": null
+            },
+            {
+              "major_name": "Computational Mathematics",
+              "grad_percentage": 0.04,
+              "median_starting_salary": null
+            },
+            {
+              "major_name": "Bioengineering and Biomedical Engineering",
+              "grad_percentage": 0.04,
+              "median_starting_salary": null
+            }
+          ],
+          "faculty_research_impact": {
+            "bibliometric_rank": 16,
+            "citation_impact_score": 2.02
+          },
+          "freshman_retention_rate": 0.98,
+          "median_salary_6yrs_post_grad": 132140
+        },
+        "supplementary_admissions_insights": {
+          "other_notable_data": {
+            "housing_types": [
+              "apartments for married students",
+              "coed dorms",
+              "special housing for disabled students",
+              "theme housing"
+            ],
+            "alumni_giving_rate": 0.097,
+            "athletic_association": "NCAA III",
+            "greek_life_sororities": 0,
+            "campus_safety_services": [
+              "24-hour foot and vehicle patrols",
+              "late night transport/escort service",
+              "24-hour emergency telephones",
+              "lighted pathways/sidewalks",
+              "controlled dormitory access (key, security card, etc.)"
+            ],
+            "greek_life_fraternities": 0,
+            "alcohol_permitted_legal_age": true,
+            "firearm_campus_carry_policy": "Banned",
+            "housing_on_campus_percentage": 0.9,
+            "physically_disabled_services": [
+              "Adaptive equipment",
+              "Braille services",
+              "Interpreters for hearing-impaired",
+              "Note-taking services",
+              "Reader services",
+              "Special housing",
+              "Special transportation",
+              "Talking books",
+              "Tape recorders",
+              "Tutors"
+            ],
+            "ld_program_advisers_available": true,
+            "international_student_services": [
+              "career support or OPT advising",
+              "cultural dining options",
+              "ESL program/classes",
+              "housing offered during all school holidays",
+              "international student organization",
+              "legal advising",
+              "special counselors/advisors",
+              "special orientation (1-6 days)"
+            ],
+            "disabled_student_housing_available": true,
+            "accessibility_campus_physically_disabled": "Mostly"
+          },
+          "specialized_facilities": null,
+          "campus_culture_indicators": [
+            "Rigorous academic environment",
+            "Intensive STEM education",
+            "Merit-based admissions (not legacy)",
+            "Focus on producing Nobel laureates, scientists, engineers, innovators",
+            "Challenging undergraduate workload",
+            "Supportive environment",
+            "Friendly faculty and administration",
+            "Emphasis on worth ethic and collaboration skills",
+            "Cozy and beautiful campus",
+            "Strong ethics",
+            "Exploration and pushing potentials in STEM fields",
+            "Social gatherings",
+            "Academic inspirations",
+            "Resourceful and kind peers/mentors"
+          ],
+          "unique_academic_opportunities": [
+            "Undergraduate research/creative projects (92% participation)",
+            "First-year experiences (17% participation)",
+            "Combined-degree programs (with Bowdoin College, Bryn Mawr, Grinnell College, Haverford College, Mt. Holyoke College, Oberlin College, Occidental College, Ohio Wesleyan University, Pomona College, Reed College, Spelman College, Wesleyan University, Whitman College)",
+            "Pre-medicine program",
+            "Writing in the disciplines (100% participation)",
+            "Qualified undergraduate students may take graduate-level classes"
+          ]
+        }
+      },
+      "cost_of_attendance": null,
+      "admissions_data": null,
+      "fieldsPresent": [
+        "institutional_identity",
+        "rankings_comprehensive",
+        "admissions_engine",
+        "academic_roi_and_outcomes",
+        "financial_profile",
+        "international_context",
+        "supplementary_admissions_insights"
+      ],
+      "extractionMethod": "LLM",
+      "llmModelUsed": "gemini-2.5-flash",
+      "scraped_at": "2026-04-26T18:17:48.179Z",
+      "approvedAt": "2026-04-26T18:19:32.788Z",
+      "approvedByUserId": "eca9ae55-403c-4af4-be68-b9202c68512e"
+    }
+  ],
+  "colleges": [
+    {
+      "id": "williams-college",
+      "name": "Williams College",
+      "aliases": [],
+      "country": "United States"
+    },
+    {
+      "id": "amherst-college",
+      "name": "Amherst College",
+      "aliases": [],
+      "country": "United States"
+    },
+    {
+      "id": "swarthmore-college",
+      "name": "Swarthmore College",
+      "aliases": [],
+      "country": "United States"
+    },
+    {
+      "id": "pomona-college",
+      "name": "Pomona College",
+      "aliases": [],
+      "country": "United States"
+    },
+    {
+      "id": "university-of-oxford",
+      "name": "University of Oxford",
+      "aliases": [],
+      "country": "United Kingdom"
+    },
+    {
+      "id": "university-of-cambridge",
+      "name": "University of Cambridge",
+      "aliases": [],
+      "country": "United Kingdom"
+    },
+    {
+      "id": "university-of-london",
+      "name": "University of London",
+      "aliases": [],
+      "country": "United Kingdom"
+    },
+    {
+      "id": "imperial-college-london",
+      "name": "Imperial College London",
+      "aliases": [],
+      "country": "United Kingdom"
+    },
+    {
+      "id": "cornell-university",
+      "name": "Cornell University",
+      "aliases": [],
+      "country": "United States"
+    },
+    {
+      "id": "university-of-chicago",
+      "name": "University of Chicago",
+      "aliases": [
+        "UChicago",
+        "University of Chicago"
+      ],
+      "country": "United States"
+    },
+    {
+      "id": "stanford-university",
+      "name": "Stanford University",
+      "aliases": [],
+      "country": "United States"
+    },
+    {
+      "id": "california-institute-of-technology",
+      "name": "California Institute of Technology",
+      "aliases": [],
+      "country": "United States"
+    },
+    {
+      "id": "university-of-california,-berkeley",
+      "name": "University of California, Berkeley",
+      "aliases": [],
+      "country": "United States"
+    },
+    {
+      "id": "university-of-california,-los-angeles",
+      "name": "University of California, Los Angeles",
+      "aliases": [],
+      "country": "United States"
+    },
+    {
+      "id": "university-of-michigan",
+      "name": "University of Michigan",
+      "aliases": [],
+      "country": "United States"
+    },
+    {
+      "id": "university-of-virginia",
+      "name": "University of Virginia",
+      "aliases": [],
+      "country": "United States"
+    },
+    {
+      "id": "university-of-north-carolina-at-chapel-hill",
+      "name": "University of North Carolina at Chapel Hill",
+      "aliases": [],
+      "country": "United States"
+    },
+    {
+      "id": "duke-university",
+      "name": "Duke University",
+      "aliases": [],
+      "country": "United States"
+    },
+    {
+      "id": "northwestern-university",
+      "name": "Northwestern University",
+      "aliases": [],
+      "country": "United States"
+    },
+    {
+      "id": "university-college-london-(ucl)",
+      "name": "University College London (UCL)",
+      "aliases": [],
+      "country": "United Kingdom"
+    },
+    {
+      "id": "london-school-of-economics-and-political-science-(lse)",
+      "name": "London School of Economics and Political Science (LSE)",
+      "aliases": [],
+      "country": "United Kingdom"
+    },
+    {
+      "id": "university-of-manchester",
+      "name": "University of Manchester",
+      "aliases": [],
+      "country": "United Kingdom"
+    },
+    {
+      "id": "university-of-edinburgh",
+      "name": "University of Edinburgh",
+      "aliases": [],
+      "country": "United Kingdom"
+    },
+    {
+      "id": "heidelberg-university",
+      "name": "Heidelberg University",
+      "aliases": [],
+      "country": "Germany"
+    },
+    {
+      "id": "ludwig-maximilians-university-munich",
+      "name": "Ludwig Maximilians University Munich",
+      "aliases": [],
+      "country": "Germany"
+    },
+    {
+      "id": "technical-university-of-munich-(tum)",
+      "name": "Technical University of Munich (TUM)",
+      "aliases": [],
+      "country": "Germany"
+    },
+    {
+      "id": "university-of-berlin",
+      "name": "University of Berlin",
+      "aliases": [],
+      "country": "Germany"
+    },
+    {
+      "id": "university-of-bonn",
+      "name": "University of Bonn",
+      "aliases": [],
+      "country": "Germany"
+    },
+    {
+      "id": "university-of-amsterdam",
+      "name": "University of Amsterdam",
+      "aliases": [],
+      "country": "Netherlands"
+    },
+    {
+      "id": "university-of-utrecht",
+      "name": "University of Utrecht",
+      "aliases": [],
+      "country": "Netherlands"
+    },
+    {
+      "id": "australian-national-university-(anu)",
+      "name": "Australian National University (ANU)",
+      "aliases": [],
+      "country": "Australia"
+    },
+    {
+      "id": "carnegie-mellon-university",
+      "name": "Carnegie Mellon University",
+      "aliases": [
+        "CMU",
+        "Carnegie"
+      ],
+      "country": "United States"
+    },
+    {
+      "id": "massachusetts-institute-of-technology",
+      "name": "Massachusetts Institute of Technology",
+      "aliases": [
+        "MIT"
+      ],
+      "country": "United States"
+    },
+    {
+      "id": "harvard-university",
+      "name": "Harvard University",
+      "aliases": [],
+      "country": "United States"
+    },
+    {
+      "id": "princeton-university",
+      "name": "Princeton University",
+      "aliases": [],
+      "country": "United States"
+    },
+    {
+      "id": "yale-university",
+      "name": "Yale University",
+      "aliases": [],
+      "country": "United States"
+    },
+    {
+      "id": "columbia-university",
+      "name": "Columbia University",
+      "aliases": [],
+      "country": "United States"
+    },
+    {
+      "id": "university-of-pennsylvania",
+      "name": "University of Pennsylvania",
+      "aliases": [],
+      "country": "United States"
+    },
+    {
+      "id": "brown-university",
+      "name": "Brown University",
+      "aliases": [],
+      "country": "United States"
+    },
+    {
+      "id": "johns-hopkins-university",
+      "name": "Johns Hopkins University",
+      "aliases": [],
+      "country": "United States"
+    },
+    {
+      "id": "vanderbilt-university",
+      "name": "Vanderbilt University",
+      "aliases": [],
+      "country": "United States"
+    },
+    {
+      "id": "rice-university",
+      "name": "Rice University",
+      "aliases": [],
+      "country": "United States"
+    },
+    {
+      "id": "emory-university",
+      "name": "Emory University",
+      "aliases": [],
+      "country": "United States"
+    },
+    {
+      "id": "georgetown-university",
+      "name": "Georgetown University",
+      "aliases": [],
+      "country": "United States"
+    },
+    {
+      "id": "university-of-southern-california",
+      "name": "University of Southern California",
+      "aliases": [],
+      "country": "United States"
+    },
+    {
+      "id": "leiden-university",
+      "name": "Leiden University",
+      "aliases": [],
+      "country": "Netherlands"
+    },
+    {
+      "id": "erasmus-university-rotterdam",
+      "name": "Erasmus University Rotterdam",
+      "aliases": [],
+      "country": "Netherlands"
+    },
+    {
+      "id": "dartmouth-college",
+      "name": "Dartmouth College",
+      "aliases": [],
+      "country": "United States"
+    },
+    {
+      "id": "university-of-groningen",
+      "name": "University of Groningen",
+      "aliases": [],
+      "country": "Netherlands"
+    },
+    {
+      "id": "university-of-melbourne",
+      "name": "University of Melbourne",
+      "aliases": [],
+      "country": "Australia"
+    },
+    {
+      "id": "university-of-sydney",
+      "name": "University of Sydney",
+      "aliases": [],
+      "country": "Australia"
+    },
+    {
+      "id": "university-of-new-south-wales-(unsw)",
+      "name": "University of New South Wales (UNSW)",
+      "aliases": [],
+      "country": "Australia"
+    },
+    {
+      "id": "university-of-queensland",
+      "name": "University of Queensland",
+      "aliases": [],
+      "country": "Australia"
+    },
+    {
+      "id": "monash-university",
+      "name": "Monash University",
+      "aliases": [],
+      "country": "Australia"
+    },
+    {
+      "id": "university-of-toronto",
+      "name": "University of Toronto",
+      "aliases": [],
+      "country": "Canada"
+    },
+    {
+      "id": "mcgill-university",
+      "name": "McGill University",
+      "aliases": [],
+      "country": "Canada"
+    },
+    {
+      "id": "university-of-british-columbia-(ubc)",
+      "name": "University of British Columbia (UBC)",
+      "aliases": [],
+      "country": "Canada"
+    },
+    {
+      "id": "mcmaster-university",
+      "name": "McMaster University",
+      "aliases": [],
+      "country": "Canada"
+    },
+    {
+      "id": "university-of-alberta",
+      "name": "University of Alberta",
+      "aliases": [],
+      "country": "Canada"
+    },
+    {
+      "id": "simon-fraser-university",
+      "name": "Simon Fraser University",
+      "aliases": [],
+      "country": "Canada"
+    },
+    {
+      "id": "national-university-of-singapore-(nus)",
+      "name": "National University of Singapore (NUS)",
+      "aliases": [],
+      "country": "Singapore"
+    },
+    {
+      "id": "nanyang-technological-university-(ntu)",
+      "name": "Nanyang Technological University (NTU)",
+      "aliases": [],
+      "country": "Singapore"
+    },
+    {
+      "id": "singapore-management-university-(smu)",
+      "name": "Singapore Management University (SMU)",
+      "aliases": [],
+      "country": "Singapore"
+    },
+    {
+      "id": "cmlpb628z0000a0z97chff1hx",
+      "name": "Ashoka University",
+      "aliases": [],
+      "country": "India"
+    },
+    {
+      "id": "cmm01xq8h0000xrbe3py02mo4",
+      "name": "Davidson College",
+      "aliases": [],
+      "country": "United States"
+    },
+    {
+      "id": "cmm0ab5iu001251doei0ejw2e",
+      "name": "University of Wisconsin, Madison",
+      "aliases": [],
+      "country": "United States"
+    },
+    {
+      "id": "cmohgv4zu002g28uub8rp8kag",
+      "name": "University of Illinois, Urbana Champaign",
+      "aliases": [],
+      "country": "United States"
+    },
+    {
+      "id": "cmohgvp1p002h28uupvvf43vf",
+      "name": "Purdue University",
+      "aliases": [],
+      "country": "United States"
+    }
+  ]
+}
