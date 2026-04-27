@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,6 +9,7 @@ import { ux } from '@/lib/ux';
 import { cn } from '@/lib/utils';
 import { IntegrationSetupCard } from '@/components/meetings/IntegrationSetupCard';
 import { HostAvailabilityView } from '@/components/meetings/HostAvailabilityView';
+import { Key, Save, ShieldCheck } from 'lucide-react';
 
 interface SettingsPageProps {
   user: any;
@@ -31,6 +32,45 @@ export default function SettingsPage({ user, student, counselorSettings }: Setti
     defaultMeetingDuration: counselorSettings?.defaultMeetingDuration || 30,
     bufferTime: counselorSettings?.bufferTime || 15,
   });
+
+  const [rankingCreds, setRankingCreds] = useState({
+    sourceName: 'us_news',
+    email: '',
+    password: '',
+  });
+  const [credsLoading, setCredsLoading] = useState(false);
+  const [credsSuccess, setCredsSuccess] = useState(false);
+
+  useEffect(() => {
+    if (activeTab === 'preferences' && user.role === 'counselor') {
+       fetch('/api/admin/ranking-source-credentials')
+         .then(res => res.json())
+         .then(data => {
+            const usNews = data.find((d: any) => d.sourceName === 'us_news');
+            if (usNews) {
+               setRankingCreds(prev => ({ ...prev, email: usNews.hasEmail ? '********' : '' }));
+            }
+         });
+    }
+  }, [activeTab, user.role]);
+
+  const handleUpdateCredentials = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setCredsLoading(true);
+    setCredsSuccess(false);
+    try {
+      const res = await fetch('/api/admin/ranking-source-credentials', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(rankingCreds),
+      });
+      if (res.ok) setCredsSuccess(true);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setCredsLoading(false);
+    }
+  };
 
   const setupRequired = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '').get('reason') === 'setup_required';
 
@@ -61,7 +101,7 @@ export default function SettingsPage({ user, student, counselorSettings }: Setti
 
   const tabs = [
     { id: 'account', label: 'Account' },
-    ...(user.role === 'counselor' ? [{ id: 'meetings', label: 'Meeting Setup' }] : []),
+    ...(user.role === 'counselor' ? [{ id: 'meetings', label: 'Meeting Setup' }, { id: 'preferences', label: 'Platform Settings' }] : []),
     ...(user.role === 'student' ? [{ id: 'preferences', label: 'Preferences' }] : []),
   ];
 
@@ -243,6 +283,64 @@ export default function SettingsPage({ user, student, counselorSettings }: Setti
                 </CardContent>
               </Card>
             </section>
+          </div>
+        )}
+
+        {activeTab === 'preferences' && user.role === 'counselor' && (
+          <div className="space-y-8">
+            <Card variant="base">
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <Key className="w-4 h-4 text-brand-600" />
+                  <CardTitle className={ux.text.subheading}>Ranking Source Credentials</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleUpdateCredentials} className="space-y-4">
+                  <p className={ux.text.body}>Provide premium credentials for ranking sources to enable automated scraping.</p>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label className={ux.form.label}>Source</label>
+                      <select className={ux.form.input} disabled>
+                        <option>US News & World Report</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <label className={ux.form.label}>Email / Username</label>
+                      <Input 
+                        value={rankingCreds.email}
+                        onChange={(e) => setRankingCreds({ ...rankingCreds, email: e.target.value })}
+                        placeholder="premium@usnews.com"
+                        className={ux.form.input}
+                      />
+                    </div>
+                    <div className="space-y-2 md:col-span-2">
+                      <label className={ux.form.label}>Password</label>
+                      <Input 
+                        type="password"
+                        value={rankingCreds.password}
+                        onChange={(e) => setRankingCreds({ ...rankingCreds, password: e.target.value })}
+                        placeholder="••••••••"
+                        className={ux.form.input}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-4 pt-2">
+                    <Button type="submit" disabled={credsLoading || !rankingCreds.password}>
+                      {credsLoading ? 'Saving...' : 'Update US News Credentials'}
+                    </Button>
+                    {credsSuccess && (
+                      <span className="flex items-center gap-1 text-green-600 text-[10px] font-black uppercase tracking-widest">
+                        <ShieldCheck className="w-3 h-3" />
+                        Credentials Encrypted & Saved
+                      </span>
+                    )}
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
           </div>
         )}
 

@@ -4,6 +4,8 @@ import { config } from "dotenv";
 
 import { PrismaClient, UserRole } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { seedTemplates } from "./seed-templates";
+import { seedGenericTemplate } from "./seed-generic-template";
 
 const prisma = new PrismaClient();
 
@@ -12,7 +14,7 @@ async function main() {
 
   // 1. Seed Organization
   const org = await prisma.organization.upsert({
-    where: { id: "engage" },
+    where: { id: "waypoint" },
     update: {
       name: "Engage Counseling Organization",
       primaryColor: "#3B82F6",
@@ -29,13 +31,12 @@ async function main() {
 
   // 2. Helper to seed counselors
   const seedCounselor = async (email: string, firstName: string, lastName: string, isAdmin: boolean) => {
-    return await prisma.user.upsert({
+    const user = await prisma.user.upsert({
       where: { email },
       update: {
         firstName,
         lastName,
         role: UserRole.counselor,
-        isAdmin,
         passwordHash: commonPassword,
       },
       create: {
@@ -44,10 +45,20 @@ async function main() {
         firstName,
         lastName,
         role: UserRole.counselor,
-        isAdmin,
         organizationId: "waypoint",
       },
     });
+
+    await prisma.counselor.upsert({
+      where: { userId: user.id },
+      update: { isAdmin },
+      create: {
+        userId: user.id,
+        isAdmin
+      }
+    });
+
+    return user;
   };
 
   // Seed Counselors
@@ -59,6 +70,10 @@ async function main() {
 
   const c2 = await seedCounselor('lavanya.rajesh@waypoint.edu', 'Lavanya', 'Rajesh', false);
   console.log(`✅ Counselor Created: ${c2.firstName} ${c2.lastName}`);
+
+  // 3. Seed Extraction Templates
+  await seedTemplates();
+  await seedGenericTemplate();
 
   console.log('🎉 Core seeding complete.');
 }
