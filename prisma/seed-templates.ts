@@ -132,12 +132,17 @@ Return ONLY valid JSON.`,
 export async function seedTemplates() {
   console.log('Seeding extraction templates (RankingSourcePrompt)...');
   
-  // 1. Resolve the correct RankingSource IDs first
-  const usNews = await prisma.rankingSource.findUnique({ where: { name: 'us_news' } });
-  if (!usNews) {
-    console.warn("⚠️ US News ranking source not found. Please seed ranking sources first.");
-    return;
-  }
+  // 1. Ensure US News ranking source exists (Self-Sufficient Seed)
+  const usNews = await prisma.rankingSource.upsert({
+    where: { name: 'us_news' },
+    update: { displayName: 'US News' },
+    create: { 
+      name: 'us_news', 
+      displayName: 'US News', 
+      baseUrl: 'https://www.usnews.com/best-colleges', 
+      isActive: true 
+    }
+  });
 
   const p = prisma as any;
   const promptModel = p.rankingSourcePrompt || p.RankingSourcePrompt;
