@@ -4,7 +4,7 @@ import { config } from "dotenv";
 
 import { PrismaClient, UserRole } from "@prisma/client";
 import bcrypt from "bcryptjs";
-import { seedTemplates } from "./seed-prompts";
+// import { seedTemplates } from "./seed-prompts";
 import { seedIntelligence } from "./seed-intelligence";
 
 const prisma = new PrismaClient();
@@ -75,7 +75,7 @@ async function main() {
   await seedIntelligence(prisma);
 
   // 4. Seed Extraction Prompts
-  await seedTemplates();
+  // await seedTemplates();
 
   console.log('🎉 Core infrastructure seeding complete.');
 }
