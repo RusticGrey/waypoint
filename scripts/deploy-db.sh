@@ -40,7 +40,8 @@ if [ -z "$DATABASE_URL" ]; then
 fi
 
 echo "Running Prisma migrations..."
-npx prisma migrate deploy
+
+npx dotenv -e "$ENV_FILE" -- prisma migrate deploy
 
 if [ $? -eq 0 ]; then
   echo "Generating Prisma Client..."

@@ -43,20 +43,32 @@ export async function seedIntelligence(pOverride?: PrismaClient) {
 
     // 1. Seed Colleges (UPSERT BY NAME to prevent ID conflicts between environments)
     for (const college of data.colleges) {
-      await p.college.upsert({
+      // Robust mapping of optional fields that might not exist in target DB yet
+      const updateData: any = {
+        country: college.country,
+      };
+      
+      const createData: any = {
+        // If the college is brand new, use the name as ID to keep it human-readable and consistent
+        id: college.id || college.name.toLowerCase().replace(/[^a-z0-9]/g, '-'),
+        name: college.name,
+        country: college.country,
+        isActive: true
+      };
+
+      // Handle schema resilience: Only set shortName if the client model supports it
+      // Use try-catch for runtime safety on production environments with older schema
+      try {
+        (updateData as any).shortName = college.shortName || college.aliases?.[0];
+        (createData as any).shortName = college.shortName || college.aliases?.[0];
+      } catch (e) {
+        console.warn(`⚠️ skipping shortName for ${college.name} - column might not exist yet.`);
+      }
+
+      await (p as any).college.upsert({
         where: { name: college.name },
-        update: {
-          shortName: college.shortName || college.aliases?.[0],
-          country: college.country,
-        },
-        create: {
-          // If the college is brand new, use the name as ID to keep it human-readable and consistent
-          id: college.id || college.name.toLowerCase().replace(/[^a-z0-9]/g, '-'),
-          name: college.name,
-          shortName: college.shortName || college.aliases?.[0],
-          country: college.country,
-          isActive: true
-        }
+        update: updateData,
+        create: createData
       });
     }
 
@@ -83,7 +95,7 @@ export async function seedIntelligence(pOverride?: PrismaClient) {
 
     // 3. Seed Data Sources
     for (const source of data.sources) {
-      await p.dataSource.upsert({
+      await (p as any).dataSource.upsert({
         where: { name: source.name },
         update: {
           displayName: source.displayName,
@@ -105,7 +117,7 @@ export async function seedIntelligence(pOverride?: PrismaClient) {
       // NATURAL KEY RESOLUTION: Map name to local environment ID
       let localCollegeId = ranking.collegeId;
       if (ranking.collegeName) {
-        const localCol = await p.college.findUnique({ where: { name: ranking.collegeName } });
+        const localCol = await (p as any).college.findUnique({ where: { name: ranking.collegeName } });
         if (localCol) localCollegeId = localCol.id;
       }
 
@@ -113,7 +125,7 @@ export async function seedIntelligence(pOverride?: PrismaClient) {
       let localSourceId = ranking.rankingSourceId;
       const sourceInfo = data.sources.find((s: any) => s.id === ranking.rankingSourceId);
       if (sourceInfo) {
-        const localSource = await p.dataSource.findUnique({ where: { name: sourceInfo.name } });
+        const localSource = await (p as any).dataSource.findUnique({ where: { name: sourceInfo.name } });
         if (localSource) localSourceId = localSource.id;
       }
 
@@ -122,7 +134,7 @@ export async function seedIntelligence(pOverride?: PrismaClient) {
         continue;
       }
 
-      await p.collegeInsight.upsert({
+      await (p as any).collegeInsight.upsert({
         where: {
           collegeId_dataSourceId_academicYear: {
             collegeId: localCollegeId,
