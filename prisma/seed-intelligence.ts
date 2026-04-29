@@ -117,6 +117,11 @@ export async function seedIntelligence(pOverride?: PrismaClient) {
         if (localSource) localSourceId = localSource.id;
       }
 
+      if (!localCollegeId || !localSourceId) {
+        console.warn(`⚠️ Skipping insight for ${ranking.collegeName || localCollegeId} - could not resolve IDs.`);
+        continue;
+      }
+
       await p.collegeInsight.upsert({
         where: {
           collegeId_dataSourceId_academicYear: {
@@ -130,15 +135,17 @@ export async function seedIntelligence(pOverride?: PrismaClient) {
             rankings: ranking.rankings,
             cost_of_attendance: ranking.cost_of_attendance,
             admissions_data: ranking.admissions_data,
-            acceptance_rate: ranking.acceptance_rate
+            acceptance_rate: ranking.acceptance_rate,
+            // Include anything else present in ranking.data if it exists (for schema flexibility)
+            ...(ranking.data || {})
           },
           status: 'approved',
-          extractionMethod: ranking.extractionMethod,
+          extractionMethod: ranking.extractionMethod || 'LLM',
           llmModelUsed: ranking.llmModelUsed,
           approvedAt: ranking.approvedAt || new Date()
         },
         create: {
-          id: ranking.id,
+          // Do NOT force ranking.id to prevent P2002 unique constraint errors on Vercel/Prod
           collegeId: localCollegeId,
           dataSourceId: localSourceId,
           academicYear: ranking.academicYear,
@@ -146,10 +153,11 @@ export async function seedIntelligence(pOverride?: PrismaClient) {
             rankings: ranking.rankings,
             cost_of_attendance: ranking.cost_of_attendance,
             admissions_data: ranking.admissions_data,
-            acceptance_rate: ranking.acceptance_rate
+            acceptance_rate: ranking.acceptance_rate,
+            ...(ranking.data || {})
           },
           status: 'approved',
-          extractionMethod: ranking.extractionMethod,
+          extractionMethod: ranking.extractionMethod || 'LLM',
           llmModelUsed: ranking.llmModelUsed,
           approvedAt: ranking.approvedAt || new Date()
         }

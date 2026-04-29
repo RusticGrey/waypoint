@@ -28,7 +28,9 @@ async function main() {
   const insights = await prisma.collegeInsight.findMany({
     where: { 
       status: 'approved',
-      approvedAt: { not: null, gt: lastDate }
+      // If lastDate is epoch (first export), take all approved. 
+      // Otherwise only take things since lastDate.
+      ...(lastExport > 0 ? { approvedAt: { not: null, gt: lastDate } } : {})
     },
   });
 

@@ -133,7 +133,7 @@ export async function seedTemplates() {
   console.log('Seeding extraction templates (DataSourcePrompt)...');
   
   // 1. Ensure US News ranking source exists (Self-Sufficient Seed)
-  const usNews = await prisma.datasource.upsert({
+  const usNews = await (prisma as any).dataSource.upsert({
     where: { name: 'us_news' },
     update: { displayName: 'US News' },
     create: { 
