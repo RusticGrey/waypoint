@@ -11,16 +11,16 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const colleges = await (prisma.college as any).findMany({
+    const colleges = await prisma.college.findMany({
       include: {
         _count: {
           select: { 
             documents: true,
-            rankingData: true
+            insights: true
           }
         },
-        rankingData: {
-          where: { approvedAt: { not: null } },
+        insights: {
+          where: { status: 'approved' },
           select: { id: true }
         }
       },
@@ -50,9 +50,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'College name is required' }, { status: 400 });
     }
 
+    const slugId = name.toLowerCase()
+      .replace(/[^a-z0-9]/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+
     const college = await prisma.college.create({
       data: {
+        id: slugId,
         name,
+        shortName: body.shortName || null,
         country: body.country || 'United States',
         isActive: true
       }

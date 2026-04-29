@@ -9,7 +9,7 @@
     "lint": "next lint",
     "postinstall": "prisma generate",
     "seed:intelligence": "tsx prisma/seed-intelligence.ts",
-    "export:intelligence": "tsx scripts/export-intelligence.ts"
+    "export:intelligence": "node scripts/export-intelligence.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.77.0",

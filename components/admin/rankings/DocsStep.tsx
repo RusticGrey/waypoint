@@ -46,16 +46,14 @@ export const DocsStep: React.FC<DocsStepProps> = ({
   };
 
   const filteredDocuments = documents.filter((doc) =>
-    (doc.metadata?.fileName || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (doc.sourceType || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (doc.section || "").toLowerCase().includes(searchTerm.toLowerCase())
+    (doc.fileName || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (doc.dataSourceId || "").toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Group by Source Type
   const groupedDocuments: Record<string, any[]> = {};
   filteredDocuments.forEach(doc => {
-    // Robust source identification: metadata > sourceType > fallback
-    const sourceName = doc.metadata?.rankingSourceName || doc.sourceType || "Uncategorized";
+    const sourceName = doc.dataSource?.displayName || doc.dataSourceId || "Uncategorized";
     if (!groupedDocuments[sourceName]) groupedDocuments[sourceName] = [];
     groupedDocuments[sourceName].push(doc);
   });
@@ -72,13 +70,6 @@ export const DocsStep: React.FC<DocsStepProps> = ({
             Review your source repository and stage files for AI analysis.
           </p>
         </div>
-        <Button
-          onClick={onUploadNew}
-          className="bg-brand-600 hover:bg-brand-700 text-white font-black uppercase tracking-widest text-[10px] px-6 py-6 rounded-2xl shadow-xl shadow-brand-100 transition-all active:scale-[0.98]"
-        >
-          <Plus className="w-4 h-4 mr-2 stroke-[3px]" />
-          Upload New Source
-        </Button>
       </div>
 
       {/* Search & Actions Bar */}
@@ -151,10 +142,10 @@ export const DocsStep: React.FC<DocsStepProps> = ({
                     <div className="flex-1 min-w-0 flex items-center justify-between gap-6">
                       <div className="flex items-center gap-2 min-w-0 flex-1">
                         <h4 className="text-[11px] font-black text-slate-900 truncate uppercase tracking-tight">
-                          {doc.metadata?.fileName || "Unnamed Source"}
+                          {doc.fileName || "Unnamed Source"}
                         </h4>
                         <Badge variant="neutral" className="text-[8px] font-bold px-1.5 py-0 border-slate-200 text-slate-400 bg-transparent shrink-0">
-                          {docTypeLabel}
+                          {doc.contentType || 'HTML'}
                         </Badge>
                       </div>
                       
@@ -163,18 +154,6 @@ export const DocsStep: React.FC<DocsStepProps> = ({
                           <Calendar className="w-3 h-3" />
                           {formattedDate}
                         </span>
-                        <div className="flex items-center gap-2">
-                          <div className={cn(
-                            "w-2 h-2 rounded-full shadow-sm",
-                            doc.extractionStatus === "pending" ? "bg-amber-400" : "bg-green-500"
-                          )} />
-                          <span className={cn(
-                            "text-[9px] font-black uppercase tracking-widest",
-                            doc.extractionStatus === "pending" ? "text-amber-600" : "text-green-600"
-                          )}>
-                            {doc.extractionStatus === "pending" ? "Staged" : "Analyzed"}
-                          </span>
-                        </div>
                       </div>
                     </div>
                   </div>

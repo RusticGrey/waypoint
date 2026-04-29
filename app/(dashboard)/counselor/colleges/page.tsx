@@ -10,7 +10,8 @@ import { cn } from '@/lib/utils';
 import { 
   Plus, Search, GraduationCap, MapPin, 
   Globe, FileText, ChevronRight, Loader2,
-  MessageSquare, LayoutGrid, CheckCircle2, Sparkles
+  MessageSquare, LayoutGrid, CheckCircle2, Sparkles,
+  Database, Settings2
 } from 'lucide-react';
 import Link from 'next/link';
 import { CollegeKnowledgeChat } from '@/components/admin/rankings/CollegeKnowledgeChat';
@@ -80,6 +81,12 @@ export default function CollegeDirectory() {
             <p className={ux.text.body}>Manage institutions and explore the AI knowledge base.</p>
           </div>
           <div className="flex items-center gap-3">
+            <Link href="/counselor/extraction-templates">
+              <Button variant="outline">
+                <Settings2 className="w-4 h-4 mr-2" />
+                Manage Prompts
+              </Button>
+            </Link>
             <Button onClick={() => setShowAddForm(!showAddForm)}>
               <Plus className="w-4 h-4 mr-2" />
               Add College
@@ -170,7 +177,7 @@ export default function CollegeDirectory() {
               {/* Ultra-Compact Strip Grid */}
               <div className="grid gap-3 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
                 {filteredColleges.map((college) => {
-                  const hasIntelligence = college.rankingData?.length > 0;
+                  const hasIntelligence = college.insights?.length > 0;
                   const hasDocuments = college._count?.documents > 0;
 
                   return (

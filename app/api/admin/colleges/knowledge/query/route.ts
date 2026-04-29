@@ -9,7 +9,7 @@ import { z } from "zod";
 const queryParamsSchema = z.object({
   collegeId: z.string(),
   academicYear: z.string(),
-  rankingSourceId: z.string().optional(),
+  dataSourceId: z.string().optional(),
 });
 
 export async function GET(req: NextRequest) {
@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const collegeId = searchParams.get("collegeId");
     const academicYear = searchParams.get("academicYear");
-    const rankingSourceId = searchParams.get("rankingSourceId");
+    const dataSourceId = searchParams.get("dataSourceId") || searchParams.get("rankingSourceId");
 
     if (!collegeId || !academicYear) {
       return NextResponse.json(
@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
     const params = queryParamsSchema.parse({
       collegeId,
       academicYear,
-      rankingSourceId: rankingSourceId || undefined,
+      dataSourceId: dataSourceId || undefined,
     });
 
     const college = await prisma.college.findUnique({
@@ -46,39 +46,42 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "College not found" }, { status: 404 });
     }
 
+    const { searchParams: rawParams } = new URL(req.url);
+    const requestedStatus = rawParams.get("status") || "approved";
+
     const filter: any = {
       collegeId: params.collegeId,
-      approvalStatus: "approved",
+      status: requestedStatus,
     };
 
-    if (params.rankingSourceId) {
-      filter.rankingSourceId = params.rankingSourceId;
+    if (params.dataSourceId) {
+      filter.dataSourceId = params.dataSourceId;
     }
 
-    let rankings = await (prisma as any).collegeRankingData.findMany({
+    let insights = await prisma.collegeInsight.findMany({
       where: {
         ...filter,
         academicYear: params.academicYear,
       },
       include: {
-        rankingSource: { select: { id: true, displayName: true } },
+        dataSource: { select: { id: true, displayName: true } },
       },
     });
 
     let fallbackYear = null;
 
-    if (rankings.length === 0) {
-      const mostRecentRanking = await (prisma as any).collegeRankingData.findFirst({
+    if (insights.length === 0) {
+      const mostRecentInsight = await prisma.collegeInsight.findFirst({
         where: filter,
         orderBy: { academicYear: "desc" },
         include: {
-          rankingSource: { select: { id: true, displayName: true } },
+          dataSource: { select: { id: true, displayName: true } },
         },
       });
 
-      if (mostRecentRanking) {
-        rankings = [mostRecentRanking];
-        fallbackYear = (mostRecentRanking as any).academicYear;
+      if (mostRecentInsight) {
+        insights = [mostRecentInsight];
+        fallbackYear = mostRecentInsight.academicYear;
       }
     }
 
@@ -87,14 +90,16 @@ export async function GET(req: NextRequest) {
         collegeId: params.collegeId,
         collegeName: college.name,
         requestedAcademicYear: params.academicYear,
-        actualAcademicYear: rankings.length > 0 ? (rankings[0] as any).academicYear : null,
+        actualAcademicYear: insights.length > 0 ? insights[0].academicYear : null,
         fallbackYear,
-        rankings: rankings.map((ranking: any) => ({
-          rankingSourceId: ranking.rankingSourceId,
-          rankingSourceName: ranking.rankingSource.displayName,
-          academicYear: ranking.academicYear,
-          rankingDataJSON: ranking.rankings, // Matching schema field name 'rankings'
-          approvalStatus: ranking.approvalStatus,
+        rankings: insights.map((insight: any) => ({
+          id: insight.id,
+          collegeId: insight.collegeId,
+          dataSourceId: insight.dataSourceId,
+          dataSourceName: insight.dataSource.displayName,
+          academicYear: insight.academicYear,
+          rankingDataJSON: insight.data,
+          status: insight.status,
         })),
       },
       { status: 200 }

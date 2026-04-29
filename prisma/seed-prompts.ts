@@ -130,13 +130,14 @@ Return ONLY valid JSON.`,
 ];
 
 export async function seedTemplates() {
-  console.log('Seeding extraction templates (RankingSourcePrompt)...');
+  console.log('Seeding extraction templates (DataSourcePrompt)...');
   
   // 1. Ensure US News ranking source exists (Self-Sufficient Seed)
-  const usNews = await prisma.rankingSource.upsert({
+  const usNews = await prisma.dataSource.upsert({
     where: { name: 'us_news' },
     update: { displayName: 'US News' },
     create: { 
+      id: 'us-news',
       name: 'us_news', 
       displayName: 'US News', 
       baseUrl: 'https://www.usnews.com/best-colleges', 
@@ -144,19 +145,13 @@ export async function seedTemplates() {
     }
   });
 
-  const p = prisma as any;
-  const promptModel = p.rankingSourcePrompt || p.RankingSourcePrompt;
-
-  if (!promptModel) {
-    console.warn("⚠️ RankingSourcePrompt model not found in Prisma client.");
-    return;
-  }
+  const promptModel = prisma.dataSourcePrompt;
 
   for (const template of templates) {
     await promptModel.upsert({
       where: {
-        rankingSourceId_version: {
-          rankingSourceId: usNews.id,
+        dataSourceId_version: {
+          dataSourceId: usNews.id,
           version: 1,
         },
       },
@@ -165,7 +160,7 @@ export async function seedTemplates() {
         isActive: true
       },
       create: {
-        rankingSourceId: usNews.id,
+        dataSourceId: usNews.id,
         promptText: template.promptTemplate,
         version: 1,
         isActive: true

@@ -10,9 +10,9 @@ export async function GET(req: Request) {
       select: {
         id: true,
         name: true,
+        shortName: true,
         country: true,
         acceptanceRate: true,
-        rankingUsNews: true,
         avgGpa: true,
         avgSat: true,
         avgAct: true,
@@ -40,12 +40,18 @@ export async function POST(req: Request) {
     
     const body = await req.json();
     
+    const slugId = body.name.toLowerCase()
+      .replace(/[^a-z0-9]/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+
     const college = await prisma.college.create({
       data: {
+        id: slugId,
         name: body.name,
+        shortName: body.shortName || null,
         country: body.country || 'United States',
         acceptanceRate: body.acceptanceRate ? parseFloat(body.acceptanceRate) : null,
-        rankingUsNews: body.rankingUsNews ? parseInt(body.rankingUsNews) : null,
         avgGpa: body.avgGpa ? parseFloat(body.avgGpa) : null,
         avgSat: body.avgSat ? parseInt(body.avgSat) : null,
         avgAct: body.avgAct ? parseInt(body.avgAct) : null,
@@ -110,9 +116,9 @@ export async function PUT(req: Request) {
             where: { id: body.id },
             data: {
                 name: body.name,
+                shortName: body.shortName,
                 country: body.country,
                 acceptanceRate: body.acceptanceRate ? parseFloat(body.acceptanceRate) : null,
-                rankingUsNews: body.rankingUsNews ? parseInt(body.rankingUsNews) : null,
                 avgGpa: body.avgGpa ? parseFloat(body.avgGpa) : null,
                 avgSat: body.avgSat ? parseInt(body.avgSat) : null,
                 avgAct: body.avgAct ? parseInt(body.avgAct) : null,

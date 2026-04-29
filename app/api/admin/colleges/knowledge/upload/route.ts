@@ -8,13 +8,12 @@ import crypto from "crypto";
 const uploadRequestSchema = z.object({
   collegeId: z.string(),
   academicYear: z.string(),
-  rankingSourceId: z.string(),
+  dataSourceId: z.string(),
   documents: z.array(
     z.object({
       fileName: z.string().min(1),
-      rawHtmlContent: z.string(),
-      mimeType: z.string().optional().default("text/html"),
-      documentType: z.string().optional().default("html"),
+      content: z.string(),
+      contentType: z.string().optional().default("text/html"),
     })
   ).min(1),
 });
@@ -26,21 +25,30 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
-      select: { id: true, role: true },
-    });
-
-    if (!user || user.role !== "counselor") {
-      return NextResponse.json(
-        { error: "Only counselors can upload documents" },
-        { status: 403 }
-      );
+    // Check session role first
+    if (session.user.role !== 'counselor') {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
+    // Still need user id for the create operation
+    const userId = session.user.id;
+
     const body = await req.json();
-    const { collegeId, academicYear, rankingSourceId, documents } =
-      uploadRequestSchema.parse(body);
+    
+    // Zod parsing will catch most issues
+    let parsed;
+    try {
+      parsed = uploadRequestSchema.parse(body);
+    } catch (err: any) {
+      console.error("[Upload API] Zod Error:", err.errors);
+      return NextResponse.json({ error: "Invalid request format", details: err.errors }, { status: 400 });
+    }
+
+    const { collegeId, academicYear, dataSourceId, documents } = parsed;
+
+    if (!collegeId || !dataSourceId || !academicYear) {
+      return NextResponse.json({ error: "Missing required fields: collegeId, dataSourceId, and academicYear are all required." }, { status: 400 });
+    }
 
     const college = await prisma.college.findUnique({
       where: { id: collegeId },
@@ -50,61 +58,45 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "College not found" }, { status: 404 });
     }
 
-    const rankingSource = await prisma.rankingSource.findUnique({
-      where: { id: rankingSourceId },
+    const dataSource = await prisma.dataSource.findUnique({
+      where: { id: dataSourceId },
     });
 
-    if (!rankingSource) {
+    if (!dataSource) {
       return NextResponse.json(
-        { error: "Ranking source not found" },
+        { error: "Data source not found" },
         { status: 404 }
       );
     }
 
     const results = await Promise.all(
       documents.map(async (doc) => {
-        const htmlHash = crypto.createHash("sha256").update(doc.rawHtmlContent).digest("hex");
+        const contentHash = crypto.createHash("sha256").update(doc.content).digest("hex");
         
-        // Comprehensive duplicate check: collegeId + sourceType + (htmlHash OR fileName)
         const existing = await prisma.collegeDocument.findFirst({
           where: { 
             collegeId, 
-            sourceType: rankingSource.name,
-            OR: [
-              { htmlHash },
-              { metadata: { path: ['fileName'], equals: doc.fileName } }
-            ]
+            dataSourceId,
+            academicYear,
+            contentHash
           }
         });
 
         if (existing) {
-          return { skipped: true, fileName: doc.fileName, id: existing.id, extractionStatus: existing.extractionStatus, metadata: existing.metadata };
+          return { skipped: true, fileName: doc.fileName, id: existing.id };
         }
 
         const newDoc = await prisma.collegeDocument.create({
           data: {
             collegeId,
-            section: "General",
-            sourceType: rankingSource.name,
-            rawHtmlContent: doc.rawHtmlContent,
-            htmlHash,
-            uploadedByUserId: user.id,
-            extractionStatus: "pending",
-            documentType: doc.documentType || "html",
-            metadata: {
-              fileName: doc.fileName,
-              mimeType: doc.mimeType,
-              academicYear: academicYear,
-              rankingSourceId: rankingSourceId
-            }
-          },
-          select: {
-            id: true,
-            collegeId: true,
-            documentType: true,
-            extractionStatus: true,
-            metadata: true
-          },
+            dataSourceId,
+            academicYear,
+            content: doc.content,
+            contentHash,
+            fileName: doc.fileName,
+            uploadedByUserId: userId,
+            contentType: doc.contentType || "text/html",
+          }
         });
 
         return { ...newDoc, skipped: false, fileName: doc.fileName };
@@ -118,33 +110,14 @@ export async function POST(req: NextRequest) {
       {
         success: true,
         message: `Processed ${results.length} document(s)`,
-        uploadedDocuments: uploadedDocuments.map(doc => ({
-          ...doc,
-          fileName: (doc.metadata as any)?.fileName || doc.fileName,
-          academicYear: academicYear,
-          approvalStatus: doc.extractionStatus
-        })),
+        uploadedDocuments: uploadedDocuments,
         skippedCount: skippedDocuments.length,
         skippedFiles: skippedDocuments.map(s => s.fileName)
       },
       { status: 201 }
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error("Upload API error:", error);
-
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        {
-          error: "Invalid request format",
-          details: (error as any).errors,
-        },
-        { status: 400 }
-      );
-    }
-
-    return NextResponse.json(
-      { error: "Failed to upload documents" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: error.message || "Failed to upload documents" }, { status: 500 });
   }
 }

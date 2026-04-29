@@ -11,13 +11,21 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const prompts = await (prisma as any).rankingSourcePrompt.findMany({
-      where: { isActive: true }, // Only show latest active ones by default
+    const { searchParams } = new URL(req.url);
+    const dataSourceId = searchParams.get('dataSourceId');
+
+    const filter: any = { isActive: true };
+    if (dataSourceId) {
+      filter.dataSourceId = dataSourceId;
+    }
+
+    const prompts = await prisma.dataSourcePrompt.findMany({
+      where: filter,
       include: {
-        rankingSource: true // Include ranking source name mapping
+        dataSource: true
       },
       orderBy: [
-        { rankingSourceId: 'asc' }
+        { dataSourceId: 'asc' }
       ]
     });
 
@@ -38,34 +46,34 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { sourceType, promptText } = body;
+    const { dataSourceId, promptText } = body;
 
     // Validate the source exists in DB
-    const rankingSource = await (prisma as any).rankingSource.findFirst({
-      where: { name: sourceType }
+    const dataSource = await prisma.dataSource.findUnique({
+      where: { id: dataSourceId }
     });
 
-    if (!rankingSource) {
-      return NextResponse.json({ error: `Invalid Source Type: ${sourceType}` }, { status: 400 });
+    if (!dataSource) {
+      return NextResponse.json({ error: `Invalid Data Source: ${dataSourceId}` }, { status: 400 });
     }
 
     // Find current max version for this source
-    const currentLatest = await (prisma as any).rankingSourcePrompt.findFirst({
-      where: { rankingSourceId: rankingSource.id },
+    const currentLatest = await prisma.dataSourcePrompt.findFirst({
+      where: { dataSourceId: dataSource.id },
       orderBy: { version: 'desc' }
     });
 
     const nextVersion = currentLatest ? currentLatest.version + 1 : 1;
 
     // Deactivate old versions for this source
-    await (prisma as any).rankingSourcePrompt.updateMany({
-      where: { rankingSourceId: rankingSource.id, isActive: true },
+    await prisma.dataSourcePrompt.updateMany({
+      where: { dataSourceId: dataSource.id, isActive: true },
       data: { isActive: false }
     });
 
-    const newPrompt = await (prisma as any).rankingSourcePrompt.create({
+    const newPrompt = await prisma.dataSourcePrompt.create({
       data: {
-        rankingSourceId: rankingSource.id,
+        dataSourceId: dataSource.id,
         promptText: promptText,
         version: nextVersion,
         isActive: true

@@ -8,7 +8,7 @@ export interface ExtractionResult {
   modelUsed: string;
 }
 
-export interface RankingSourceAdapter {
+export interface DataSourceAdapter {
   name: string;
   displayName: string;
   

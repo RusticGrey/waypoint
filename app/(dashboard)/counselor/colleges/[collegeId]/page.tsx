@@ -11,22 +11,29 @@ import {
   Loader2, GraduationCap, MapPin, Globe, 
   FileText, MessageSquare, Database, LayoutDashboard,
   Settings, Save, AlertCircle, CheckCircle2, ChevronLeft,
-  RotateCcw, FileJson, Sparkles
+  RotateCcw, FileJson, Sparkles, Edit3
 } from 'lucide-react';
 import Link from 'next/link';
 import { CollegeMetadataEditor } from '@/components/admin/rankings/CollegeMetadataEditor';
-import { KnowledgeWorkflow } from '@/components/admin/rankings/KnowledgeWorkflow';
 import { CollegeKnowledgeChat } from '@/components/admin/rankings/CollegeKnowledgeChat';
+import { KnowledgeWorkflow } from '@/components/admin/rankings/KnowledgeWorkflow';
+import { JsonEditor } from '@/components/admin/rankings/JsonEditor';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 type Tab = 'overview' | 'documents';
 
 export default function CollegeDetailPage() {
   const { collegeId } = useParams();
   const [college, setCollege] = useState<any>(null);
-  const [rankingSources, setRankingSources] = useState<any[]>([]);
+  const [dataSources, setDataSources] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<Tab>('overview');
   const [activeSubTab, setActiveSubTab] = useState<string>('');
+  
+  // JSON Editing State
+  const [editingInsight, setEditingInsight] = useState<any>(null);
+  const [editedJson, setEditedJson] = useState<any>(null);
+  const [savingInsight, setSavingInsight] = useState(false);
 
   const isProduction = process.env.NODE_ENV === 'production';
 
@@ -37,11 +44,40 @@ export default function CollegeDetailPage() {
 
   const fetchRankingSources = async () => {
     try {
-      const res = await fetch('/api/admin/rankings/sources');
+      const res = await fetch('/api/admin/colleges/knowledge/sources');
       const data = await res.json();
-      setRankingSources(data || []);
+      setDataSources(data || []);
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const handleEditInsight = (insight: any) => {
+    setEditingInsight(insight);
+    setEditedJson(insight.data);
+  };
+
+  const saveInsightEdit = async () => {
+    if (!editingInsight) return;
+    setSavingInsight(true);
+    try {
+      const res = await fetch('/api/admin/colleges/knowledge/approve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'approve',
+          dataId: editingInsight.id,
+          correctedJson: editedJson
+        })
+      });
+      if (res.ok) {
+        setEditingInsight(null);
+        fetchCollege();
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSavingInsight(false);
     }
   };
 
@@ -130,7 +166,7 @@ export default function CollegeDetailPage() {
         <div className="flex p-1 bg-slate-100/50 rounded-2xl w-fit border border-slate-200 shadow-inner">
           {[
             { id: 'overview', label: 'Overview', icon: LayoutDashboard },
-            ...(!isProduction ? [{ id: 'documents', label: 'Knowledge Repository', icon: Database }] : []),
+            { id: 'documents', label: 'Knowledge Repository', icon: Database },
           ].map((tab: any) => (
             <button
               key={tab.id}
@@ -164,37 +200,64 @@ export default function CollegeDetailPage() {
                     <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Verified Knowledge Repository Data</p>
                   </div>
                 </div>
-                <Badge variant="neutral" className="bg-brand-600 text-white font-black uppercase tracking-widest text-[9px] px-3 py-1 border-none">
-                  Live Insights
-                </Badge>
+                <div className="flex items-center gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => {
+                      const currentInsight = (college.insights || []).find((i: any) => i.data?.[activeSubTab]);
+                      if (currentInsight) handleEditInsight(currentInsight);
+                    }}
+                    className="h-7 text-[8px] font-black uppercase tracking-widest border-slate-200 hover:bg-slate-50"
+                  >
+                    <Edit3 className="w-3 h-3 mr-1" /> Edit JSON
+                  </Button>
+                  <Badge variant="neutral" className="bg-brand-600 text-white font-black uppercase tracking-widest text-[9px] px-3 py-1 border-none">
+                    Live Insights
+                  </Badge>
+                </div>
               </div>
 
               {/* Categorized Sub-Tabs */}
               {(() => {
-                const groups = college.rankingData || [];
-                if (groups.length === 0) return null;
+                const insights = college.insights || [];
+                if (insights.length === 0) return null;
 
-                const categories = [
-                  { id: 'institutional_identity', label: 'Identity', icon: GraduationCap },
-                  { id: 'rankings_comprehensive', label: 'Rankings', icon: FileJson },
-                  { id: 'admissions_engine', label: 'Admissions', icon: CheckCircle2 },
-                  { id: 'financial_profile', label: 'Financial', icon: Database },
-                  { id: 'supplementary_admissions_insights', label: 'Campus Life', icon: Sparkles },
-                  { id: 'international_context', label: 'Global', icon: Globe },
-                  { id: 'academic_roi_and_outcomes', label: 'Outcomes', icon: LayoutDashboard },
-                ];
+                // Dynamically extract all unique top-level keys from all insights
+                const allKeys = new Set<string>();
+                insights.forEach((insight: any) => {
+                  if (insight.data && typeof insight.data === 'object') {
+                    Object.keys(insight.data).forEach(key => allKeys.add(key));
+                  }
+                });
 
-                // Set initial subtab if not set
-                if (!activeSubTab) setActiveSubTab(categories[0].id);
+                if (allKeys.size === 0) return null;
+
+                const categories = Array.from(allKeys).map(key => ({
+                  id: key,
+                  label: key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+                  icon: key.includes('identity') ? GraduationCap : 
+                        key.includes('ranking') ? FileJson :
+                        key.includes('admission') ? CheckCircle2 :
+                        key.includes('financial') || key.includes('cost') ? Database :
+                        key.includes('insight') || key.includes('life') ? Sparkles :
+                        key.includes('international') || key.includes('global') ? Globe :
+                        LayoutDashboard
+                }));
+
+                // Set initial subtab if not set or if current subtab no longer exists
+                if (!activeSubTab || !allKeys.has(activeSubTab)) {
+                  setActiveSubTab(categories[0].id);
+                }
 
                 return (
-                  <div className="flex gap-1 mb-[-1px]">
+                  <div className="flex gap-1 mb-[-1px] overflow-x-auto no-scrollbar pr-8">
                     {categories.map((cat) => (
                       <button
                         key={cat.id}
                         onClick={() => setActiveSubTab(cat.id)}
                         className={cn(
-                          "flex items-center gap-2 px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] transition-all border-b-2",
+                          "flex items-center gap-2 px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] transition-all border-b-2 whitespace-nowrap",
                           activeSubTab === cat.id
                             ? "border-brand-600 text-brand-600 bg-brand-50/30"
                             : "border-transparent text-slate-400 hover:text-slate-600 hover:bg-slate-50"
@@ -216,11 +279,11 @@ export default function CollegeDetailPage() {
                   if (Array.isArray(val)) {
                     if (val.length === 0) return null;
                     return (
-                      <div className="space-y-3 w-full">
+                      <div className="space-y-2 w-full mt-2">
                         {val.map((item, i) => (
                           <div key={i} className={cn(
-                            "p-4 rounded-2xl border transition-all shadow-sm",
-                            depth % 2 === 0 ? "bg-slate-50/30 border-slate-100" : "bg-white border-slate-100"
+                            "p-3 rounded-xl border transition-all shadow-sm",
+                            depth % 2 === 0 ? "bg-slate-50/50 border-slate-100" : "bg-white border-slate-100"
                           )}>
                             {renderValue(item, depth + 1)}
                           </div>
@@ -230,10 +293,10 @@ export default function CollegeDetailPage() {
                   }
                   if (typeof val === 'object') {
                     return (
-                      <div className="grid grid-cols-1 gap-4 w-full">
+                      <div className="grid grid-cols-1 gap-3 w-full">
                         {Object.entries(val).map(([k, v]) => (
-                          <div key={k} className="flex flex-col sm:flex-row gap-2 sm:gap-6 items-start pb-4 border-b border-slate-100/50 last:border-0 last:pb-0">
-                            <span className="text-[9px] font-black uppercase text-slate-400 min-w-[140px] mt-1.5 tracking-[0.1em]">{k.replace(/_/g, ' ')}</span>
+                          <div key={k} className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-start py-2 border-b border-slate-50 last:border-0 last:pb-0">
+                            <span className="text-[10px] font-black uppercase text-slate-400 min-w-[160px] mt-1 tracking-wider">{k.replace(/_/g, ' ')}</span>
                             <div className="flex-1 w-full min-w-0">
                               {renderValue(v, depth + 1)}
                             </div>
@@ -245,19 +308,22 @@ export default function CollegeDetailPage() {
                   
                   // Primary value rendering
                   const isLarge = depth <= 1;
+                  const isBool = typeof val === 'boolean';
+                  
                   return (
                     <span className={cn(
                       "font-black tracking-tight break-words block sm:inline",
-                      isLarge ? "text-slate-900 text-lg sm:text-xl" : "text-brand-700 text-sm"
+                      isLarge ? "text-slate-900 text-base md:text-lg" : "text-slate-700 text-xs md:text-sm",
+                      isBool && (val ? "text-green-600" : "text-red-500")
                     )}>
-                      {String(val)}
+                      {isBool ? (val ? 'YES' : 'NO') : String(val)}
                     </span>
                   );
                 };
 
-                const rankingData = college.rankingData || [];
+                const insights = college.insights || [];
                 
-                if (rankingData.length === 0) {
+                if (insights.length === 0) {
                   return (
                     <div className="py-24 text-center">
                        <Database className="w-12 h-12 text-slate-100 mx-auto mb-4" />
@@ -270,12 +336,12 @@ export default function CollegeDetailPage() {
                 }
 
                 // Filter data based on active sub-tab
-                const filteredInsights = rankingData.flatMap((group: any) => {
-                  const categoryData = group.rankings?.[activeSubTab];
+                const filteredInsights = insights.flatMap((group: any) => {
+                  const categoryData = group.data?.[activeSubTab];
                   if (!categoryData) return [];
                   return [{
                     data: categoryData,
-                    source: group.rankingSource?.displayName,
+                    source: group.dataSource?.displayName,
                     year: group.academicYear
                   }];
                 });
@@ -349,11 +415,47 @@ export default function CollegeDetailPage() {
       {activeTab === 'documents' && (
         <KnowledgeWorkflow 
           colleges={[college]} 
-          rankingSources={rankingSources}
+          dataSources={dataSources}
           initialCollegeId={college.id}
           initialDocuments={college.documents || []}
+          onComplete={() => setActiveTab('overview')}
         />
       )}
+
+      {/* JSON Editor Modal */}
+      <Dialog open={!!editingInsight} onOpenChange={(open) => !open && setEditingInsight(null)}>
+        <DialogContent className="max-w-4xl bg-white rounded-[32px] p-8 border-none shadow-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-black uppercase tracking-tight flex items-center gap-3">
+              <FileJson className="w-6 h-6 text-brand-600" />
+              Refine Institutional Insight
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="mt-6 space-y-6">
+            <div className="rounded-2xl overflow-hidden border border-slate-100 shadow-inner bg-slate-50">
+              <JsonEditor 
+                json={editedJson} 
+                readOnly={false}
+                onChange={setEditedJson}
+                height="500px"
+              />
+            </div>
+            
+            <div className="flex justify-end gap-3">
+              <Button variant="ghost" onClick={() => setEditingInsight(null)}>Cancel</Button>
+              <Button 
+                onClick={saveInsightEdit} 
+                disabled={savingInsight}
+                className="bg-brand-600 hover:bg-brand-700 text-white font-black uppercase tracking-widest text-xs px-8 py-6 rounded-2xl shadow-lg shadow-brand-100"
+              >
+                {savingInsight ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
+                Save Changes & Sync Core Data
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
     </div>
   );

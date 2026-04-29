@@ -79,7 +79,7 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
           >
             {extractedData.map((data) => (
               <option key={data.id} value={data.id}>
-                {data.collegeName} • {data.rankingSourceName} •{" "}
+                {data.collegeName} • {data.dataSourceName} •{" "}
                 {data.academicYear}
               </option>
             ))}
@@ -97,7 +97,7 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
             </h3>
             <div className="rounded-3xl overflow-hidden shadow-sm border border-slate-100">
               <JsonEditor
-                json={currentData.rankingDataJSON}
+                json={currentData.data}
                 readOnly={true}
                 height="500px"
               />
@@ -112,7 +112,7 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
             <div className="bg-white rounded-[32px] border border-brand-100 shadow-xl overflow-hidden ring-4 ring-brand-50/50 p-8 custom-scrollbar max-h-[540px] overflow-y-auto text-left">
               <div className="space-y-6">
                 {(() => {
-                  const data = correctedJson || currentData.rankingDataJSON || {};
+                  const data = correctedJson || currentData.data || {};
                   
                   // Recursive function to render nested fields beautifully
                   const renderValue = (val: any): React.ReactNode => {

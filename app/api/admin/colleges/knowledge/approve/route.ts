@@ -8,7 +8,7 @@ const approvalRequestSchema = z.object({
   action: z.enum(["approve", "reject", "modify"]),
   dataId: z.string(),
   approvalNotes: z.string().optional(),
-  correctedJson: z.record(z.any()).optional().nullable(),
+  correctedJson: z.any().optional().nullable(),
 });
 
 export async function POST(req: NextRequest) {
@@ -35,17 +35,17 @@ export async function POST(req: NextRequest) {
     const { action, dataId, approvalNotes, correctedJson } =
       approvalRequestSchema.parse(body);
 
-    const rankingData = await prisma.collegeRankingData.findUnique({
+    const insight = await prisma.collegeInsight.findUnique({
       where: { id: dataId },
       include: {
-        college: { select: { id: true, name: true } },
-        rankingSource: { select: { id: true, displayName: true } },
+        college: true,
+        dataSource: { select: { id: true, displayName: true } },
       },
     });
 
-    if (!rankingData) {
+    if (!insight) {
       return NextResponse.json(
-        { error: "Ranking data not found" },
+        { error: "Insight data not found" },
         { status: 404 }
       );
     }
@@ -62,18 +62,41 @@ export async function POST(req: NextRequest) {
 
     console.log(`[Approval API] Transitioning ${dataId} to ${newStatus}. Action: ${action}`);
     
-    const updated = await prisma.collegeRankingData.update({
+    const finalData = (correctedJson as any) || insight.data;
+
+    const updated = await prisma.collegeInsight.update({
       where: { id: dataId },
       data: {
-        rankings: (correctedJson as any) || rankingData.rankings,
+        data: finalData,
+        status: newStatus,
         approvedByUserId: action === "approve" ? user.id : null,
         approvedAt: action === "approve" ? new Date() : null,
       },
       include: {
-        college: { select: { name: true } },
-        rankingSource: { select: { displayName: true } },
+        college: { select: { id: true, name: true, country: true, acceptanceRate: true, avgGpa: true, avgSat: true, avgAct: true } },
+        dataSource: { select: { displayName: true } },
       },
     });
+
+    // Sync to College if approved
+    if (action === "approve") {
+      const metrics = finalData.admissions_engine || finalData.admissions || {};
+      const identity = finalData.institutional_identity || {};
+
+      await prisma.college.update({
+        where: { id: updated.college.id },
+        data: {
+          name: identity.name || updated.college.name,
+          country: identity.country || updated.college.country,
+          acceptanceRate: metrics.acceptance_rate || metrics.acceptanceRate || updated.college.acceptanceRate,
+          avgGpa: metrics.avg_gpa || metrics.avgGpa || updated.college.avgGpa,
+          avgSat: metrics.middle_50_percentile_stats?.sat_math?.p75 ? 
+                  (metrics.middle_50_percentile_stats.sat_math.p75 + (metrics.middle_50_percentile_stats.sat_reading?.p75 || 0)) : 
+                  (metrics.avgSat || updated.college.avgSat),
+          avgAct: metrics.middle_50_percentile_stats?.act_composite?.p75 || metrics.avgAct || updated.college.avgAct
+        }
+      });
+    }
 
     // We don't have sourceDocumentIds in the TRUE schema for CollegeRankingData!
     // It seems the relation is one-way or handled differently.
@@ -87,7 +110,7 @@ export async function POST(req: NextRequest) {
         dataId,
         newStatus,
         college: updated.college.name,
-        rankingSource: updated.rankingSource.displayName,
+        rankingSource: updated.dataSource.displayName,
         approvalNotes,
         approvedAt: updated.approvedAt?.toISOString(),
       },

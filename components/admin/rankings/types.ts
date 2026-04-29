@@ -5,7 +5,7 @@ export interface College {
   name: string;
 }
 
-export interface RankingSource {
+export interface DataSource {
   id: string;
   name: string;
   displayName: string;
@@ -15,37 +15,34 @@ export interface RankingSource {
 export interface UploadedDocument {
   id: string;
   fileName?: string;
-  approvalStatus?: string;
+  status?: string;
   academicYear?: string;
-  mimeType?: string;
-  sourceType?: string;
-  extractionStatus?: string;
+  contentType?: string;
+  dataSourceId?: string;
   extractedAt?: string;
-  extractedData?: any;
   uploadedAt: string;
-  metadata?: any;
 }
 
 export interface ExtractionSample {
-  collegeId: string;
-  collegeName: string;
-  rankingSourceId: string;
-  rankingSourceName: string;
-  academicYear: string;
-  extractedData: Record<string, any>;
-  rankingDataJSON?: Record<string, any>;
-}
-
-export interface CollegeRankingData {
   id: string;
   collegeId: string;
   collegeName: string;
-  rankingSourceId: string;
-  rankingSourceName: string;
+  dataSourceId: string;
+  dataSourceName: string;
   academicYear: string;
-  rankingDataJSON: Record<string, any>;
-  approvalStatus: "pending" | "approved" | "rejected";
-  sourceDocumentIds: string[];
+  extractedData: Record<string, any>;
+  data: Record<string, any>;
+}
+
+export interface CollegeInsight {
+  id: string;
+  collegeId: string;
+  collegeName: string;
+  dataSourceId: string;
+  dataSourceName: string;
+  academicYear: string;
+  data: Record<string, any>;
+  status: "pending" | "approved" | "rejected";
 }
 
 export interface WorkflowState {
@@ -54,7 +51,7 @@ export interface WorkflowState {
   selectedSource: string;
   academicYear: string;
   uploadedDocuments: UploadedDocument[];
-  extractedData: CollegeRankingData[];
+  extractedData: CollegeInsight[];
   draftId: string | null;
   approvalNotes: string;
   correctedJson: Record<string, any> | null;
@@ -65,12 +62,11 @@ export interface WorkflowState {
 export interface UploadStepProps {
   onUpload: (documents: Array<{
     fileName: string;
-    rawHtmlContent: string;
-    mimeType?: string;
-    documentType?: string;
+    content: string;
+    contentType?: string;
   }>) => Promise<void>;
   colleges: College[];
-  rankingSources: RankingSource[];
+  dataSources: DataSource[];
   selectedCollege: string;
   setSelectedCollege: (id: string) => void;
   selectedSource: string;
@@ -94,7 +90,7 @@ export interface ExtractStepProps {
 }
 
 export interface ReviewStepProps {
-  extractedData: CollegeRankingData[];
+  extractedData: CollegeInsight[];
   onApprove: (action: "approve" | "reject" | "modify", dataId: string) => Promise<void>;
   loading: boolean;
   approvalNotes: string;

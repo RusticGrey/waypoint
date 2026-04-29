@@ -1,7 +1,7 @@
 import { Page } from 'puppeteer';
-import { RankingSourceAdapter, ExtractionResult } from './rankingSourceAdapter';
+import { DataSourceAdapter, ExtractionResult } from './dataSourceAdapter';
 
-export class USNewsAdapter implements RankingSourceAdapter {
+export class USNewsAdapter implements DataSourceAdapter {
   name = 'us_news';
   displayName = 'US News';
 

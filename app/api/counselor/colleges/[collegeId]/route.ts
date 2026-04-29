@@ -24,23 +24,22 @@ export async function GET(
           orderBy: { uploadedAt: 'desc' },
           select: {
             id: true,
-            section: true,
-            sourceType: true,
-            extractionStatus: true,
-            extractedAt: true,
-            extractedData: true,
+            dataSourceId: true,
+            academicYear: true,
             uploadedAt: true,
-            metadata: true
+            contentType: true,
+            fileSize: true,
+            fileName: true
           }
         },
-        rankingData: {
-          where: { approvedAt: { not: null } },
+        insights: {
+          where: { status: 'approved' },
           include: {
-            rankingSource: {
+            dataSource: {
               select: { displayName: true, name: true }
             }
           },
-          orderBy: { scraped_at: 'desc' }
+          orderBy: { extractedAt: 'desc' }
         }
       }
     });

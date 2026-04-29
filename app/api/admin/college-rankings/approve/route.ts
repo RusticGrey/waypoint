@@ -14,9 +14,13 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const { proposal } = body;
+    const { insightId, manualData } = body;
 
-    const savedData = await orchestrator.approveData(proposal, session.user.id);
+    if (!insightId) {
+      return NextResponse.json({ error: 'Insight ID is required' }, { status: 400 });
+    }
+
+    const savedData = await orchestrator.approveData(insightId, session.user.id, manualData);
 
     return NextResponse.json(savedData);
   } catch (error: any) {

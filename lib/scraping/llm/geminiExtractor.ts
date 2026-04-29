@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
-import { ExtractionResult } from '../sources/rankingSourceAdapter';
+import { ExtractionResult } from '../sources/dataSourceAdapter';
 
 export class GeminiExtractor {
   private genAI: GoogleGenerativeAI;
@@ -272,7 +272,7 @@ export class GeminiExtractor {
       },
       {
         name: "get_admissions_stats",
-        description: "Fetches acceptance rates, SAT/ACT ranges, GPA requirements, AND application deadlines for colleges. Also includes supplementary insights like campus culture and student demographics.",
+        description: "Fetches acceptance rates, SAT/ACT ranges, GPA requirements, application deadlines, AND supplementary insights including campus life, housing types, and student activities.",
         parameters: {
           type: SchemaType.OBJECT,
           properties: {
@@ -344,7 +344,7 @@ export class GeminiExtractor {
     1. Base answers ONLY on verified data retrieved through your tools.
     2. Transparency: If you use general knowledge to provide context, prefix the sentence with "[OUTSIDE SOURCE]:".
     3. Multi-turn: Use history to maintain context (e.g., knowing which college is being discussed).
-    4. Comprehensive Overviews: When a user asks for a 'summary', 'overview', or general information about a college, ALWAYS fetch ALL available data points using your tools to provide a holistic 360-degree view (including campus life, culture, and demographics).
+    4. Comprehensive Overviews: When a user asks for a 'summary', 'overview', or general information about a college, ALWAYS fetch ALL available data points using your tools to provide a holistic 360-degree view (including housing, campus life, student activities, culture, and demographics).
 
     RESOLVING COLLEGES (CRITICAL):
     - If a user uses a nickname (e.g. 'uchicago', 'gt', 'cal') that 'get_college_ids' returns as NOT_FOUND:

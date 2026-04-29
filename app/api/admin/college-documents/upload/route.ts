@@ -20,12 +20,13 @@ export async function POST(req: NextRequest) {
 
     const formData = await req.formData();
     const collegeId = formData.get('collegeId') as string;
-    const section = formData.get('section') as string || 'generic';
-    const sourceType = formData.get('sourceType') as string || 'all';
+    const dataSourceId = formData.get('dataSourceId') as string;
+    const academicYear = formData.get('academicYear') as string || new Date().getFullYear().toString();
     const documentType = formData.get('documentType') as string || 'html';
+    const override = formData.get('override') === 'true';
     const htmlFile = formData.get('file') as File;
 
-    if (!collegeId || !htmlFile) {
+    if (!collegeId || !dataSourceId || !htmlFile) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
@@ -64,75 +65,49 @@ export async function POST(req: NextRequest) {
       fileContent = buffer.toString('base64');
     }
 
-    const htmlHash = crypto.createHash('sha256').update(fileContent).digest('hex');
+    const contentHash = crypto.createHash('sha256').update(fileContent).digest('hex');
 
-    console.log(`[Upload] Saving file: ${htmlFile.name}, College: ${collegeId}, Hash: ${htmlHash}`);
+    console.log(`[Upload] Saving file: ${htmlFile.name}, College: ${collegeId}, Hash: ${contentHash}`);
 
     // Check for duplicate document
-    const existingDoc = await (prisma as any).collegeDocument.findFirst({
-      where: { collegeId, htmlHash }
+    const existingDoc = await prisma.collegeDocument.findFirst({
+      where: { collegeId, dataSourceId, academicYear, contentHash }
     });
 
-    if (existingDoc) {
+    if (existingDoc && !override) {
       console.log(`[Upload] Document already exists with ID: ${existingDoc.id}`);
       return NextResponse.json({ 
-        message: 'Document already exists', 
-        documentId: existingDoc.id,
-        extractionStatus: existingDoc.extractionStatus
-      });
+        message: 'A similar document already exists for this college, source, and year.', 
+        duplicate: true,
+        documentId: existingDoc.id
+      }, { status: 409 });
     }
 
-    // Validate RankingSource
-    const rankingSource = await (prisma as any).rankingSource.findFirst({
-      where: { name: sourceType }
+    if (existingDoc && override) {
+      console.log(`[Upload] Overriding existing document: ${existingDoc.id}`);
+      await prisma.collegeDocument.delete({ where: { id: existingDoc.id } });
+    }
+
+    // Validate DataSource
+    const dataSource = await prisma.dataSource.findUnique({
+      where: { id: dataSourceId }
     });
 
-    if (!rankingSource) {
-      return NextResponse.json({ error: `Invalid Data Source: '${sourceType}' is not a registered RankingSource.` }, { status: 400 });
+    if (!dataSource) {
+      return NextResponse.json({ error: `Invalid Data Source ID: '${dataSourceId}'` }, { status: 400 });
     }
-
-    // Get active prompt to attach
-    const activePrompt = await (prisma as any).rankingSourcePrompt.findFirst({
-      where: { rankingSourceId: rankingSource.id, isActive: true },
-      orderBy: { version: 'desc' }
-    });
-
-    if (!activePrompt) {
-      console.warn(`[Upload] No active prompt found for source: ${sourceType}. Document will be pending extraction without promptId.`);
-    }
-
-    // Extract data using LLM
-    const apiKey = process.env.GOOGLE_AI_API_KEY;
-    if (!apiKey) {
-      throw new Error('GOOGLE_AI_API_KEY not configured');
-    }
-
-    // WE NO LONGER EXTRACT ON UPLOAD PER USER FEEDBACK
-    let extractedData = null;
-    let extractionStatus = 'pending';
 
     // Save document
-    console.log(`[Upload] Saving document to DB with status: ${extractionStatus}`);
-
-    // Save document
-    const document = await (prisma as any).collegeDocument.create({
+    const document = await prisma.collegeDocument.create({
       data: {
         collegeId,
-        section,
-        sourceType,
-        documentType,
-        rawHtmlContent: fileContent,
-        htmlHash,
-        extractedData: null,
-        extractionStatus: 'pending',
-        extractedAt: null,
-        uploadedByUserId: session.user.id,
-        promptId: activePrompt?.id || null,
-        metadata: {
-          fileName: htmlFile.name,
-          fileSize: htmlFile.size,
-          contentType: htmlFile.type
-        } as any
+        dataSourceId,
+        academicYear,
+        content: fileContent,
+        contentHash,
+        contentType: htmlFile.type || (documentType === 'html' ? 'text/html' : 'application/octet-stream'),
+        fileSize: htmlFile.size,
+        uploadedByUserId: session.user.id
       }
     });
 

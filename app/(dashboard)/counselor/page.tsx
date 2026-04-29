@@ -212,11 +212,19 @@ export default async function StaffDashboard() {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {phaseChangeAlerts.map((alert, idx) => (
-                <Link key={idx} href={`/counselor/students/${alert.studentId}`} className="block">
-                  <div className="p-3 bg-white border border-amber-100 rounded-lg hover:border-amber-300 transition-all shadow-sm">
+                <Link key={idx} href={alert.href || `/counselor/students/${alert.studentId}`} className="block">
+                  <div className={cn(
+                    "p-3 bg-white border rounded-lg transition-all shadow-sm",
+                    alert.type === 'intelligence' ? "border-brand-100 hover:border-brand-300" : "border-amber-100 hover:border-amber-300"
+                  )}>
                     <p className="font-bold text-slate-900 text-sm">{alert.name}</p>
                     <p className="text-xs text-slate-600 mt-1">{alert.message}</p>
-                    <p className="text-[10px] font-black text-amber-600 uppercase mt-2">Review & Approve &rarr;</p>
+                    <p className={cn(
+                      "text-[10px] font-black uppercase mt-2",
+                      alert.type === 'intelligence' ? "text-brand-600" : "text-amber-600"
+                    )}>
+                      Review & Approve &rarr;
+                    </p>
                   </div>
                 </Link>
               ))}

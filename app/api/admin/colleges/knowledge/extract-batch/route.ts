@@ -3,13 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
-import { extractDataFromDocument, GeminiExtractor } from "@/lib/scraping/llm/geminiExtractor";
-
-const extractBatchRequestSchema = z.object({
-  batchSize: z.number().int().min(1).max(100).optional().default(10),
-  documentIds: z.array(z.string()).optional(),
-  customPrompt: z.string().optional(),
-});
+import { GeminiExtractor } from "@/lib/scraping/llm/geminiExtractor";
 
 export async function POST(req: NextRequest) {
   try {
@@ -36,104 +30,68 @@ export async function POST(req: NextRequest) {
     const filter: any = {};
     if (documentIds && documentIds.length > 0) {
       filter.id = { in: documentIds };
-    } else {
-      filter.extractionStatus = { in: ["pending", "processed"] };
     }
 
-    // DRY RUN: Group documents by College/Source/Year for efficient single-call extraction
-    if (dryRun) {
-      const docs = await prisma.collegeDocument.findMany({
-        where: filter,
-        select: { id: true, collegeId: true, sourceType: true, metadata: true, college: { select: { name: true } } },
-        take: batchSize || 50,
-      });
+    // Fetch documents
+    const docs = await prisma.collegeDocument.findMany({
+      where: filter,
+      include: {
+        college: { select: { id: true, name: true } },
+        dataSource: { select: { id: true, name: true, displayName: true } }
+      },
+      orderBy: { uploadedAt: 'desc' },
+      take: batchSize || 50
+    });
 
-      const groups: Record<string, any> = {};
-      for (const d of docs) {
-        const academicYear = (d.metadata as any)?.academicYear || "2025-2026";
-        const sourceKey = d.sourceType || "uncategorized";
-        const key = `${d.collegeId}-${sourceKey}-${academicYear}`;
-        if (!groups[key]) {
-          groups[key] = {
-            key: `${d.college.name} - ${sourceKey} (${academicYear})`,
-            documentIds: [],
-            collegeName: d.college.name,
-            sourceType: d.sourceType
-          };
-        }
-        groups[key].documentIds.push(d.id);
+    if (docs.length === 0) {
+      return NextResponse.json({ success: true, message: "No documents to process", processed: 0 });
+    }
+
+    // Group documents by (collegeId, dataSourceId, academicYear)
+    const groupedByKey: Record<string, any> = {};
+
+    for (const doc of docs) {
+      const key = `${doc.collegeId}-${doc.dataSourceId}-${doc.academicYear}`;
+      if (!groupedByKey[key]) {
+        groupedByKey[key] = {
+          collegeId: doc.collegeId,
+          collegeName: doc.college.name,
+          dataSourceId: doc.dataSourceId,
+          dataSourceName: doc.dataSource.name,
+          dataSourceDisplayName: doc.dataSource.displayName,
+          academicYear: doc.academicYear,
+          documents: []
+        };
       }
+      groupedByKey[key].documents.push(doc);
+    }
 
+    const groupsToProcess = Object.values(groupedByKey);
+
+    if (dryRun) {
       return NextResponse.json({
         success: true,
-        groups: Object.values(groups),
+        groups: groupsToProcess.map((g: any) => ({
+          key: `${g.collegeName} - ${g.dataSourceDisplayName} (${g.academicYear})`,
+          documentCount: g.documents.length,
+          documentIds: g.documents.map((d: any) => d.id)
+        })),
         totalDocuments: docs.length
       });
     }
 
-    const pendingDocuments = await prisma.collegeDocument.findMany({
-      where: filter,
-      include: {
-        college: { select: { id: true, name: true } },
-      },
-      take: batchSize,
-    });
-
-    if (pendingDocuments.length === 0) {
-      return NextResponse.json(
-        {
-          success: true,
-          message: "No pending documents to extract",
-          draftId: null,
-          processed: 0,
-          samples: [],
-        },
-        { status: 200 }
-      );
-    }
-
-    // Group documents by (collegeId, sourceType, academicYear)
-    const groupedByKey: Record<string, typeof pendingDocuments> = {};
-
-    for (const doc of pendingDocuments) {
-      const academicYear = (doc.metadata as any)?.academicYear || "2025-2026";
-      const sourceKey = doc.sourceType || "uncategorized";
-      const key = `${doc.collegeId}-${sourceKey}-${academicYear}`;
-      if (!groupedByKey[key]) {
-        groupedByKey[key] = [];
-      }
-      groupedByKey[key].push(doc);
-    }
-
     const extractedDataSamples = [];
-    let processedCount = 0;
+    const targetModel = process.env.LLM_MODEL_EXTRACTION || 'gemini-1.5-pro';
+    const extractor = new GeminiExtractor(process.env.GOOGLE_AI_API_KEY!);
 
-    for (const [key, docs] of Object.entries(groupedByKey)) {
-      console.log(`Processing extraction group: ${key}`);
-      const [rawCollegeId, sourceIdentifier, academicYear] = key.split("-");
+    for (const group of groupsToProcess) {
+      console.log(`Processing extraction group: ${group.collegeName} - ${group.dataSourceDisplayName}`);
       
-      // Use the ACTUAL college ID from the document record to avoid mismatch
-      const collegeId = docs[0].collegeId;
+      const isScanned = group.documents.some((d: any) => d.contentType.includes('pdf') || d.contentType.includes('image'));
+      const mimeType = group.documents[0].contentType;
 
-      // Determine if we are dealing with scanned/image content
-      const isScanned = docs.some(d => d.documentType === 'image_pdf' || d.documentType === 'image');
-      const mimeType = docs[0].metadata && (docs[0].metadata as any).mimeType ? (docs[0].metadata as any).mimeType : (isScanned ? 'application/pdf' : 'text/html');
-
-      // Robust source lookup:
-      // 1. Try metadata ID
-      // 2. Try exact name/displayName
-      // 3. Try fuzzy/case-insensitive match
-      const metaSourceId = (docs[0].metadata as any)?.rankingSourceId;
-      
-      const rankingSource = await prisma.rankingSource.findFirst({
-        where: { 
-          OR: [
-            { id: metaSourceId || "non-existent" },
-            { name: { equals: sourceIdentifier, mode: 'insensitive' } },
-            { displayName: { equals: sourceIdentifier, mode: 'insensitive' } },
-            { name: { contains: sourceIdentifier, mode: 'insensitive' } }
-          ]
-        },
+      const dataSource = await prisma.dataSource.findUnique({
+        where: { id: group.dataSourceId },
         include: {
           prompts: {
             where: { isActive: true },
@@ -143,52 +101,35 @@ export async function POST(req: NextRequest) {
         }
       });
 
-      if (!rankingSource) {
-        console.warn(`No ranking source found for identifier: ${sourceIdentifier}`);
+      if (!dataSource || dataSource.prompts.length === 0) {
+        console.warn(`No active prompt found for Data Source: ${group.dataSourceName}. Skipping.`);
         continue;
       }
 
-      const promptToUse = customPrompt || rankingSource.prompts[0]?.promptText || "Extract college ranking and admissions data as JSON.";
-      
-      // Multi-block content (array of contents)
-      const documentContents = docs.map(d => d.rawHtmlContent);
-
-      // MODEL SELECTION: Default to configured extraction model (Pro)
-      const targetModel = process.env.LLM_MODEL_EXTRACTION || 'gemini-1.5-pro';
+      const promptToUse = customPrompt || dataSource.prompts[0].promptText;
+      const documentContents = group.documents.map((d: any) => d.content);
 
       let extractedResult;
       try {
-        // Consolidated Extraction Strategy: Use a single, high-fidelity multimodal call
         if (isScanned) {
-          console.log(`[API] Using Consolidated Multimodal Vision strategy for ${sourceIdentifier} (Model: ${targetModel})`);
-          
-          const extractor = new GeminiExtractor(process.env.GOOGLE_AI_API_KEY!);
           extractedResult = await (extractor as any).extractWithTemplate(
-            documentContents as any, 
-            `You are the Master Data Architect for Waypoint. PERFORM FORCED TRANSCRIPTION of all data points for ${docs[0].college.name}.
+            documentContents, 
+            `You are the Master Data Architect for Waypoint. PERFORM FORCED TRANSCRIPTION of all data points for ${group.collegeName}.
              
              REQUIRED SCHEMA:
              {
                "institutional_identity": { "name": "", "location": { "city": "", "state": "" }, "type": "", "setting": "" },
                "rankings_comprehensive": { "overall_national": 0, "subject_and_specialty_rankings": [] },
                "admissions_engine": { "acceptance_rate": 0, "middle_50_percentile_stats": { "sat_math": { "p25": 0, "p75": 0 }, "sat_reading": { "p25": 0, "p75": 0 } } },
-               "financial_profile": { "sticker_price_total": 0 }
+               "financial_profile": { "sticker_price_total": 0 },
+               "supplementary_admissions_insights": { "campus_life": "", "student_activities": [], "clubs_and_organizations": [] }
              }
-
-             INSTRUCTIONS:
-             1. Scan ALL document parts for every sub-specialty ranking in CS, Engineering, and Business.
-             2. Capture SAT/ACT ranges exactly from any tables found.
-             3. If a value is missing, return null for that field.
              
              ${promptToUse}`,
             { documentType: 'image_pdf', mimeType },
-            targetModel // Force higher tier if needed
+            targetModel
           );
-          
-          console.log(`[API] Successfully extracted consolidated multimodal results.`);
         } else {
-          console.log(`[API] Using standard HTML extraction. (Model: ${targetModel})`);
-          const extractor = new GeminiExtractor(process.env.GOOGLE_AI_API_KEY!);
           extractedResult = await (extractor as any).extractWithTemplate(
             documentContents.join("\n\n---\n\n"),
             promptToUse,
@@ -199,97 +140,57 @@ export async function POST(req: NextRequest) {
 
         const extractedData = extractedResult.data || extractedResult;
 
-        // SAVE IMMEDIATELY (One group at a time)
-        const fieldsFound = Object.keys(extractedData);
-        
-        const savedData = await prisma.collegeRankingData.upsert({
+        const savedInsight = await prisma.collegeInsight.upsert({
           where: {
-            collegeId_rankingSourceId_academicYear: {
-              collegeId: collegeId,
-              rankingSourceId: rankingSource.id,
-              academicYear: academicYear,
+            collegeId_dataSourceId_academicYear: {
+              collegeId: group.collegeId,
+              dataSourceId: group.dataSourceId,
+              academicYear: group.academicYear,
             },
           },
           create: {
-            collegeId: collegeId,
-            rankingSourceId: rankingSource.id,
-            academicYear: academicYear,
-            rankings: extractedData,
+            collegeId: group.collegeId,
+            dataSourceId: group.dataSourceId,
+            academicYear: group.academicYear,
+            data: extractedData,
+            status: "pending",
             extractionMethod: "LLM",
             llmModelUsed: targetModel,
-            fieldsPresent: fieldsFound,
           },
           update: {
-            rankings: extractedData,
-            fieldsPresent: fieldsFound,
+            data: extractedData,
+            status: "pending",
             llmModelUsed: targetModel,
-            scraped_at: new Date(),
+            extractedAt: new Date(),
           },
         });
 
-        // Update document statuses for this group
-        await prisma.collegeDocument.updateMany({
-          where: { id: { in: docs.map(d => d.id) } },
-          data: { extractionStatus: "extracted" },
-        });
-
-        processedCount += docs.length;
-
         extractedDataSamples.push({
-          id: savedData.id,
-          collegeId,
-          collegeName: docs[0].college.name,
-          rankingSourceId: rankingSource.id,
-          rankingSourceName: rankingSource.displayName,
-          academicYear,
-          rankingDataJSON: extractedData,
+          id: savedInsight.id,
+          collegeId: group.collegeId,
+          collegeName: group.collegeName,
+          dataSourceId: group.dataSourceId,
+          dataSourceName: group.dataSourceDisplayName,
+          academicYear: group.academicYear,
           extractedData: extractedData,
-          rawLlmResponse: extractedResult.rawResponse || JSON.stringify(extractedData, null, 2),
         });
 
       } catch (err: any) {
-        if (err?.message?.includes('DOCUMENT_EMPTY_OR_INVALID') || err?.message?.includes('no pages')) {
-          console.error(`Skipping ${rankingSource.name} due to empty/invalid document: ${err.message}`);
-          await prisma.collegeDocument.updateMany({
-            where: { id: { in: docs.map(d => d.id) } },
-            data: { extractionStatus: "failed" },
-          });
-        } else {
-          console.error(`LLM Error for ${rankingSource.name}:`, err);
-          // Don't mark as failed if it's a transient LLM error, let it retry next batch
-          // or mark as failed if you prefer strictness
-        }
+        console.error(`LLM Error for ${group.dataSourceName}:`, err);
         continue;
       }
     }
 
-    const batchId = `batch_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return NextResponse.json({
+      success: true,
+      message: `Processed ${groupsToProcess.length} group(s)`,
+      processedDocuments: docs.length,
+      samples: extractedDataSamples,
+      modelUsed: targetModel
+    });
 
-    return NextResponse.json(
-      {
-        success: true,
-        draftId: batchId,
-        message: `Extracted ${extractedDataSamples.length} document batch(es)`,
-        processedCount: pendingDocuments.length,
-        processedDocs: pendingDocuments.map(d => ({ id: d.id, name: (d.metadata as any)?.fileName || d.id })),
-        samples: extractedDataSamples,
-        modelUsed: process.env.LLM_MODEL_EXTRACTION || "gemini-1.5-pro",
-      },
-      { status: 200 }
-    );
-  } catch (error) {
+  } catch (error: any) {
     console.error("Extract-batch API error:", error);
-
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: "Invalid request format", details: (error as any).errors },
-        { status: 400 }
-      );
-    }
-
-    return NextResponse.json(
-      { error: "Failed to extract documents" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: error.message || "Failed to extract documents" }, { status: 500 });
   }
 }

@@ -18,28 +18,26 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // 1. Fetch relevant documents for this college
-    const documents = await prisma.collegeDocument.findMany({
+    // 1. Fetch relevant insights for this college
+    const insights = await prisma.collegeInsight.findMany({
       where: { 
         collegeId,
-        extractionStatus: 'extracted'
+        status: 'approved'
       },
-      select: {
-        id: true,
-        section: true,
-        extractedData: true
+      include: {
+        dataSource: { select: { displayName: true } }
       }
     });
 
-    if (documents.length === 0) {
+    if (insights.length === 0) {
       return NextResponse.json({ 
-        answer: "I don't have any detailed documents for this college yet. Please upload some US News HTML pages first." 
+        answer: "I don't have any detailed insights for this college yet. Please upload and process documents first." 
       });
     }
 
-    // 2. Build context from extracted data
-    const context = documents
-      .map((doc: { section: string; extractedData: any }) => `SECTION: ${doc.section}\nDATA: ${JSON.stringify(doc.extractedData)}`)
+    // 2. Build context from approved insights
+    const context = insights
+      .map((insight: any) => `SOURCE: ${insight.dataSource.displayName} (${insight.academicYear})\nDATA: ${JSON.stringify(insight.data)}`)
       .join('\n\n---\n\n');
 
     // 3. Generate answer using LLM
@@ -50,18 +48,6 @@ export async function POST(req: NextRequest) {
 
     const extractor = new GeminiExtractor(apiKey);
     const answer = await extractor.generateAnswer(context, query);
-
-    // 4. Log the query
-    await (prisma as any).collegeDataQuery.create({
-      data: {
-        collegeId,
-        queryType: 'counselor_chat',
-        queryText: query,
-        results: { answer },
-        documentsUsed: documents.map((d: { id: string }) => d.id),
-        createdBy: session.user.id
-      }
-    });
 
     return NextResponse.json({ answer });
 

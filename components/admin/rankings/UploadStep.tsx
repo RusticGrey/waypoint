@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { UploadStepProps } from "./types";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, Upload, File } from "lucide-react";
@@ -8,7 +8,7 @@ import { AlertCircle, Upload, File } from "lucide-react";
 export const UploadStep: React.FC<UploadStepProps> = ({
   onUpload,
   colleges,
-  rankingSources,
+  dataSources,
   selectedCollege,
   setSelectedCollege,
   selectedSource,
@@ -18,6 +18,7 @@ export const UploadStep: React.FC<UploadStepProps> = ({
   loading,
   error,
 }) => {
+
   const [dragActive, setDragActive] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
   const [documentType, setDocumentType] = useState<string>("true_pdf");
@@ -64,9 +65,8 @@ export const UploadStep: React.FC<UploadStepProps> = ({
 
         return {
           fileName: file.name,
-          rawHtmlContent: content,
-          mimeType: file.type || (documentType === 'true_pdf' ? 'application/pdf' : 'text/html'),
-          documentType: documentType,
+          content: content,
+          contentType: file.type || (documentType === 'true_pdf' ? 'application/pdf' : 'text/html'),
         };
       })
     );
@@ -122,21 +122,21 @@ export const UploadStep: React.FC<UploadStepProps> = ({
           <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400">
             Ranking Source
           </label>
-          <select
-            value={selectedSource}
-            onChange={(e) => setSelectedSource(e.target.value)}
-            disabled={loading}
-            className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50/50 focus:ring-2 focus:ring-brand-500 outline-none transition-all font-bold text-slate-700"
-          >
-            <option value="">Select a ranking source...</option>
-            {rankingSources
-              .filter((s) => s.isActive)
-              .map((source) => (
-                <option key={source.id} value={source.id}>
-                  {source.displayName}
-                </option>
-              ))}
-          </select>
+            <select
+              value={selectedSource}
+              onChange={(e) => setSelectedSource(e.target.value)}
+              disabled={loading}
+              className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50/50 focus:ring-2 focus:ring-brand-500 outline-none transition-all font-bold text-slate-700"
+            >
+              <option value="">Select a data source...</option>
+              {dataSources
+                .filter((s) => s.isActive)
+                .map((source) => (
+                  <option key={source.id} value={source.id}>
+                    {source.displayName}
+                  </option>
+                ))}
+            </select>
         </div>
 
         {/* Academic Year */}

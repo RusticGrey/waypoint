@@ -1,35 +1,43 @@
 "use client";
 
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { DocsStep } from "./DocsStep";
 import { UploadStep } from "./UploadStep";
 import { ExtractStep } from "./ExtractStep";
 import { ReviewStep } from "./ReviewStep";
-import { SuccessStep } from "./SuccessStep";
-import { WorkflowState, College, RankingSource } from "./types";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { WorkflowState, College, DataSource } from "./types";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { AlertCircle, X, Sparkles } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { AlertCircle, X, Sparkles, Plus, Database, FileSearch, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface KnowledgeWorkflowProps {
   colleges: College[];
-  rankingSources: RankingSource[];
+  dataSources: DataSource[];
   initialCollegeId?: string;
   initialDocuments?: any[];
+  onComplete?: () => void;
 }
 
 export const KnowledgeWorkflow: React.FC<KnowledgeWorkflowProps> = ({
   colleges,
-  rankingSources,
+  dataSources,
   initialCollegeId,
   initialDocuments = [],
+  onComplete,
 }) => {
+  const currentYear = new Date().getFullYear();
+  const months = new Date().getMonth();
+  const defaultYear = months > 4 ? `${currentYear}-${currentYear + 1}` : `${currentYear - 1}-${currentYear}`;
+
+  const [activeTab, setActiveTab] = useState<"docs" | "extract">("docs");
+
   const [state, setState] = useState<WorkflowState>({
     currentStep: "docs",
     selectedCollege: initialCollegeId || "",
     selectedSource: "",
-    academicYear: "",
+    academicYear: defaultYear,
     uploadedDocuments: initialDocuments,
     extractedData: [],
     draftId: null,
@@ -39,12 +47,9 @@ export const KnowledgeWorkflow: React.FC<KnowledgeWorkflowProps> = ({
     error: null,
   });
 
-  const [pendingReviews, setPendingReviews] = useState<any[]>([]);
-  const [showResumePrompt, setShowResumePrompt] = useState(false);
   const [skippedFiles, setSkippedFiles] = useState<string[]>([]);
   const [selectedDocumentIds, setSelectedDocumentIds] = useState<string[]>([]);
-  // Use a ref to ensure the latest selected IDs are always available in callbacks
-  const selectedDocumentIdsRef = React.useRef<string[]>([]);
+  const selectedDocumentIdsRef = useRef<string[]>([]);
   useEffect(() => {
     selectedDocumentIdsRef.current = selectedDocumentIds;
   }, [selectedDocumentIds]);
@@ -53,32 +58,62 @@ export const KnowledgeWorkflow: React.FC<KnowledgeWorkflowProps> = ({
   const [samples, setSamples] = useState<any[]>([]);
   const [llmStatus, setLlmStatus] = useState("");
   const [activePrompt, setActivePrompt] = useState("");
-  const [isPromptModified, setIsPromptModified] = useState(false);
   const [isUploadOpen, setIsUploadOpen] = useState(false);
 
-  // Check for pending unreviewed extractions on mount
+  // 1. Sync documents from PROPS only once on mount or when initialCollegeId changes
+  useEffect(() => {
+    if (initialDocuments && initialDocuments.length > 0) {
+      setState(prev => ({ ...prev, uploadedDocuments: initialDocuments }));
+    }
+  }, [initialCollegeId]);
+
+  // 2. Check for pending unreviewed extractions for THIS college across ALL years
   useEffect(() => {
     const checkPending = async () => {
+      const collegeId = state.selectedCollege || initialCollegeId;
+      if (!collegeId) return;
+
       try {
-        const res = await fetch('/api/admin/colleges/knowledge/query?status=pending');
+        // Query for ALL years to find any pending extractions for this institution
+        const res = await fetch(`/api/admin/colleges/knowledge/query?collegeId=${collegeId}&status=pending&academicYear=ALL`);
         if (res.ok) {
           const data = await res.json();
-          // Filter for data that hasn't been approved yet
-          const unapproved = data.results?.filter((r: any) => !r.approvedAt) || [];
+          const unapproved = data.rankings?.filter((r: any) => r.status === 'pending') || [];
+          
           if (unapproved.length > 0) {
-            // Map backend results to Workflow expectations
+            console.log("[Workflow] Auto-resuming pending extractions:", unapproved.length);
             const mapped = unapproved.map((r: any) => ({
                 id: r.id,
                 collegeId: r.collegeId,
-                collegeName: r.college?.name || "Unknown College",
-                rankingSourceId: r.rankingSourceId,
-                rankingSourceName: r.rankingSource?.displayName || "Unknown Source",
+                collegeName: data.collegeName || "Institution",
+                dataSourceId: r.dataSourceId,
+                dataSourceName: r.dataSourceName || "Source",
                 academicYear: r.academicYear,
-                rankingDataJSON: r.rankings || {},
-                extractedData: r.rankings || {},
+                data: r.rankingDataJSON || {},
+                status: r.status
             }));
-            setPendingReviews(mapped);
-            setShowResumePrompt(true);
+            
+            setSamples(mapped);
+            
+            // Set source prompt
+            const promptRes = await fetch(`/api/admin/colleges/knowledge/prompts?dataSourceId=${mapped[0].dataSourceId}`);
+            let promptText = "";
+            if (promptRes.ok) {
+              const prompts = await promptRes.json();
+              if (prompts.length > 0) promptText = prompts[0].promptText;
+            }
+
+            setState(prev => ({
+              ...prev,
+              selectedSource: mapped[0].dataSourceId,
+              academicYear: mapped[0].academicYear,
+              extractedData: mapped,
+              currentStep: "extract",
+              draftId: "extracted"
+            }));
+
+            setActivePrompt(promptText);
+            setActiveTab("extract"); 
           }
         }
       } catch (err) {
@@ -86,31 +121,8 @@ export const KnowledgeWorkflow: React.FC<KnowledgeWorkflowProps> = ({
       }
     };
     checkPending();
-  }, []);
+  }, [initialCollegeId, state.selectedCollege]);
 
-  // Sync documents if they change from props
-  useEffect(() => {
-    setState(prev => ({ 
-      ...prev, 
-      uploadedDocuments: initialDocuments,
-      // Reset selected documents if they are no longer in the list
-      selectedDocumentIds: prev.uploadedDocuments 
-        ? selectedDocumentIds.filter(id => initialDocuments.some(d => d.id === id))
-        : []
-    }));
-  }, [initialDocuments]);
-
-  const handleResumePending = () => {
-    setState(prev => ({
-      ...prev,
-      currentStep: "review",
-      extractedData: pendingReviews,
-      selectedCollege: pendingReviews[0].collegeId,
-    }));
-    setShowResumePrompt(false);
-  };
-
-  // Step Progress Indicator - Upload is now a popup, not a stage
   const steps = ["docs", "extract", "review", "success"] as const;
   type Step = typeof steps[number];
   const currentStepIndex = steps.indexOf(state.currentStep as any);
@@ -121,31 +133,29 @@ export const KnowledgeWorkflow: React.FC<KnowledgeWorkflowProps> = ({
 
   const handleUploadNew = () => {
     setSkippedFiles([]);
+    if (!state.selectedSource && dataSources.length > 0) {
+      const active = dataSources.find(s => s.isActive) || dataSources[0];
+      setState(prev => ({ ...prev, selectedSource: active.id }));
+    }
     setIsUploadOpen(true);
   };
 
   const handleInitializeExtraction = async (documentIds: string[]) => {
-    console.log("Initializing extraction for IDs:", documentIds);
     setSelectedDocumentIds(documentIds);
     setState(prev => ({ ...prev, loading: true }));
     
-    // Fetch the prompt for the first selected document's source
+    // Find source type of first doc to fetch prompt
     const firstDoc = state.uploadedDocuments.find(d => d.id === documentIds[0]);
-    const sourceType = firstDoc?.sourceType || "us_news";
+    const dataSourceId = firstDoc?.dataSourceId || "us-news";
     
     try {
-      const res = await fetch(`/api/counselor/extraction-templates`);
+      const res = await fetch(`/api/admin/colleges/knowledge/prompts?dataSourceId=${dataSourceId}`);
       const templates = await res.json();
-      const matches = templates.filter((t: any) => t.rankingSource?.name === sourceType && t.isActive);
+      const matches = templates.filter((t: any) => t.dataSourceId === dataSourceId && t.isActive);
       matches.sort((a: any, b: any) => b.version - a.version);
       
-      if (matches.length > 0) {
-        setActivePrompt(matches[0].promptText);
-      } else {
-        setActivePrompt("");
-      }
-      
-      goToStep("extract");
+      setActivePrompt(matches.length > 0 ? matches[0].promptText : "");
+      setActiveTab("extract");
     } catch (err) {
       console.error("Failed to fetch prompt:", err);
     } finally {
@@ -153,30 +163,10 @@ export const KnowledgeWorkflow: React.FC<KnowledgeWorkflowProps> = ({
     }
   };
 
-  const handleSaveGlobalPrompt = async (prompt: string) => {
-    setState((prev) => ({ ...prev, loading: true }));
-    const firstDoc = state.uploadedDocuments.find(d => selectedDocumentIds.includes(d.id));
-    const sourceType = firstDoc?.sourceType || "us_news";
-
-    try {
-      const res = await fetch(`/api/counselor/extraction-templates`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sourceType, promptText: prompt })
-      });
-      if (!res.ok) throw new Error("Failed to save global template");
-      setIsPromptModified(false);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setState((prev) => ({ ...prev, loading: false }));
-    }
-  };
-
   const handleDeleteDocument = async (id: string) => {
     if (!confirm("Delete this document?")) return;
     try {
-      const res = await fetch(`/api/counselor/documents/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/admin/colleges/knowledge/documents/${id}`, { method: "DELETE" });
       if (res.ok) {
         setState(prev => ({
           ...prev,
@@ -192,16 +182,13 @@ export const KnowledgeWorkflow: React.FC<KnowledgeWorkflowProps> = ({
     async (
       documents: Array<{
         fileName: string;
-        rawHtmlContent: string;
-        mimeType?: string;
-        documentType?: string;
+        content: string;
+        contentType?: string;
       }>
     ) => {
       setState((prev) => ({ ...prev, loading: true, error: null }));
 
       try {
-        let uploadedDocs = [];
-        
         if (documents.length > 0) {
           const response = await fetch("/api/admin/colleges/knowledge/upload", {
             method: "POST",
@@ -209,34 +196,37 @@ export const KnowledgeWorkflow: React.FC<KnowledgeWorkflowProps> = ({
             body: JSON.stringify({
               collegeId: state.selectedCollege,
               academicYear: state.academicYear,
-              rankingSourceId: state.selectedSource,
+              dataSourceId: state.selectedSource,
               documents,
             }),
           });
 
-          if (!response.ok) throw new Error("Upload failed");
+          if (!response.ok) {
+            const errData = await response.json().catch(() => ({}));
+            throw new Error(errData.error || "Upload failed");
+          }
 
           const data = await response.json();
-          uploadedDocs = data.uploadedDocuments;
+          const uploadedDocs = data.uploadedDocuments || [];
           if (data.skippedFiles && data.skippedFiles.length > 0) {
             setSkippedFiles(data.skippedFiles);
           }
-        }
 
-        setState((prev) => {
-          const combined = [...prev.uploadedDocuments, ...uploadedDocs];
-          const unique = Array.from(new Map(combined.map(d => [d.id, d])).values());
-          return {
-            ...prev,
-            uploadedDocuments: unique,
-            loading: false,
-          };
-        });
-        setIsUploadOpen(false); // Close modal on success
-      } catch (error) {
+          setState((prev) => {
+            const combined = [...prev.uploadedDocuments, ...uploadedDocs];
+            const unique = Array.from(new Map(combined.map(d => [d.id, d])).values());
+            return {
+              ...prev,
+              uploadedDocuments: unique,
+              loading: false,
+            };
+          });
+          setIsUploadOpen(false);
+        }
+      } catch (error: any) {
         setState((prev) => ({
           ...prev,
-          error: "Failed to upload documents",
+          error: error.message || "Failed to upload documents",
           loading: false,
         }));
       }
@@ -244,118 +234,67 @@ export const KnowledgeWorkflow: React.FC<KnowledgeWorkflowProps> = ({
     [state.selectedCollege, state.academicYear, state.selectedSource]
   );
 
+  const handleProceedToReview = useCallback(() => {
+    setState(prev => ({ 
+      ...prev, 
+      currentStep: "review", 
+      extractedData: samples 
+    }));
+  }, [samples]);
+
   const handleExtract = useCallback(async (customPrompt?: string) => {
-    if (state.currentStep === "extract" && state.extractedData.length > 0 && !customPrompt) {
-       goToStep("review");
+    if (samples.length > 0 && typeof customPrompt !== 'string') {
+       handleProceedToReview();
        return;
     }
 
-    if (customPrompt) {
-      setActivePrompt(customPrompt);
-    }
-
     setState((prev) => ({ ...prev, loading: true, error: null }));
-    setExtractionProgress(0);
-    setLlmStatus("Planning Extraction Groups...");
+    setExtractionProgress(5);
+    setLlmStatus("Initializing LLM Extraction Pipeline...");
+
+    const progressInterval = setInterval(() => {
+      setExtractionProgress(prev => {
+        if (prev >= 92) return prev;
+        const jump = Math.random() * 2;
+        return prev + jump;
+      });
+    }, 2500);
 
     try {
-      // 1. Dry run to get groups
-      const dryRunRes = await fetch("/api/admin/colleges/knowledge/extract-batch", {
+      const res = await fetch("/api/admin/colleges/knowledge/extract-batch", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
           documentIds: selectedDocumentIdsRef.current,
-          dryRun: true 
+          customPrompt: typeof customPrompt === 'string' ? customPrompt : undefined
         }),
       });
 
-      if (!dryRunRes.ok) throw new Error("Planning failed");
-      const { groups } = await dryRunRes.json();
+      clearInterval(progressInterval);
 
-      if (!groups || groups.length === 0) {
-        setExtractionProgress(100);
-        setState(prev => ({ ...prev, loading: false }));
-        return;
-      }
-
-      // 2. Orchestrate sequential extraction
-      const samplesMap: Record<string, any> = {};
-      let currentDraftId = null;
-
-      for (let i = 0; i < groups.length; i++) {
-        const group = groups[i];
-        const progressPerBatch = 100 / groups.length;
-        const baseProgress = i * progressPerBatch;
-
-        setLlmStatus(`Extracting: ${group.key} (${i + 1}/${groups.length})...`);
-        setExtractionProgress(baseProgress + 5);
-
-        try {
-          const res = await fetch("/api/admin/colleges/knowledge/extract-batch", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ 
-              documentIds: group.documentIds,
-              customPrompt
-            }),
-          });
-
-          if (!res.ok) throw new Error(`Batch ${i+1} failed`);
-
-          const data = await res.json();
-          currentDraftId = data.draftId;
-
-          // Merge results by College + Source + Year
-          if (data.samples) {
-            for (const sample of data.samples) {
-              const mergeKey = `${sample.collegeId}-${sample.rankingSourceId}-${sample.academicYear}`;
-              if (!samplesMap[mergeKey]) {
-                samplesMap[mergeKey] = sample;
-              } else {
-                // Stable ID: Keep the FIRST ID we got for this group (it's the database ID)
-                const stableId = samplesMap[mergeKey].id;
-                
-                // Deep merge the extractedData
-                samplesMap[mergeKey].extractedData = {
-                  ...samplesMap[mergeKey].extractedData,
-                  ...sample.extractedData,
-                  id: stableId, // Ensure ID doesn't get overwritten by something else
-                  // Handle nested objects if they exist
-                  rankings_comprehensive: {
-                    ...(samplesMap[mergeKey].extractedData.rankings_comprehensive || {}),
-                    ...(sample.extractedData.rankings_comprehensive || {})
-                  },
-                  admissions_engine: {
-                    ...(samplesMap[mergeKey].extractedData.admissions_engine || {}),
-                    ...(sample.extractedData.admissions_engine || {})
-                  }
-                };
-                // Ensure rankingDataJSON is also updated
-                samplesMap[mergeKey].rankingDataJSON = samplesMap[mergeKey].extractedData;
-              }
-            }
-            setSamples(Object.values(samplesMap)); // Live update merged view
-          }
-        } catch (err) {
-          console.error(err);
-        }
-        
-        setExtractionProgress(baseProgress + progressPerBatch);
-      }
-
-      const finalSamples = Object.values(samplesMap);
+      if (!res.ok) throw new Error("Extraction failed");
+      const data = await res.json();
+      
+      setLlmStatus("Synthesis complete!");
       setExtractionProgress(100);
-      setLlmStatus("All batches complete!");
-
-      setState((prev) => ({
-        ...prev,
-        extractedData: finalSamples,
-        draftId: currentDraftId,
-        currentStep: finalSamples.length > 0 ? "extract" : prev.currentStep,
-        loading: false,
+      
+      const finalSamples = (data.samples || []).map((s: any) => ({
+        ...s,
+        data: s.extractedData // Normalize key mismatch from API
       }));
 
+      setState(prev => ({
+        ...prev,
+        extractedData: finalSamples,
+        currentStep: "extract",
+        draftId: "extracted",
+        loading: false
+      }));
+      
+      setSamples(finalSamples);
+
     } catch (error) {
+      clearInterval(progressInterval);
       console.error(error);
       setState((prev) => ({
         ...prev,
@@ -363,61 +302,46 @@ export const KnowledgeWorkflow: React.FC<KnowledgeWorkflowProps> = ({
         loading: false,
       }));
     }
-  }, [state.currentStep, state.draftId, selectedDocumentIds]);
+  }, [samples, handleProceedToReview]);
 
   const handleApprove = useCallback(
     async (
       action: "approve" | "reject" | "modify",
       dataId: string
     ) => {
-      console.log(`[Workflow] Attempting ${action} for dataId:`, dataId);
       setState((prev) => ({ ...prev, loading: true, error: null }));
 
       try {
-        const payload = {
-          action,
-          dataId,
-          approvalNotes: state.approvalNotes,
-          correctedJson: state.correctedJson,
-        };
-        console.log("[Workflow] Approval payload:", payload);
-
         const response = await fetch("/api/admin/colleges/knowledge/approve", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
+          body: JSON.stringify({
+            action,
+            dataId,
+            approvalNotes: state.approvalNotes,
+            correctedJson: state.correctedJson,
+          }),
         });
 
-        if (!response.ok) {
-          const errData = await response.json().catch(() => ({}));
-          console.error("[Workflow] Approval API failed:", response.status, errData);
-          throw new Error(errData.error || "Approval failed");
-        }
-
-        const data = await response.json();
-        console.log("[Workflow] Approval success:", data);
+        if (!response.ok) throw new Error("Approval failed");
 
         setState((prev) => ({
           ...prev,
-          currentStep:
-            action === "approve"
-              ? "success"
-              : prev.currentStep,
           loading: false,
           approvalNotes: "",
           correctedJson: null,
-          // Update the specific item in extractedData if it was modified
-          extractedData: prev.extractedData.map(item => 
-            item.id === dataId ? { ...item, rankingDataJSON: state.correctedJson || item.rankingDataJSON } : item
-          )
+          error: action === 'approve' ? null : 'Insight rejected and discarded.',
+          extractedData: action === 'approve' 
+            ? prev.extractedData.map(item => item.id === dataId ? { ...item, status: 'approved' } : item)
+            : prev.extractedData.filter(item => item.id !== dataId)
         }));
+
+        if (action === 'approve') {
+           alert("Insight successfully approved and published!");
+           onComplete?.();
+        }
       } catch (error: any) {
-        console.error("[Workflow] Approval error handle:", error);
-        setState((prev) => ({
-          ...prev,
-          error: "Failed to process approval",
-          loading: false,
-        }));
+        setState((prev) => ({ ...prev, error: "Failed to process approval", loading: false }));
       }
     },
     [state.approvalNotes, state.correctedJson]
@@ -428,7 +352,7 @@ export const KnowledgeWorkflow: React.FC<KnowledgeWorkflowProps> = ({
       currentStep: "docs",
       selectedCollege: initialCollegeId || "",
       selectedSource: "",
-      academicYear: "",
+      academicYear: defaultYear,
       uploadedDocuments: initialDocuments,
       extractedData: [],
       draftId: null,
@@ -442,97 +366,54 @@ export const KnowledgeWorkflow: React.FC<KnowledgeWorkflowProps> = ({
     setSamples([]);
   };
 
-  const selectedCollege = colleges.find(
-    (c) => c.id === state.selectedCollege
-  );
+  const selectedCollegeObj = useMemo(() => colleges.find(c => c.id === state.selectedCollege), [colleges, state.selectedCollege]);
 
   return (
     <div className="w-full max-w-7xl mx-auto">
-      {/* Step Indicator - COMPACT VIEW */}
-      <div className="mb-8 bg-slate-50/50 p-4 rounded-[24px] border border-slate-100">
-        <div className="flex items-center justify-between max-w-2xl mx-auto">
-          {steps.map((step, idx) => (
-            <React.Fragment key={step}>
-              <div className="flex items-center gap-3 group">
-                <button
-                  onClick={() => idx < currentStepIndex && goToStep(step)}
-                  disabled={idx >= currentStepIndex}
-                  className={cn(
-                    "flex items-center justify-center w-8 h-8 rounded-xl text-[10px] font-black transition-all",
-                    idx <= currentStepIndex
-                      ? "bg-slate-900 text-white shadow-md shadow-slate-200"
-                      : "bg-white border border-slate-200 text-slate-400",
-                    idx === currentStepIndex && "ring-4 ring-brand-100 bg-brand-600",
-                    idx < currentStepIndex && "cursor-pointer hover:bg-slate-800"
-                  )}
-                >
-                  {idx + 1}
-                </button>
-                <span className={cn(
-                  "text-[9px] font-black uppercase tracking-widest hidden sm:inline-block",
-                  idx <= currentStepIndex ? "text-slate-900" : "text-slate-300"
-                )}>
-                  {step === "docs" ? "Repo" : step}
-                </span>
-              </div>
-              {idx < steps.length - 1 && (
-                <div className="w-8 h-px bg-slate-200" />
+      {/* Sub-Tab Navigation */}
+      <div className="mb-8 flex p-1 bg-slate-100 rounded-2xl w-fit border border-slate-200 shadow-inner">
+          {[
+            { id: 'docs', label: 'Staged Repository', icon: Database },
+            { id: 'extract', label: 'Extract & Approve', icon: FileSearch },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as any)}
+              className={cn(
+                "flex items-center gap-2 px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
+                activeTab === tab.id
+                  ? "bg-white text-brand-600 shadow-md ring-1 ring-slate-200"
+                  : "text-slate-400 hover:text-slate-600"
               )}
-            </React.Fragment>
+            >
+              <tab.icon className={cn("w-3.5 h-3.5", activeTab === tab.id ? "text-brand-600" : "text-slate-400")} />
+              {tab.label}
+            </button>
           ))}
-        </div>
       </div>
 
-      {showResumePrompt && (
-          <div className="mb-8 p-6 bg-brand-50 border-2 border-brand-200 rounded-[32px] flex flex-col md:flex-row items-center justify-between gap-6 animate-in slide-in-from-top-4 duration-500">
-             <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-brand-600 rounded-2xl flex items-center justify-center shadow-lg shadow-brand-200">
-                   <Sparkles className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                   <h3 className="text-sm font-black text-brand-900 uppercase tracking-tight">Pending Reviews Found</h3>
-                   <p className="text-xs text-brand-700 font-medium">You have {pendingReviews.length} extracted item(s) waiting for verification.</p>
-                </div>
-             </div>
-             <div className="flex gap-3 w-full md:w-auto">
-                <Button 
-                  variant="outline" 
-                  onClick={() => setShowResumePrompt(false)}
-                  className="flex-1 md:flex-none border-brand-200 text-brand-700 font-bold text-[10px] uppercase tracking-widest h-12 px-6 rounded-xl hover:bg-white"
-                >
-                  Dismiss
-                </Button>
-                <Button 
-                  onClick={handleResumePending}
-                  className="flex-1 md:flex-none bg-brand-600 text-white font-black text-[10px] uppercase tracking-widest h-12 px-6 rounded-xl shadow-lg shadow-brand-200 hover:bg-brand-700"
-                >
-                  Resume Review
-                </Button>
-             </div>
-          </div>
-        )}
-
-      {/* Step Content */}
-      <div className="bg-white rounded-[32px] shadow-2xl shadow-slate-200/40 border border-slate-100 p-6 md:p-8 min-h-[500px]">
-        {state.currentStep === "docs" && (
+      <div className="bg-white rounded-[40px] shadow-2xl border border-slate-100 p-8 min-h-[500px]">
+        {activeTab === "docs" && (
           <div className="space-y-6">
-            {skippedFiles.length > 0 && (
-              <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
-                <AlertCircle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
-                <div>
-                  <h4 className="text-sm font-black text-amber-900 uppercase tracking-tight">Duplicate Documents Skipped</h4>
-                  <p className="text-xs text-amber-700 mt-1">The following files were already in the repository and were not re-uploaded:</p>
-                  <ul className="mt-2 space-y-1">
-                    {skippedFiles.map((file, idx) => (
-                      <li key={idx} className="text-[10px] font-mono text-amber-800 bg-amber-100/50 px-2 py-1 rounded w-fit">{file}</li>
-                    ))}
-                  </ul>
-                </div>
-                <button onClick={() => setSkippedFiles([])} className="ml-auto text-amber-400 hover:text-amber-600 transition-colors">
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            )}
+            <div className="flex justify-between items-center mb-6">
+               <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-brand-50 rounded-xl flex items-center justify-center">
+                     <Database className="w-5 h-5 text-brand-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-black text-slate-900 uppercase">Staged Assets</h3>
+                    <p className="text-[10px] text-slate-400 font-bold uppercase">Reference documents for AI synthesis</p>
+                  </div>
+               </div>
+               <Button
+                  onClick={handleUploadNew}
+                  className="bg-brand-600 hover:bg-brand-700 text-white font-black uppercase tracking-widest text-[10px] h-12 px-6 rounded-2xl shadow-lg shadow-brand-100 transition-all active:scale-[0.98]"
+                >
+                  <Plus className="w-4 h-4 mr-2 stroke-[3px]" />
+                  Staging New Source
+                </Button>
+            </div>
+
             <DocsStep
               documents={state.uploadedDocuments}
               onUploadNew={handleUploadNew}
@@ -543,70 +424,41 @@ export const KnowledgeWorkflow: React.FC<KnowledgeWorkflowProps> = ({
           </div>
         )}
 
-        {state.currentStep === "extract" && (
-          <ExtractStep
-            selectedDocuments={state.uploadedDocuments.filter(d => selectedDocumentIds.includes(d.id))}
-            onExtract={handleExtract}
-            onSaveGlobal={handleSaveGlobalPrompt}
-            loading={state.loading}
-            extractionProgress={extractionProgress}
-            samples={samples}
-            draftId={state.draftId}
-            initialPrompt={activePrompt}
-            llmStatus={llmStatus}
-          />
-        )}
-
-        {state.currentStep === "review" && state.extractedData.length > 0 && (
-          <ReviewStep
-            extractedData={state.extractedData}
-            onApprove={handleApprove}
-            loading={state.loading}
-            approvalNotes={state.approvalNotes}
-            setApprovalNotes={(notes) =>
-              setState((prev) => ({ ...prev, approvalNotes: notes }))
-            }
-            correctedJson={state.correctedJson}
-            setCorrectedJson={(json) =>
-              setState((prev) => ({ ...prev, correctedJson: json }))
-            }
-          />
-        )}
-
-        {state.currentStep === "success" && selectedCollege && (
-          <SuccessStep
-            approvedCount={selectedDocumentIds.length}
-            collegeName={selectedCollege.name}
-            academicYear={state.academicYear}
-            onNewWorkflow={handleNewWorkflow}
-            approvedDocuments={state.uploadedDocuments.filter(d => selectedDocumentIds.includes(d.id))}
-          />
+        {activeTab === "extract" && (
+          <div className="space-y-8 animate-in fade-in duration-500">
+            <ExtractStep
+              selectedDocuments={state.uploadedDocuments.filter(d => selectedDocumentIds.includes(d.id))}
+              onExtract={handleExtract}
+              onSaveGlobal={async () => {}} 
+              loading={state.loading}
+              extractionProgress={extractionProgress}
+              samples={samples}
+              draftId={state.draftId}
+              initialPrompt={activePrompt}
+              llmStatus={llmStatus}
+              onApprove={handleApprove}
+              approvalNotes={state.approvalNotes}
+              setApprovalNotes={(notes) => setState(prev => ({ ...prev, approvalNotes: notes }))}
+              correctedJson={state.correctedJson}
+              setCorrectedJson={(json) => setState(prev => ({ ...prev, correctedJson: json }))}
+            />
+          </div>
         )}
       </div>
 
-      {/* Upload Modal */}
       <Dialog open={isUploadOpen} onOpenChange={setIsUploadOpen}>
-        <DialogContent 
-          className="rounded-3xl p-0 border-none overflow-hidden"
-          style={{ maxWidth: '1000px', width: '90vw' }}
-        >
-          <div className="p-8 md:p-12 bg-white">
+        <DialogContent className="max-w-[90vw] md:max-w-6xl w-full p-0 bg-white rounded-[40px] border-none shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+          <div className="flex-1 overflow-y-auto p-8 md:p-12 custom-scrollbar">
             <UploadStep
               onUpload={handleUpload}
               colleges={colleges}
-              rankingSources={rankingSources}
+              dataSources={dataSources}
               selectedCollege={state.selectedCollege}
-              setSelectedCollege={(id) =>
-                setState((prev) => ({ ...prev, selectedCollege: id }))
-              }
+              setSelectedCollege={(id) => setState(prev => ({ ...prev, selectedCollege: id }))}
               selectedSource={state.selectedSource}
-              setSelectedSource={(id) =>
-                setState((prev) => ({ ...prev, selectedSource: id }))
-              }
+              setSelectedSource={(id) => setState(prev => ({ ...prev, selectedSource: id }))}
               academicYear={state.academicYear}
-              setAcademicYear={(year) =>
-                setState((prev) => ({ ...prev, academicYear: year }))
-              }
+              setAcademicYear={(year) => setState(prev => ({ ...prev, academicYear: year }))}
               loading={state.loading}
               error={state.error}
             />

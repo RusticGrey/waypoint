@@ -46,14 +46,14 @@ export async function seedIntelligence(pOverride?: PrismaClient) {
       await p.college.upsert({
         where: { name: college.name },
         update: {
-          aliases: college.aliases,
+          shortName: college.shortName || college.aliases?.[0],
           country: college.country,
         },
         create: {
           // If the college is brand new, use the name as ID to keep it human-readable and consistent
           id: college.id || college.name.toLowerCase().replace(/[^a-z0-9]/g, '-'),
           name: college.name,
-          aliases: college.aliases,
+          shortName: college.shortName || college.aliases?.[0],
           country: college.country,
           isActive: true
         }
@@ -81,9 +81,9 @@ export async function seedIntelligence(pOverride?: PrismaClient) {
       });
     }
 
-    // 3. Seed Ranking Sources
+    // 3. Seed Data Sources
     for (const source of data.sources) {
-      await p.rankingSource.upsert({
+      await p.dataSource.upsert({
         where: { name: source.name },
         update: {
           displayName: source.displayName,
@@ -91,7 +91,7 @@ export async function seedIntelligence(pOverride?: PrismaClient) {
           isActive: source.isActive
         },
         create: {
-          id: source.id,
+          id: source.id.includes('-') ? source.id : source.name.toLowerCase().replace(/[^a-z0-9]/g, '-'),
           name: source.name,
           displayName: source.displayName,
           baseUrl: source.baseUrl,
@@ -100,7 +100,7 @@ export async function seedIntelligence(pOverride?: PrismaClient) {
       });
     }
 
-    // 4. Seed Verified Ranking Data (RESOLVE LOCAL IDs)
+    // 4. Seed Verified Insights (RESOLVE LOCAL IDs)
     for (const ranking of data.rankingData) {
       // NATURAL KEY RESOLUTION: Map name to local environment ID
       let localCollegeId = ranking.collegeId;
@@ -113,24 +113,26 @@ export async function seedIntelligence(pOverride?: PrismaClient) {
       let localSourceId = ranking.rankingSourceId;
       const sourceInfo = data.sources.find((s: any) => s.id === ranking.rankingSourceId);
       if (sourceInfo) {
-        const localSource = await p.rankingSource.findUnique({ where: { name: sourceInfo.name } });
+        const localSource = await p.dataSource.findUnique({ where: { name: sourceInfo.name } });
         if (localSource) localSourceId = localSource.id;
       }
 
-      await p.collegeRankingData.upsert({
+      await p.collegeInsight.upsert({
         where: {
-          collegeId_rankingSourceId_academicYear: {
+          collegeId_dataSourceId_academicYear: {
             collegeId: localCollegeId,
-            rankingSourceId: localSourceId,
+            dataSourceId: localSourceId,
             academicYear: ranking.academicYear
           }
         },
         update: {
-          acceptance_rate: ranking.acceptance_rate,
-          rankings: ranking.rankings,
-          cost_of_attendance: ranking.cost_of_attendance,
-          admissions_data: ranking.admissions_data,
-          fieldsPresent: ranking.fieldsPresent,
+          data: {
+            rankings: ranking.rankings,
+            cost_of_attendance: ranking.cost_of_attendance,
+            admissions_data: ranking.admissions_data,
+            acceptance_rate: ranking.acceptance_rate
+          },
+          status: 'approved',
           extractionMethod: ranking.extractionMethod,
           llmModelUsed: ranking.llmModelUsed,
           approvedAt: ranking.approvedAt || new Date()
@@ -138,13 +140,15 @@ export async function seedIntelligence(pOverride?: PrismaClient) {
         create: {
           id: ranking.id,
           collegeId: localCollegeId,
-          rankingSourceId: localSourceId,
+          dataSourceId: localSourceId,
           academicYear: ranking.academicYear,
-          acceptance_rate: ranking.acceptance_rate,
-          rankings: ranking.rankings,
-          cost_of_attendance: ranking.cost_of_attendance,
-          admissions_data: ranking.admissions_data,
-          fieldsPresent: ranking.fieldsPresent,
+          data: {
+            rankings: ranking.rankings,
+            cost_of_attendance: ranking.cost_of_attendance,
+            admissions_data: ranking.admissions_data,
+            acceptance_rate: ranking.acceptance_rate
+          },
+          status: 'approved',
           extractionMethod: ranking.extractionMethod,
           llmModelUsed: ranking.llmModelUsed,
           approvedAt: ranking.approvedAt || new Date()

@@ -8,14 +8,13 @@ datasource db {
 }
 
 model Organization {
-  id                      String                    @id @default(uuid())
-  name                    String
-  logoUrl                 String?                   @map("logo_url")
-  primaryColor            String                    @default("#3B82F6") @map("primary_color")
-  createdAt               DateTime                  @default(now()) @map("created_at")
-  publicEvents            PublicEvent[]
-  RankingSourceCredential RankingSourceCredential[]
-  users                   User[]
+  id           String        @id @default(uuid())
+  name         String
+  logoUrl      String?       @map("logo_url")
+  primaryColor String        @default("#3B82F6") @map("primary_color")
+  createdAt    DateTime      @default(now()) @map("created_at")
+  publicEvents PublicEvent[]
+  users        User[]
 
   @@map("Organization")
 }
@@ -30,7 +29,8 @@ model User {
   lastName         String               @map("last_name")
   createdAt        DateTime             @default(now()) @map("created_at")
   timezone         String               @default("UTC")
-  approvedRankings CollegeRankingData[] @relation("ApprovedRankingData")
+  approvedInsights CollegeInsight[]     @relation("ApprovedInsights")
+  collegeDocuments CollegeDocument[]
   counselor        Counselor?           @relation("UserToCounselor")
   emailLogs        EmailLog[]
   notifications    Notification[]
@@ -229,134 +229,93 @@ model Achievement {
 }
 
 model College {
-  id             String                 @id @default(cuid())
-  name           String                 @unique
-  aliases        String[]               @default([])
-  country        String                 @default("United States")
-  acceptanceRate Float?                 @map("acceptance_rate")
-  avgGpa         Float?                 @map("avg_gpa")
-  avgSat         Int?                   @map("avg_sat")
-  avgAct         Int?                   @map("avg_act")
-  rankingUsNews  Int?                   @map("ranking_us_news")
-  isActive       Boolean                @default(true) @map("is_active")
-  createdAt      DateTime               @default(now()) @map("created_at")
-  updatedAt      DateTime               @updatedAt @map("updated_at")
+  id             String               @id @default(cuid())
+  name           String               @unique
+  shortName      String?              @map("short_name")
+  country        String               @default("United States")
+  acceptanceRate Float?               @map("acceptance_rate")
+  avgGpa         Float?               @map("avg_gpa")
+  avgSat         Int?                 @map("avg_sat")
+  avgAct         Int?                 @map("avg_act")
+  isActive       Boolean              @default(true) @map("is_active")
+  createdAt      DateTime             @default(now()) @map("created_at")
+  updatedAt      DateTime             @updatedAt @map("updated_at")
   applications   CollegeApplication[]
-  queries        CollegeDataQuery[]
   documents      CollegeDocument[]
-  rankingData    CollegeRankingData[]
-  sourceMappings RankingSourceCollege[]
+  insights       CollegeInsight[]
   targetColleges TargetCollege[]
 
   @@map("College")
 }
 
-model RankingSource {
-  id                      String                    @id @default(cuid())
-  name                    String                    @unique
-  displayName             String                    @map("display_name")
-  baseUrl                 String                    @map("base_url")
-  isActive                Boolean                   @default(true) @map("is_active")
-  createdAt               DateTime                  @default(now()) @map("created_at")
-  updatedAt               DateTime                  @updatedAt @map("updated_at")
-  data                    CollegeRankingData[]
-  collegeMappings         RankingSourceCollege[]
-  RankingSourceCredential RankingSourceCredential[]
-  prompts                 RankingSourcePrompt[]
+model DataSource {
+  id        String             @id
+  name      String             @unique
+  displayName String             @map("display_name")
+  baseUrl     String             @map("base_url")
+  isActive    Boolean            @default(true) @map("is_active")
+  createdAt   DateTime           @default(now()) @map("created_at")
+  updatedAt   DateTime           @updatedAt @map("updated_at")
+  insights    CollegeInsight[]
+  prompts     DataSourcePrompt[]
+  documents   CollegeDocument[]
 
-  @@map("RankingSource")
+  @@map("DataSource")
 }
 
-model RankingSourceCollege {
-  id               String        @id @default(cuid())
-  rankingSourceId  String        @map("ranking_source_id")
-  collegeId        String        @map("college_id")
-  sourceProfileUrl String        @map("source_profile_url")
-  sections         Json          @default("{}")
-  createdAt        DateTime      @default(now()) @map("created_at")
-  updatedAt        DateTime      @updatedAt @map("updated_at")
-  college          College       @relation(fields: [collegeId], references: [id], onDelete: Cascade)
-  rankingSource    RankingSource @relation(fields: [rankingSourceId], references: [id], onDelete: Cascade)
+model CollegeInsight {
+  id               String     @id @default(cuid())
+  collegeId        String     @map("college_id")
+  dataSourceId     String     @map("data_source_id")
+  academicYear     String     @map("academic_year")
+  data             Json       @default("{}")
+  status           String     @default("pending")
+  extractionMethod String     @default("LLM") @map("extraction_method")
+  llmModelUsed     String?    @map("llm_model_used")
+  extractedAt      DateTime   @default(now()) @map("extracted_at")
+  approvedAt       DateTime?  @map("approved_at")
+  approvedByUserId String?    @map("approved_by_user_id")
+  approvedBy       User?      @relation("ApprovedInsights", fields: [approvedByUserId], references: [id])
+  college          College    @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+  dataSource       DataSource @relation(fields: [dataSourceId], references: [id], onDelete: Cascade)
 
-  @@unique([rankingSourceId, collegeId])
-  @@map("RankingSourceCollege")
-}
-
-model CollegeRankingData {
-  id                 String        @id @default(cuid())
-  collegeId          String        @map("college_id")
-  rankingSourceId    String        @map("ranking_source_id")
-  academicYear       String        @map("academic_year")
-  acceptance_rate    Float?
-  rankings           Json?
-  cost_of_attendance Json?
-  admissions_data    Json?
-  fieldsPresent      String[]      @map("fields_present")
-  extractionMethod   String        @default("LLM") @map("extraction_method")
-  llmModelUsed       String?       @map("llm_model_used")
-  scraped_at         DateTime      @default(now())
-  approvedAt         DateTime?     @map("approved_at")
-  approvedByUserId   String?       @map("approved_by_user_id")
-  approvedBy         User?         @relation("ApprovedRankingData", fields: [approvedByUserId], references: [id])
-  college            College       @relation(fields: [collegeId], references: [id], onDelete: Cascade)
-  rankingSource      RankingSource @relation(fields: [rankingSourceId], references: [id], onDelete: Cascade)
-
-  @@unique([collegeId, rankingSourceId, academicYear])
-  @@map("CollegeRankingData")
+  @@unique([collegeId, dataSourceId, academicYear])
+  @@map("CollegeInsight")
 }
 
 model CollegeDocument {
-  id                  String               @id @default(cuid())
-  collegeId           String               @map("college_id")
-  section             String
-  sourceType          String               @map("source_type")
-  rawHtmlContent      String               @map("raw_html_content")
-  htmlHash            String               @map("html_hash")
-  extractedData       Json?                @map("extracted_data")
-  extractionStatus    String               @default("pending") @map("extraction_status")
-  extractedAt         DateTime?            @map("extracted_at")
-  uploadedByUserId    String               @map("uploaded_by_user_id")
-  uploadedAt          DateTime             @default(now()) @map("uploaded_at")
-  metadata            Json                 @default("{}")
-  createdAt           DateTime             @default(now()) @map("created_at")
-  updatedAt           DateTime             @updatedAt @map("updated_at")
-  documentType        String               @default("html") @map("document_type")
-  promptId            String?              @map("prompt_id")
-  college             College              @relation(fields: [collegeId], references: [id], onDelete: Cascade)
-  rankingSourcePrompt RankingSourcePrompt? @relation(fields: [promptId], references: [id])
+  id               String     @id @default(cuid())
+  collegeId        String     @map("college_id")
+  dataSourceId     String     @map("data_source_id")
+  academicYear     String     @map("academic_year")
+  content          String     @map("content")
+  contentHash      String     @map("content_hash")
+  contentType      String     @default("text/html") @map("content_type")
+  fileName         String?    @map("file_name")
+  fileSize         Int?       @map("file_size")
+  uploadedByUserId String     @map("uploaded_by_user_id")
+  uploadedAt       DateTime   @default(now()) @map("uploaded_at")
+  college          College    @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+  dataSource       DataSource @relation(fields: [dataSourceId], references: [id], onDelete: Cascade)
+  uploadedBy       User       @relation(fields: [uploadedByUserId], references: [id], onDelete: Cascade)
 
   @@index([collegeId])
-  @@index([sourceType])
+  @@index([dataSourceId])
   @@map("CollegeDocument")
 }
 
-model RankingSourcePrompt {
-  id              String            @id @default(cuid())
-  rankingSourceId String            @map("ranking_source_id")
-  promptText      String            @map("prompt_text")
-  version         Int               @default(1)
-  isActive        Boolean           @default(true) @map("is_active")
-  createdAt       DateTime          @default(now()) @map("created_at")
-  updatedAt       DateTime          @updatedAt @map("updated_at")
-  documents       CollegeDocument[]
-  rankingSource   RankingSource     @relation(fields: [rankingSourceId], references: [id], onDelete: Cascade)
+model DataSourcePrompt {
+  id           String     @id @default(cuid())
+  dataSourceId String     @map("data_source_id")
+  promptText   String     @map("prompt_text")
+  version      Int        @default(1)
+  isActive     Boolean    @default(true) @map("is_active")
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+  dataSource   DataSource @relation(fields: [dataSourceId], references: [id], onDelete: Cascade)
 
-  @@unique([rankingSourceId, version])
-  @@map("RankingSourcePrompt")
-}
-
-model CollegeDataQuery {
-  id            String   @id @default(cuid())
-  collegeId     String   @map("college_id")
-  queryType     String   @map("query_type")
-  queryText     String   @map("query_text")
-  results       Json
-  documentsUsed String[] @map("documents_used")
-  createdBy     String   @map("created_by")
-  createdAt     DateTime @default(now()) @map("created_at")
-  college       College  @relation(fields: [collegeId], references: [id], onDelete: Cascade)
-
-  @@map("CollegeDataQuery")
+  @@unique([dataSourceId, version])
+  @@map("DataSourcePrompt")
 }
 
 model KnowledgeGlossary {
@@ -665,22 +624,6 @@ model EventSignup {
   @@map("EventSignup")
 }
 
-model RankingSourceCredential {
-  id                 String        @id
-  ranking_source_id  String
-  organization_id    String
-  encrypted_email    String?
-  encrypted_password String?
-  encrypted_api_key  String?
-  is_active          Boolean       @default(true)
-  last_tested_at     DateTime?
-  created_at         DateTime      @default(now())
-  updated_at         DateTime
-  Organization       Organization  @relation(fields: [organization_id], references: [id], onDelete: Cascade)
-  RankingSource      RankingSource @relation(fields: [ranking_source_id], references: [id], onDelete: Cascade)
-
-  @@unique([ranking_source_id, organization_id])
-}
 
 enum UserRole {
   counselor

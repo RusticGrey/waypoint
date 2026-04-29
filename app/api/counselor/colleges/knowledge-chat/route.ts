@@ -83,12 +83,9 @@ async function exec_get_college_ids(args: { names: string[] }, extractor: Gemini
   const resolvedNames = await resolve_terms(names, extractor);
   
   // 2. Fetch all colleges for matching
-  let allColleges: any[] = [];
-  try {
-    allColleges = await prisma.$queryRaw`SELECT id, name, aliases FROM "College"`;
-  } catch (e) {
-    allColleges = await prisma.college.findMany({ select: { id: true, name: true } } as any);
-  }
+  const allColleges = await prisma.college.findMany({
+    select: { id: true, name: true, shortName: true }
+  });
 
   // FUZZY NORMALIZATION: Strip all non-alphanumeric for matching
   const normalize = (str: string) => String(str || "").toLowerCase().replace(/[^a-z0-9]/g, "").trim();
@@ -99,16 +96,13 @@ async function exec_get_college_ids(args: { names: string[] }, extractor: Gemini
 
     const match = allColleges.find(c => {
       const nameNorm = normalize(c.name);
-      
-      let aliases: string[] = [];
-      if (Array.isArray(c.aliases)) aliases = c.aliases;
-      else if (typeof c.aliases === 'string') aliases = c.aliases.replace(/[{}]/g, '').split(',').map((s: string) => s.trim().replace(/^"|"$/g, ''));
+      const shortNameNorm = normalize(c.shortName || "");
       
       const exactMatch = nameNorm === inputNorm;
-      const aliasMatch = aliases.some(a => normalize(a) === inputNorm);
+      const shortMatch = shortNameNorm === inputNorm;
       const partialMatch = nameNorm.includes(inputNorm) || inputNorm.includes(nameNorm);
       
-      return exactMatch || aliasMatch || (partialMatch && nameNorm.length > 5);
+      return exactMatch || shortMatch || (partialMatch && nameNorm.length > 5);
     });
 
     if (match) console.log(`[Beacon Debug] get_college_ids success: "${inputName}" -> ${match.name}`);
@@ -121,16 +115,16 @@ async function exec_get_college_ids(args: { names: string[] }, extractor: Gemini
  */
 async function exec_get_subject_rankings(args: { collegeIds: string[] }) {
   console.log("[Beacon Tool] get_subject_rankings for:", args.collegeIds);
-  const data = await prisma.collegeRankingData.findMany({
-    where: { collegeId: { in: args.collegeIds }, approvedAt: { not: null } },
-    include: { college: { select: { name: true } }, rankingSource: { select: { displayName: true } } }
+  const data = await prisma.collegeInsight.findMany({
+    where: { collegeId: { in: args.collegeIds }, status: "approved" },
+    include: { college: { select: { name: true } }, dataSource: { select: { displayName: true } } }
   });
 
   return data.map(d => ({
     college: d.college.name,
-    source: d.rankingSource.displayName,
+    source: d.dataSource.displayName,
     year: d.academicYear,
-    rankings: (d.rankings as any)?.rankings_comprehensive?.subject_and_specialty_rankings || []
+    rankings: (d.data as any)?.rankings_comprehensive?.subject_and_specialty_rankings || []
   }));
 }
 
@@ -141,13 +135,13 @@ async function exec_get_specific_ranking(args: { collegeIds: string[], subject: 
   console.log(`[Beacon Tool] get_specific_ranking for subject "${args.subject}" across colleges:`, args.collegeIds);
   const resolvedSubject = String((await resolve_terms(args.subject, extractor))[0] || "").toLowerCase().trim();
   
-  const data = await prisma.collegeRankingData.findMany({
-    where: { collegeId: { in: args.collegeIds }, approvedAt: { not: null } },
-    include: { college: { select: { name: true } }, rankingSource: { select: { displayName: true } } }
+  const data = await prisma.collegeInsight.findMany({
+    where: { collegeId: { in: args.collegeIds }, status: "approved" },
+    include: { college: { select: { name: true } }, dataSource: { select: { displayName: true } } }
   });
 
   const results = data.map(d => {
-    const rankings = (d.rankings as any)?.rankings_comprehensive?.subject_and_specialty_rankings || [];
+    const rankings = (d.data as any)?.rankings_comprehensive?.subject_and_specialty_rankings || [];
     
     // POWER MATCH: Token-based overlap detection
     const searchTokens = resolvedSubject.split(/\s+/).filter(t => t.length > 2);
@@ -188,7 +182,7 @@ async function exec_get_specific_ranking(args: { collegeIds: string[], subject: 
     
     const res = { 
       college: d.college.name, 
-      source: d.rankingSource.displayName,
+      source: d.dataSource.displayName,
       subject: resolvedSubject, 
       rank: matchedItem ? matchedItem.rank : "No specific rank found in this record" 
     };
@@ -205,12 +199,12 @@ async function exec_get_specific_ranking(args: { collegeIds: string[], subject: 
  */
 async function exec_get_admissions_stats(args: { collegeIds: string[] }) {
   console.log("[Beacon Tool] get_admissions_stats for:", args.collegeIds);
-  const data = await prisma.collegeRankingData.findMany({
-    where: { collegeId: { in: args.collegeIds }, approvedAt: { not: null } },
+  const data = await prisma.collegeInsight.findMany({
+    where: { collegeId: { in: args.collegeIds }, status: "approved" },
     include: { college: { select: { name: true } } }
   });
   const results = data.map(d => {
-    const r = d.rankings as any;
+    const r = d.data as any;
     return { 
       college: d.college.name, 
       admissions_stats: r?.admissions_engine,
@@ -226,12 +220,12 @@ async function exec_get_admissions_stats(args: { collegeIds: string[] }) {
  */
 async function exec_get_financial_stats(args: { collegeIds: string[] }) {
   console.log("[Beacon Tool] get_financial_stats for:", args.collegeIds);
-  const data = await prisma.collegeRankingData.findMany({
-    where: { collegeId: { in: args.collegeIds }, approvedAt: { not: null } },
+  const data = await prisma.collegeInsight.findMany({
+    where: { collegeId: { in: args.collegeIds }, status: "approved" },
     include: { college: { select: { name: true } } }
   });
   const results = data.map(d => {
-    const r = d.rankings as any;
+    const r = d.data as any;
     return { 
       college: d.college.name, 
       financial_profile: r?.financial_profile || "No financial data available",
@@ -250,16 +244,16 @@ async function exec_search_intelligence_repository(args: { searchTopic: string }
   const resolvedTopic = String((await resolve_terms(args.searchTopic, extractor))[0] || "").toLowerCase().trim();
   console.log(`[Beacon Tool] search_intelligence_repository for: "${resolvedTopic}"`);
   
-  const inventory = await prisma.collegeRankingData.findMany({
-    where: { approvedAt: { not: null } },
-    include: { college: { select: { name: true } }, rankingSource: { select: { displayName: true } } }
+  const inventory = await prisma.collegeInsight.findMany({
+    where: { status: "approved" },
+    include: { college: { select: { name: true } }, dataSource: { select: { displayName: true } } }
   });
 
   const searchTokens = resolvedTopic.split(/\s+/).filter(t => t.length > 2);
 
   const matches = inventory.map(i => {
-    const rankings = (i.rankings as any)?.rankings_comprehensive?.subject_and_specialty_rankings || [];
-    const dataStr = JSON.stringify(i.rankings).toLowerCase();
+    const rankings = (i.data as any)?.rankings_comprehensive?.subject_and_specialty_rankings || [];
+    const dataStr = JSON.stringify(i.data).toLowerCase();
     
     let matchedItem: any = null;
 
@@ -282,7 +276,7 @@ async function exec_search_intelligence_repository(args: { searchTopic: string }
     if (matchedItem || dataStr.includes(resolvedTopic)) {
       return { 
         college: i.college.name, 
-        source: i.rankingSource.displayName, 
+        source: i.dataSource.displayName, 
         rank: matchedItem ? matchedItem.rank : "Found match in documents",
         subject: matchedItem ? matchedItem.name : resolvedTopic
       };
