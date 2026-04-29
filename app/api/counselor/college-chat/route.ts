@@ -36,8 +36,9 @@ export async function POST(req: NextRequest) {
     }
 
     // 2. Build context from approved insights
+    // We pass the full JSON block but with clear labels to help LLM distinguish sections
     const context = insights
-      .map((insight: any) => `SOURCE: ${insight.dataSource.displayName} (${insight.academicYear})\nDATA: ${JSON.stringify(insight.data)}`)
+      .map((insight: any) => `SOURCE: ${insight.dataSource.displayName} (${insight.academicYear})\nINSTITUTIONAL_DATA: ${JSON.stringify(insight.data)}`)
       .join('\n\n---\n\n');
 
     // 3. Generate answer using LLM

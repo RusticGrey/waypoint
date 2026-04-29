@@ -11,7 +11,7 @@ import {
   Plus, Search, GraduationCap, MapPin, 
   Globe, FileText, ChevronRight, Loader2,
   MessageSquare, LayoutGrid, CheckCircle2, Sparkles,
-  Database, Settings2
+  Database, Settings2, RefreshCw
 } from 'lucide-react';
 import Link from 'next/link';
 import { CollegeKnowledgeChat } from '@/components/admin/rankings/CollegeKnowledgeChat';
@@ -215,6 +215,11 @@ export default function CollegeDirectory() {
                                 {hasDocuments && (
                                   <div className="w-6 h-6 rounded-lg bg-brand-500 flex items-center justify-center text-white shadow-sm" title="AI Insights Staged">
                                     <Sparkles className="w-3.5 h-3.5 fill-white" />
+                                  </div>
+                                )}
+                                {college.hasStaleInsight && (
+                                  <div className="w-6 h-6 rounded-lg bg-amber-500 flex items-center justify-center text-white shadow-sm animate-pulse" title="Refresh Required (Stale Insights)">
+                                    <RefreshCw className="w-3.5 h-3.5 stroke-[3px]" />
                                   </div>
                                 )}
                               </div>

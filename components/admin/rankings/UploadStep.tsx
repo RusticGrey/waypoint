@@ -142,7 +142,7 @@ export const UploadStep: React.FC<UploadStepProps> = ({
         {/* Academic Year */}
         <div className="space-y-1.5">
           <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400">
-            Academic Cycle
+            Academic Year
           </label>
           <select
             value={academicYear}
@@ -150,18 +150,12 @@ export const UploadStep: React.FC<UploadStepProps> = ({
             disabled={loading}
             className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50/50 focus:ring-2 focus:ring-brand-500 outline-none transition-all font-bold text-slate-700"
           >
-            <option value="">Select academic year...</option>
+            <option value="">Select year...</option>
             {(() => {
               const currentYear = new Date().getFullYear();
-              const months = new Date().getMonth();
-              // If we are past May, the "current" cycle is next year's start
-              const startYear = months > 4 ? currentYear : currentYear - 1;
-              
               const years = [];
-              for (let i = 0; i < 4; i++) {
-                const year = startYear - i;
-                const yearString = `${year}-${year + 1}`;
-                years.push(yearString);
+              for (let i = 0; i < 5; i++) {
+                years.push(String(currentYear + 1 - i));
               }
               return years.map(year => (
                 <option key={year} value={year}>{year}</option>

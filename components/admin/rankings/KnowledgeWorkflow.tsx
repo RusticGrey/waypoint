@@ -28,8 +28,7 @@ export const KnowledgeWorkflow: React.FC<KnowledgeWorkflowProps> = ({
   onComplete,
 }) => {
   const currentYear = new Date().getFullYear();
-  const months = new Date().getMonth();
-  const defaultYear = months > 4 ? `${currentYear}-${currentYear + 1}` : `${currentYear - 1}-${currentYear}`;
+  const defaultYear = String(currentYear);
 
   const [activeTab, setActiveTab] = useState<"docs" | "extract">("docs");
 

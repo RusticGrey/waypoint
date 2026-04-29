@@ -13,10 +13,14 @@ export async function GET(req: NextRequest) {
 
     const { searchParams } = new URL(req.url);
     const dataSourceId = searchParams.get('dataSourceId');
+    const includeHistory = searchParams.get('history') === 'true';
 
-    const filter: any = { isActive: true };
+    const filter: any = {};
     if (dataSourceId) {
       filter.dataSourceId = dataSourceId;
+    }
+    if (!includeHistory) {
+      filter.isActive = true;
     }
 
     const prompts = await prisma.dataSourcePrompt.findMany({

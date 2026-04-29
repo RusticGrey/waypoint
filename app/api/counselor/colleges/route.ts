@@ -11,6 +11,12 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // Get all active prompts to check for staleness
+    const activePrompts = await prisma.dataSourcePrompt.findMany({
+      where: { isActive: true },
+      select: { dataSourceId: true, createdAt: true }
+    });
+
     const colleges = await prisma.college.findMany({
       include: {
         _count: {
@@ -20,14 +26,32 @@ export async function GET(req: NextRequest) {
           }
         },
         insights: {
-          where: { status: 'approved' },
-          select: { id: true }
+          select: { 
+            id: true, 
+            dataSourceId: true, 
+            extractedAt: true,
+            status: true
+          }
         }
       },
       orderBy: { name: 'asc' }
     });
 
-    return NextResponse.json(colleges);
+    // Decorate colleges with stale status
+    const decoratedColleges = colleges.map(college => {
+      const hasStaleInsight = college.insights.some(insight => {
+        const prompt = activePrompts.find(p => p.dataSourceId === insight.dataSourceId);
+        if (!prompt) return false;
+        return new Date(insight.extractedAt) < new Date(prompt.createdAt);
+      });
+
+      return {
+        ...college,
+        hasStaleInsight
+      };
+    });
+
+    return NextResponse.json(decoratedColleges);
 
   } catch (error: any) {
     console.error('Error fetching colleges:', error);
