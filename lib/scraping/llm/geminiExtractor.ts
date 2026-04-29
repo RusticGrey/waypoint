@@ -237,91 +237,22 @@ export class GeminiExtractor {
         }
       },
       {
-        name: "get_subject_rankings",
-        description: "Fetches ALL major/minor/subject rankings for one or more colleges. Use this when the user asks for 'all rankings' or 'all majors'.",
+        name: "fetch_intelligence_domain",
+        description: "Fetches a focused subset of intelligence data for ALL colleges or specific ones. Domains: 'admissions' (deadlines, rates, test scores), 'finance' (tuition, aid, endowment), 'academics' (majors, ratios, programs), 'rankings', 'identity' (enrollment, type, setting). Use this for global queries (e.g., 'which colleges have Nov 1 deadline?') or detailed cross-institution analysis.",
         parameters: {
           type: SchemaType.OBJECT,
           properties: {
+            domain: {
+              type: SchemaType.STRING,
+              description: "The area of interest: 'admissions', 'finance', 'academics', 'rankings', or 'identity'."
+            },
             collegeIds: {
               type: SchemaType.ARRAY,
               items: { type: SchemaType.STRING },
-              description: "Database IDs of the colleges."
+              description: "Optional list of specific college IDs to filter by."
             }
           },
-          required: ["collegeIds"]
-        }
-      },
-      {
-        name: "get_specific_ranking",
-        description: "Fetches the rank for a SPECIFIC major or subject. ALWAYS expand abbreviations to full formal names (e.g., 'Computer Science' NOT 'CS').",
-        parameters: {
-          type: SchemaType.OBJECT,
-          properties: {
-            collegeIds: {
-              type: SchemaType.ARRAY,
-              items: { type: SchemaType.STRING }
-            },
-            subject: {
-              type: SchemaType.STRING,
-              description: "The FULL formal name of the subject (e.g., 'Computer Science'). NEVER use acronyms."
-            }
-          },
-          required: ["collegeIds", "subject"]
-        }
-      },
-      {
-        name: "get_global_college_metrics",
-        description: "Returns a high-level summary of EVERY college in the system, including acceptance rates, tuition/cost of attendance, and basic stats. Use this when the user asks for comparisons, rankings by stat (e.g. 'lowest acceptance rate' or 'cheapest college'), or lists of colleges meeting numeric criteria.",
-        parameters: {
-          type: SchemaType.OBJECT,
-          properties: {
-            academicYear: {
-              type: SchemaType.STRING,
-              description: "Filter by academic year (e.g., '2024'). Defaults to latest available."
-            }
-          }
-        }
-      },
-      {
-        name: "get_admissions_stats",
-        description: "Fetches acceptance rates, SAT/ACT ranges, GPA requirements, application deadlines, AND supplementary insights including campus life, housing types, and student activities.",
-        parameters: {
-          type: SchemaType.OBJECT,
-          properties: {
-            collegeIds: {
-              type: SchemaType.ARRAY,
-              items: { type: SchemaType.STRING }
-            }
-          },
-          required: ["collegeIds"]
-        }
-      },
-      {
-        name: "get_financial_stats",
-        description: "Fetches tuition, fees, and total sticker price for colleges.",
-        parameters: {
-          type: SchemaType.OBJECT,
-          properties: {
-            collegeIds: {
-              type: SchemaType.ARRAY,
-              items: { type: SchemaType.STRING }
-            }
-          },
-          required: ["collegeIds"]
-        }
-      },
-      {
-        name: "search_intelligence_repository",
-        description: "Global search for discovery queries. ALWAYS expand abbreviations to full formal names (e.g., 'Computer Science' NOT 'CS').",
-        parameters: {
-          type: SchemaType.OBJECT,
-          properties: {
-            searchTopic: {
-              type: SchemaType.STRING,
-              description: "The FULL formal name of the subject or major (e.g., 'Computer Science'). NEVER use acronyms."
-            }
-          },
-          required: ["searchTopic"]
+          required: ["domain"]
         }
       },
       {

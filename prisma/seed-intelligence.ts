@@ -122,8 +122,8 @@ export async function seedIntelligence(pOverride?: PrismaClient) {
       }
 
       // SOURCE RESOLUTION: Map source name to local environment ID
-      let localSourceId = ranking.rankingSourceId;
-      const sourceInfo = data.sources.find((s: any) => s.id === ranking.rankingSourceId);
+      let localSourceId = ranking.dataSourceId || ranking.rankingSourceId;
+      const sourceInfo = data.sources.find((s: any) => s.id === localSourceId);
       if (sourceInfo) {
         const localSource = await (p as any).dataSource.findUnique({ where: { name: sourceInfo.name } });
         if (localSource) localSourceId = localSource.id;

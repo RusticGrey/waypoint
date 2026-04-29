@@ -109,136 +109,68 @@ async function exec_get_college_ids(args: { names: string[] }, extractor: Gemini
 }
 
 /**
- * TOOL EXECUTION: get_subject_rankings
+ * DOMAIN MAPPING HELPERS
  */
-async function exec_get_subject_rankings(args: { collegeIds: string[] }) {
-  const data = await prisma.collegeInsight.findMany({
-    where: { collegeId: { in: args.collegeIds }, status: "approved" },
-    include: { college: { select: { name: true } }, dataSource: { select: { displayName: true } } }
-  });
+const DOMAIN_KEYWORDS: Record<string, string[]> = {
+  'admissions': ['admission', 'apply', 'acceptance', 'deadline', 'requirement', 'test', 'sat', 'act', 'gpa'],
+  'finance': ['cost', 'financ', 'tuition', 'aid', 'price', 'sticker', 'scholarship', 'endowment'],
+  'academics': ['academic', 'major', 'program', 'faculty', 'ratio', 'graduation', 'retention', 'subject'],
+  'rankings': ['rank', 'standing', 'position', 'best'],
+  'identity': ['identity', 'found', 'enrollment', 'type', 'setting', 'calendar', 'affil']
+};
 
-  return data.map(d => ({
-    college: d.college.name,
-    source: d.dataSource.displayName,
-    year: d.academicYear,
-    rankings: findDeepArray(d.data, 'rank') 
-  }));
+function matchesDomain(key: string, domain: string): boolean {
+  const k = key.toLowerCase();
+  const keywords = DOMAIN_KEYWORDS[domain.toLowerCase()] || [domain.toLowerCase()];
+  
+  // Strip numeric prefixes like "1_"
+  const cleanKey = k.replace(/^\d+_/, "");
+  
+  return keywords.some(kw => cleanKey.includes(kw) || k.includes(kw));
 }
 
 /**
- * TOOL EXECUTION: get_specific_ranking
+ * TOOL EXECUTION: fetch_intelligence_domain
+ * REPLACES: get_subject_rankings, get_specific_ranking, get_admissions_stats, get_financial_stats, get_global_college_metrics, search_intelligence_repository
  */
-async function exec_get_specific_ranking(args: { collegeIds: string[], subject: string }, extractor: GeminiExtractor) {
-  const resolvedSubject = String((await resolve_terms(args.subject, extractor))[0] || "").toLowerCase().trim();
-  const data = await prisma.collegeInsight.findMany({
-    where: { collegeId: { in: args.collegeIds }, status: "approved" },
-    include: { college: { select: { name: true } }, dataSource: { select: { displayName: true } } }
-  });
-
-  return data.map(d => {
-    const rankings = findDeepArray(d.data, 'rank');
-    const searchTokens = resolvedSubject.split(/\s+/).filter(t => t.length > 2);
-    let matchedItem: any = null;
-
-    for (const r of rankings) {
-      const name = String(r?.department || r?.name || "").toLowerCase();
-      if (name && (name.includes(resolvedSubject) || resolvedSubject.includes(name))) {
-        matchedItem = { rank: r.rank || r.overall_rank || r.value, name: r.department || r.name };
-        break;
-      }
-      if (Array.isArray(r.sub_specialties)) {
-        const subMatch = r.sub_specialties.find((sub: any) => String(sub?.name || "").toLowerCase().includes(resolvedSubject));
-        if (subMatch) { matchedItem = { rank: subMatch.rank, name: subMatch.name }; break; }
-      }
-    }
-    
-    return { 
-      college: d.college.name, 
-      source: d.dataSource.displayName,
-      subject: resolvedSubject, 
-      rank: matchedItem ? matchedItem.rank : "No specific rank found in this record" 
-    };
-  });
-}
-
-/**
- * TOOL EXECUTION: get_admissions_stats
- */
-async function exec_get_admissions_stats(args: { collegeIds: string[] }) {
-  const data = await prisma.collegeInsight.findMany({
-    where: { collegeId: { in: args.collegeIds }, status: "approved" },
-    include: { college: { select: { name: true } } }
-  });
-  return data.map(d => ({
-    college: d.college.name, 
-    admissions_stats: findDeepValue(d.data, 'admissions') || d.data,
-    deadlines: findDeepValue(d.data, 'deadline') || "See admissions stats"
-  }));
-}
-
-/**
- * TOOL EXECUTION: get_financial_stats
- */
-async function exec_get_financial_stats(args: { collegeIds: string[] }) {
-  const data = await prisma.collegeInsight.findMany({
-    where: { collegeId: { in: args.collegeIds }, status: "approved" },
-    include: { college: { select: { name: true } } }
-  });
-  return data.map(d => ({
-    college: d.college.name, 
-    financial_profile: findDeepValue(d.data, 'financial') || d.data,
-    outcomes: findDeepValue(d.data, 'outcome') || findDeepValue(d.data, 'roi') || "Not specified"
-  }));
-}
-
-/**
- * TOOL EXECUTION: get_global_college_metrics
- */
-async function exec_get_global_college_metrics(args: { academicYear?: string }) {
+async function exec_fetch_intelligence_domain(args: { domain: string, collegeIds?: string[] }) {
   const filter: any = { status: "approved" };
-  if (args.academicYear) filter.academicYear = args.academicYear;
-  const data = await prisma.collegeInsight.findMany({
+  if (args.collegeIds && args.collegeIds.length > 0) {
+    filter.collegeId = { in: args.collegeIds };
+  }
+
+  const allInsights = await prisma.collegeInsight.findMany({
     where: filter,
-    include: { college: { select: { name: true } } }
-  });
-
-  return data.map(d => {
-    return {
-      college: d.college.name,
-      academicYear: d.academicYear,
-      acceptanceRate: findDeepValue(d.data, 'acceptance_rate') || findDeepValue(d.data, 'acceptance'),
-      satMath75: findDeepValue(d.data, 'sat_math')?.p75 || findDeepValue(d.data, 'sat_math_p75'),
-      satReading75: findDeepValue(d.data, 'sat_reading')?.p75 || findDeepValue(d.data, 'sat_rw')?.p75 || findDeepValue(d.data, 'sat_reading_p75'),
-      tuition: findDeepValue(d.data, 'tuition') || findDeepValue(d.data, 'sticker_price')
-    };
-  });
-}
-
-/**
- * TOOL EXECUTION: search_intelligence_repository
- */
-async function exec_search_intelligence_repository(args: { searchTopic: string }, extractor: GeminiExtractor) {
-  const resolvedTopic = String((await resolve_terms(args.searchTopic, extractor))[0] || "").toLowerCase().trim();
-  const inventory = await prisma.collegeInsight.findMany({
-    where: { status: "approved" },
     include: { college: { select: { name: true } }, dataSource: { select: { displayName: true } } }
   });
 
-  return inventory.map(i => {
-    const rankings = findDeepArray(i.data, 'rank');
-    let matchedItem: any = null;
-    for (const r of rankings) {
-      const name = String(r?.department || r?.name || "").toLowerCase();
-      if (name && (name.includes(resolvedTopic) || resolvedTopic.includes(name))) {
-        matchedItem = { rank: r.rank || r.overall_rank || r.value, name: r.department || r.name };
-        break;
-      }
+  return allInsights.map(insight => {
+    const data = insight.data as any;
+    let combinedData: any = {};
+    let foundMatch = false;
+
+    if (data && typeof data === 'object') {
+      Object.keys(data).forEach(key => {
+        if (matchesDomain(key, args.domain)) {
+          foundMatch = true;
+          if (typeof data[key] === 'object' && data[key] !== null && !Array.isArray(data[key])) {
+            combinedData = { ...combinedData, ...data[key] };
+          } else {
+            combinedData[key] = data[key];
+          }
+        }
+      });
     }
-    if (matchedItem || JSON.stringify(i.data).toLowerCase().includes(resolvedTopic)) {
-      return { college: i.college.name, source: i.dataSource.displayName, rank: matchedItem ? matchedItem.rank : "Found match", subject: matchedItem ? matchedItem.name : resolvedTopic };
-    }
-    return null;
-  }).filter(Boolean).slice(0, 15);
+
+    if (!foundMatch) return null;
+
+    return {
+      college: insight.college.name,
+      source: insight.dataSource.displayName,
+      year: insight.academicYear,
+      [args.domain]: combinedData
+    };
+  }).filter(Boolean);
 }
 
 /**
@@ -278,12 +210,7 @@ export async function POST(req: NextRequest) {
         let toolResult;
         try {
           if (call.name === "get_college_ids") toolResult = await exec_get_college_ids(call.args as any, extractor);
-          else if (call.name === "get_subject_rankings") toolResult = await exec_get_subject_rankings(call.args as any);
-          else if (call.name === "get_specific_ranking") toolResult = await exec_get_specific_ranking(call.args as any, extractor);
-          else if (call.name === "get_admissions_stats") toolResult = await exec_get_admissions_stats(call.args as any);
-          else if (call.name === "get_financial_stats") toolResult = await exec_get_financial_stats(call.args as any);
-          else if (call.name === "get_global_college_metrics") toolResult = await exec_get_global_college_metrics(call.args as any);
-          else if (call.name === "search_intelligence_repository") toolResult = await exec_search_intelligence_repository(call.args as any, extractor);
+          else if (call.name === "fetch_intelligence_domain") toolResult = await exec_fetch_intelligence_domain(call.args as any);
           else toolResult = { error: "Unknown tool" };
         } catch (err) {
           toolResult = { error: "Local tool execution failed" };
