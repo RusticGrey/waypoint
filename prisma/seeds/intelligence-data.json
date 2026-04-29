@@ -1,5 +1,5 @@
 {
-  "timestamp": 1777445243639,
+  "timestamp": 1777445979396,
   "glossary": [
     {
       "id": "cmoiyft69000032a3bxplg23d",
@@ -8,7 +8,7 @@
       "category": "college",
       "context": null,
       "createdAt": "2026-04-28T18:23:41.937Z",
-      "updatedAt": "2026-04-29T06:47:01.401Z"
+      "updatedAt": "2026-04-29T06:49:12.626Z"
     },
     {
       "id": "cmojlspjo0018bl58kbwthi1j",
@@ -17,7 +17,7 @@
       "category": "college",
       "context": null,
       "createdAt": "2026-04-29T05:17:34.932Z",
-      "updatedAt": "2026-04-29T06:47:01.469Z"
+      "updatedAt": "2026-04-29T06:49:12.694Z"
     },
     {
       "id": "cmojly6yb0019bl5857zdxfqc",
@@ -26,7 +26,7 @@
       "category": "college",
       "context": null,
       "createdAt": "2026-04-29T05:21:50.771Z",
-      "updatedAt": "2026-04-29T06:47:01.506Z"
+      "updatedAt": "2026-04-29T06:49:12.729Z"
     }
   ],
   "sources": [
@@ -37,7 +37,7 @@
       "baseUrl": "https://www.usnews.com/best-colleges",
       "isActive": true,
       "createdAt": "2026-04-28T04:57:21.280Z",
-      "updatedAt": "2026-04-29T06:47:01.541Z"
+      "updatedAt": "2026-04-29T06:49:13.622Z"
     }
   ],
   "rankingData": [
@@ -5778,11 +5778,21 @@
   ],
   "colleges": [
     {
-      "id": "university-of-cambridge",
-      "name": "University of Cambridge",
+      "id": "davidson-college",
+      "name": "Davidson College",
       "shortName": null,
-      "country": "United Kingdom",
-      "acceptanceRate": 0.166,
+      "country": "United States",
+      "acceptanceRate": null,
+      "avgGpa": null,
+      "avgSat": null,
+      "avgAct": null
+    },
+    {
+      "id": "university-of-utrecht",
+      "name": "University of Utrecht",
+      "shortName": null,
+      "country": "Netherlands",
+      "acceptanceRate": 0.195,
       "avgGpa": null,
       "avgSat": null,
       "avgAct": null
@@ -5796,116 +5806,6 @@
       "avgGpa": 3.93,
       "avgSat": 1520,
       "avgAct": 34
-    },
-    {
-      "id": "imperial-college-london",
-      "name": "Imperial College London",
-      "shortName": null,
-      "country": "United Kingdom",
-      "acceptanceRate": 0.142,
-      "avgGpa": null,
-      "avgSat": null,
-      "avgAct": null
-    },
-    {
-      "id": "brown-university",
-      "name": "Brown University",
-      "shortName": null,
-      "country": "United States",
-      "acceptanceRate": 0.052,
-      "avgGpa": 4.08,
-      "avgSat": 1505,
-      "avgAct": 34
-    },
-    {
-      "id": "heidelberg-university",
-      "name": "Heidelberg University",
-      "shortName": null,
-      "country": "Germany",
-      "acceptanceRate": 0.236,
-      "avgGpa": null,
-      "avgSat": null,
-      "avgAct": null
-    },
-    {
-      "id": "monash-university",
-      "name": "Monash University",
-      "shortName": null,
-      "country": "Australia",
-      "acceptanceRate": 0.676,
-      "avgGpa": null,
-      "avgSat": null,
-      "avgAct": null
-    },
-    {
-      "id": "ludwig-maximilians-university-munich",
-      "name": "Ludwig Maximilians University Munich",
-      "shortName": null,
-      "country": "Germany",
-      "acceptanceRate": 0.237,
-      "avgGpa": null,
-      "avgSat": null,
-      "avgAct": null
-    },
-    {
-      "id": "northwestern-university",
-      "name": "Northwestern University",
-      "shortName": null,
-      "country": "United States",
-      "acceptanceRate": 0.07,
-      "avgGpa": 4.1,
-      "avgSat": 1510,
-      "avgAct": 34
-    },
-    {
-      "id": "yale-university",
-      "name": "Yale University",
-      "shortName": null,
-      "country": "United States",
-      "acceptanceRate": 0.045,
-      "avgGpa": 4.14,
-      "avgSat": 1515,
-      "avgAct": 34
-    },
-    {
-      "id": "university-of-toronto",
-      "name": "University of Toronto",
-      "shortName": null,
-      "country": "Canada",
-      "acceptanceRate": 0.156,
-      "avgGpa": null,
-      "avgSat": null,
-      "avgAct": null
-    },
-    {
-      "id": "georgetown-university",
-      "name": "Georgetown University",
-      "shortName": null,
-      "country": "United States",
-      "acceptanceRate": 0.12,
-      "avgGpa": 4.01,
-      "avgSat": 1480,
-      "avgAct": 33
-    },
-    {
-      "id": "university-of-utrecht",
-      "name": "University of Utrecht",
-      "shortName": null,
-      "country": "Netherlands",
-      "acceptanceRate": 0.195,
-      "avgGpa": null,
-      "avgSat": null,
-      "avgAct": null
-    },
-    {
-      "id": "columbia-university",
-      "name": "Columbia University",
-      "shortName": null,
-      "country": "United States",
-      "acceptanceRate": 0.04,
-      "avgGpa": 4.15,
-      "avgSat": 1520,
-      "avgAct": 35
     },
     {
       "id": "mcgill-university",
@@ -5928,14 +5828,94 @@
       "avgAct": 34
     },
     {
-      "id": "massachusetts-institute-of-technology",
-      "name": "Massachusetts Institute of Technology",
-      "shortName": "MIT",
+      "id": "university-of-southern-california",
+      "name": "University of Southern California",
+      "shortName": null,
       "country": "United States",
-      "acceptanceRate": 0.033,
-      "avgGpa": 4.17,
-      "avgSat": 1540,
+      "acceptanceRate": 0.093,
+      "avgGpa": 3.88,
+      "avgSat": 1470,
+      "avgAct": 33
+    },
+    {
+      "id": "monash-university",
+      "name": "Monash University",
+      "shortName": null,
+      "country": "Australia",
+      "acceptanceRate": 0.676,
+      "avgGpa": null,
+      "avgSat": null,
+      "avgAct": null
+    },
+    {
+      "id": "university-of-edinburgh",
+      "name": "University of Edinburgh",
+      "shortName": null,
+      "country": "United Kingdom",
+      "acceptanceRate": 0.266,
+      "avgGpa": null,
+      "avgSat": null,
+      "avgAct": null
+    },
+    {
+      "id": "university-of-chicago",
+      "name": "University of Chicago",
+      "shortName": "UChicago",
+      "country": "United States",
+      "acceptanceRate": 0.053,
+      "avgGpa": 4.48,
+      "avgSat": 1535,
+      "avgAct": 34
+    },
+    {
+      "id": "ludwig-maximilians-university-munich",
+      "name": "Ludwig Maximilians University Munich",
+      "shortName": null,
+      "country": "Germany",
+      "acceptanceRate": 0.237,
+      "avgGpa": null,
+      "avgSat": null,
+      "avgAct": null
+    },
+    {
+      "id": "leiden-university",
+      "name": "Leiden University",
+      "shortName": null,
+      "country": "Netherlands",
+      "acceptanceRate": 0.182,
+      "avgGpa": null,
+      "avgSat": null,
+      "avgAct": null
+    },
+    {
+      "id": "georgetown-university",
+      "name": "Georgetown University",
+      "shortName": null,
+      "country": "United States",
+      "acceptanceRate": 0.12,
+      "avgGpa": 4.01,
+      "avgSat": 1480,
+      "avgAct": 33
+    },
+    {
+      "id": "columbia-university",
+      "name": "Columbia University",
+      "shortName": null,
+      "country": "United States",
+      "acceptanceRate": 0.04,
+      "avgGpa": 4.15,
+      "avgSat": 1520,
       "avgAct": 35
+    },
+    {
+      "id": "university-of-berlin",
+      "name": "University of Berlin",
+      "shortName": null,
+      "country": "Germany",
+      "acceptanceRate": 0.271,
+      "avgGpa": null,
+      "avgSat": null,
+      "avgAct": null
     },
     {
       "id": "technical-university-of-munich-tum",
@@ -5968,16 +5948,6 @@
       "avgAct": null
     },
     {
-      "id": "university-of-southern-california",
-      "name": "University of Southern California",
-      "shortName": null,
-      "country": "United States",
-      "acceptanceRate": 0.093,
-      "avgGpa": 3.88,
-      "avgSat": 1470,
-      "avgAct": 33
-    },
-    {
       "id": "university-of-amsterdam",
       "name": "University of Amsterdam",
       "shortName": null,
@@ -5988,34 +5958,24 @@
       "avgAct": null
     },
     {
-      "id": "harvard-university",
-      "name": "Harvard University",
+      "id": "williams-college",
+      "name": "Williams College",
       "shortName": null,
       "country": "United States",
-      "acceptanceRate": 0.033,
-      "avgGpa": 4.18,
-      "avgSat": 1520,
-      "avgAct": 34
+      "acceptanceRate": 0.085,
+      "avgGpa": 3.95,
+      "avgSat": 1490,
+      "avgAct": 33
     },
     {
-      "id": "university-college-london-ucl",
-      "name": "University College London (UCL)",
+      "id": "university-of-new-south-wales-unsw",
+      "name": "University of New South Wales (UNSW)",
       "shortName": null,
-      "country": "United Kingdom",
-      "acceptanceRate": 0.175,
+      "country": "Australia",
+      "acceptanceRate": 0.453,
       "avgGpa": null,
       "avgSat": null,
       "avgAct": null
-    },
-    {
-      "id": "university-of-chicago",
-      "name": "University of Chicago",
-      "shortName": "UChicago",
-      "country": "United States",
-      "acceptanceRate": 0.053,
-      "avgGpa": 4.48,
-      "avgSat": 1535,
-      "avgAct": 34
     },
     {
       "id": "university-of-sydney",
@@ -6028,41 +5988,101 @@
       "avgAct": null
     },
     {
-      "id": "duke-university",
-      "name": "Duke University",
+      "id": "erasmus-university-rotterdam",
+      "name": "Erasmus University Rotterdam",
       "shortName": null,
-      "country": "United States",
-      "acceptanceRate": 0.056,
-      "avgGpa": 4.13,
-      "avgSat": 1530,
-      "avgAct": 34
-    },
-    {
-      "id": "vanderbilt-university",
-      "name": "Vanderbilt University",
-      "shortName": null,
-      "country": "United States",
-      "acceptanceRate": 0.063,
-      "avgGpa": 3.91,
-      "avgSat": 1515,
-      "avgAct": 34
-    },
-    {
-      "id": "university-of-melbourne",
-      "name": "University of Melbourne",
-      "shortName": null,
-      "country": "Australia",
-      "acceptanceRate": 0.322,
+      "country": "Netherlands",
+      "acceptanceRate": 0.214,
       "avgGpa": null,
       "avgSat": null,
       "avgAct": null
     },
     {
-      "id": "leiden-university",
-      "name": "Leiden University",
+      "id": "university-of-queensland",
+      "name": "University of Queensland",
+      "shortName": null,
+      "country": "Australia",
+      "acceptanceRate": 0.516,
+      "avgGpa": null,
+      "avgSat": null,
+      "avgAct": null
+    },
+    {
+      "id": "university-of-groningen",
+      "name": "University of Groningen",
       "shortName": null,
       "country": "Netherlands",
-      "acceptanceRate": 0.182,
+      "acceptanceRate": 0.226,
+      "avgGpa": null,
+      "avgSat": null,
+      "avgAct": null
+    },
+    {
+      "id": "northwestern-university",
+      "name": "Northwestern University",
+      "shortName": null,
+      "country": "United States",
+      "acceptanceRate": 0.07,
+      "avgGpa": 4.1,
+      "avgSat": 1510,
+      "avgAct": 34
+    },
+    {
+      "id": "yale-university",
+      "name": "Yale University",
+      "shortName": null,
+      "country": "United States",
+      "acceptanceRate": 0.045,
+      "avgGpa": 4.14,
+      "avgSat": 1515,
+      "avgAct": 34
+    },
+    {
+      "id": "emory-university",
+      "name": "Emory University",
+      "shortName": null,
+      "country": "United States",
+      "acceptanceRate": 0.113,
+      "avgGpa": 3.9,
+      "avgSat": 1470,
+      "avgAct": 33
+    },
+    {
+      "id": "university-of-alberta",
+      "name": "University of Alberta",
+      "shortName": null,
+      "country": "Canada",
+      "acceptanceRate": 0.476,
+      "avgGpa": null,
+      "avgSat": null,
+      "avgAct": null
+    },
+    {
+      "id": "princeton-university",
+      "name": "Princeton University",
+      "shortName": null,
+      "country": "United States",
+      "acceptanceRate": 0.039,
+      "avgGpa": 3.95,
+      "avgSat": 1515,
+      "avgAct": 34
+    },
+    {
+      "id": "carnegie-mellon-university",
+      "name": "Carnegie Mellon University",
+      "shortName": "CMU",
+      "country": "United States",
+      "acceptanceRate": 0.113,
+      "avgGpa": 3.9,
+      "avgSat": 1510,
+      "avgAct": 34
+    },
+    {
+      "id": "university-of-bonn",
+      "name": "University of Bonn",
+      "shortName": null,
+      "country": "Germany",
+      "acceptanceRate": 0.255,
       "avgGpa": null,
       "avgSat": null,
       "avgAct": null
@@ -6108,94 +6128,104 @@
       "avgAct": null
     },
     {
-      "id": "rice-university",
-      "name": "Rice University",
+      "id": "heidelberg-university",
+      "name": "Heidelberg University",
+      "shortName": null,
+      "country": "Germany",
+      "acceptanceRate": 0.236,
+      "avgGpa": null,
+      "avgSat": null,
+      "avgAct": null
+    },
+    {
+      "id": "harvard-university",
+      "name": "Harvard University",
       "shortName": null,
       "country": "United States",
-      "acceptanceRate": 0.085,
-      "avgGpa": 3.96,
+      "acceptanceRate": 0.033,
+      "avgGpa": 4.18,
       "avgSat": 1520,
       "avgAct": 34
     },
     {
-      "id": "university-of-new-south-wales-unsw",
-      "name": "University of New South Wales (UNSW)",
-      "shortName": null,
-      "country": "Australia",
-      "acceptanceRate": 0.453,
-      "avgGpa": null,
-      "avgSat": null,
-      "avgAct": null
-    },
-    {
-      "id": "erasmus-university-rotterdam",
-      "name": "Erasmus University Rotterdam",
-      "shortName": null,
-      "country": "Netherlands",
-      "acceptanceRate": 0.214,
-      "avgGpa": null,
-      "avgSat": null,
-      "avgAct": null
-    },
-    {
-      "id": "university-of-edinburgh",
-      "name": "University of Edinburgh",
+      "id": "imperial-college-london",
+      "name": "Imperial College London",
       "shortName": null,
       "country": "United Kingdom",
-      "acceptanceRate": 0.266,
+      "acceptanceRate": 0.142,
       "avgGpa": null,
       "avgSat": null,
       "avgAct": null
     },
     {
-      "id": "university-of-groningen",
-      "name": "University of Groningen",
-      "shortName": null,
-      "country": "Netherlands",
-      "acceptanceRate": 0.226,
-      "avgGpa": null,
-      "avgSat": null,
-      "avgAct": null
-    },
-    {
-      "id": "williams-college",
-      "name": "Williams College",
+      "id": "brown-university",
+      "name": "Brown University",
       "shortName": null,
       "country": "United States",
-      "acceptanceRate": 0.085,
-      "avgGpa": 3.95,
-      "avgSat": 1490,
-      "avgAct": 33
+      "acceptanceRate": 0.052,
+      "avgGpa": 4.08,
+      "avgSat": 1505,
+      "avgAct": 34
     },
     {
-      "id": "emory-university",
-      "name": "Emory University",
-      "shortName": null,
-      "country": "United States",
-      "acceptanceRate": 0.113,
-      "avgGpa": 3.9,
-      "avgSat": 1470,
-      "avgAct": 33
-    },
-    {
-      "id": "university-of-alberta",
-      "name": "University of Alberta",
+      "id": "mcmaster-university",
+      "name": "McMaster University",
       "shortName": null,
       "country": "Canada",
-      "acceptanceRate": 0.476,
+      "acceptanceRate": 0.355,
       "avgGpa": null,
       "avgSat": null,
       "avgAct": null
     },
     {
-      "id": "princeton-university",
-      "name": "Princeton University",
+      "id": "vanderbilt-university",
+      "name": "Vanderbilt University",
       "shortName": null,
       "country": "United States",
-      "acceptanceRate": 0.039,
-      "avgGpa": 3.95,
+      "acceptanceRate": 0.063,
+      "avgGpa": 3.91,
       "avgSat": 1515,
       "avgAct": 34
+    },
+    {
+      "id": "university-of-melbourne",
+      "name": "University of Melbourne",
+      "shortName": null,
+      "country": "Australia",
+      "acceptanceRate": 0.322,
+      "avgGpa": null,
+      "avgSat": null,
+      "avgAct": null
+    },
+    {
+      "id": "ashoka-university",
+      "name": "Ashoka University",
+      "shortName": null,
+      "country": "India",
+      "acceptanceRate": 10,
+      "avgGpa": null,
+      "avgSat": null,
+      "avgAct": null
+    },
+    {
+      "id": "university-of-toronto",
+      "name": "University of Toronto",
+      "shortName": null,
+      "country": "Canada",
+      "acceptanceRate": 0.156,
+      "avgGpa": null,
+      "avgSat": null,
+      "avgAct": null
+    },
+    {
+      "id": "swarthmore-college",
+      "name": "Swarthmore College",
+      "shortName": null,
+      "country": "United States",
+      "acceptanceRate": 0.067,
+      "avgGpa": 4.05,
+      "avgSat": 1485,
+      "avgAct": 33
     },
     {
       "id": "simon-fraser-university",
@@ -6208,21 +6238,51 @@
       "avgAct": null
     },
     {
-      "id": "national-university-of-singapore-nus",
-      "name": "National University of Singapore (NUS)",
+      "id": "university-college-london-ucl",
+      "name": "University College London (UCL)",
       "shortName": null,
-      "country": "Singapore",
-      "acceptanceRate": 0.054,
+      "country": "United Kingdom",
+      "acceptanceRate": 0.175,
       "avgGpa": null,
       "avgSat": null,
       "avgAct": null
     },
     {
-      "id": "university-of-bonn",
-      "name": "University of Bonn",
+      "id": "duke-university",
+      "name": "Duke University",
       "shortName": null,
-      "country": "Germany",
-      "acceptanceRate": 0.255,
+      "country": "United States",
+      "acceptanceRate": 0.056,
+      "avgGpa": 4.13,
+      "avgSat": 1530,
+      "avgAct": 34
+    },
+    {
+      "id": "university-of-manchester",
+      "name": "University of Manchester",
+      "shortName": null,
+      "country": "United Kingdom",
+      "acceptanceRate": 0.242,
+      "avgGpa": null,
+      "avgSat": null,
+      "avgAct": null
+    },
+    {
+      "id": "rice-university",
+      "name": "Rice University",
+      "shortName": null,
+      "country": "United States",
+      "acceptanceRate": 0.085,
+      "avgGpa": 3.96,
+      "avgSat": 1520,
+      "avgAct": 34
+    },
+    {
+      "id": "national-university-of-singapore-nus",
+      "name": "National University of Singapore (NUS)",
+      "shortName": null,
+      "country": "Singapore",
+      "acceptanceRate": 0.054,
       "avgGpa": null,
       "avgSat": null,
       "avgAct": null
@@ -6248,84 +6308,24 @@
       "avgAct": 34
     },
     {
-      "id": "university-of-manchester",
-      "name": "University of Manchester",
+      "id": "university-of-cambridge",
+      "name": "University of Cambridge",
       "shortName": null,
       "country": "United Kingdom",
-      "acceptanceRate": 0.242,
+      "acceptanceRate": 0.166,
       "avgGpa": null,
       "avgSat": null,
       "avgAct": null
     },
     {
-      "id": "university-of-berlin",
-      "name": "University of Berlin",
-      "shortName": null,
-      "country": "Germany",
-      "acceptanceRate": 0.271,
-      "avgGpa": null,
-      "avgSat": null,
-      "avgAct": null
-    },
-    {
-      "id": "carnegie-mellon-university",
-      "name": "Carnegie Mellon University",
-      "shortName": "CMU",
+      "id": "massachusetts-institute-of-technology",
+      "name": "Massachusetts Institute of Technology",
+      "shortName": "MIT",
       "country": "United States",
-      "acceptanceRate": 0.113,
-      "avgGpa": 3.9,
-      "avgSat": 1510,
-      "avgAct": 34
-    },
-    {
-      "id": "university-of-queensland",
-      "name": "University of Queensland",
-      "shortName": null,
-      "country": "Australia",
-      "acceptanceRate": 0.516,
-      "avgGpa": null,
-      "avgSat": null,
-      "avgAct": null
-    },
-    {
-      "id": "mcmaster-university",
-      "name": "McMaster University",
-      "shortName": null,
-      "country": "Canada",
-      "acceptanceRate": 0.355,
-      "avgGpa": null,
-      "avgSat": null,
-      "avgAct": null
-    },
-    {
-      "id": "ashoka-university",
-      "name": "Ashoka University",
-      "shortName": null,
-      "country": "India",
-      "acceptanceRate": 10,
-      "avgGpa": null,
-      "avgSat": null,
-      "avgAct": null
-    },
-    {
-      "id": "davidson-college",
-      "name": "Davidson College",
-      "shortName": null,
-      "country": "United States",
-      "acceptanceRate": null,
-      "avgGpa": null,
-      "avgSat": null,
-      "avgAct": null
-    },
-    {
-      "id": "swarthmore-college",
-      "name": "Swarthmore College",
-      "shortName": null,
-      "country": "United States",
-      "acceptanceRate": 0.067,
-      "avgGpa": 4.05,
-      "avgSat": 1485,
-      "avgAct": 33
+      "acceptanceRate": 0.033,
+      "avgGpa": 4.17,
+      "avgSat": 1540,
+      "avgAct": 35
     },
     {
       "id": "university-of-california-berkeley",
