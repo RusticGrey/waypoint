@@ -17,13 +17,14 @@ If you are a developer looking to get the project running locally, head straight
 ## 🧩 Feature Specifications
 Detailed documentation for every major functional area of the platform:
 
+- [Admin Management](features/ADMIN_MANAGEMENT.md): User management, college database, and curriculum setup.
+- [Event Management](features/EVENT_MANAGEMENT.md): Public events, slot booking, and live on-site management.
 - [Student Profile](features/STUDENT_PROFILE.md): Onboarding wizard, profile management, and completion tracking.
-- [College Applications](features/COLLEGE_APPLICATIONS.md): College lists, application tracking, test scores, and deadlines.
 - [Profile Analysis](features/PROFILE_ANALYSIS.md): Strength scoring algorithm and counselor overrides.
 - [Goals & History](features/GOALS_AND_HISTORY.md): Student improvement goals and the system audit trail.
 - [Meeting Management](features/MEETING_MANAGEMENT.md): Availability, scheduling, and integrated video conferencing.
-- [Event Management](features/EVENT_MANAGEMENT.md): Public events, slot booking, and live on-site management.
-- [Admin Management](features/ADMIN_MANAGEMENT.md): User management, college database, and curriculum setup.
+- [College Insights & Beacon AI](features/COLLEGE_INSIGHTS.md): College insights data repository and conversational agent.
+- [College Applications](features/COLLEGE_APPLICATIONS.md): College lists, application tracking, test scores, and deadlines.
 
 ---
 **Status**: Production Ready ✅  

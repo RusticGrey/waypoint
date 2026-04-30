@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { GeminiExtractor } from '@/lib/scraping/llm/geminiExtractor';
+import { ExtractionEngine } from '@/lib/extraction/extractionEngine';
 
 export async function POST(
   req: NextRequest,
@@ -57,7 +57,7 @@ export async function POST(
     // 3. Initialize extractor
     const apiKey = process.env.GOOGLE_AI_API_KEY;
     if (!apiKey) throw new Error('GOOGLE_AI_API_KEY not configured');
-    const extractor = new GeminiExtractor(apiKey);
+    const extractor = new ExtractionEngine(apiKey);
 
     const results = [];
 

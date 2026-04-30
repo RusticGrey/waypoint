@@ -1,8 +1,15 @@
 import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
-import { ExtractionResult } from '../sources/dataSourceAdapter';
 
-export class GeminiExtractor {
-  private genAI: GoogleGenerativeAI;
+export interface ExtractionResult {
+  data: any;
+  fieldsFound: string[];
+  fieldsNotFound: string[];
+  confidence: number;
+  modelUsed: string;
+}
+
+export class ExtractionEngine {
+  public genAI: GoogleGenerativeAI;
 
   constructor(apiKey: string) {
     this.genAI = new GoogleGenerativeAI(apiKey);
@@ -305,9 +312,8 @@ export class GeminiExtractor {
 export const extractDataFromDocument = async (
   content: string | string[], 
   promptTemplate: string, 
-  outputSchema: any,
   options?: { documentType?: string, mimeType?: string }
 ) => {
-  const extractor = new GeminiExtractor(process.env.GOOGLE_AI_API_KEY!);
+  const extractor = new ExtractionEngine(process.env.GOOGLE_AI_API_KEY!);
   return await extractor.extractWithTemplate(content, promptTemplate, options);
 };

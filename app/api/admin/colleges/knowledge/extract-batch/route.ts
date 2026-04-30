@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
-import { GeminiExtractor } from "@/lib/scraping/llm/geminiExtractor";
+import { ExtractionEngine } from "@/lib/extraction/extractionEngine";
 
 export async function POST(req: NextRequest) {
   try {
@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
 
     const extractedDataSamples = [];
     const targetModel = process.env.LLM_MODEL_EXTRACTION || 'gemini-1.5-pro';
-    const extractor = new GeminiExtractor(process.env.GOOGLE_AI_API_KEY!);
+    const extractor = new ExtractionEngine(process.env.GOOGLE_AI_API_KEY!);
 
     for (const group of groupsToProcess) {
       console.log(`Processing extraction group: ${group.collegeName} - ${group.dataSourceDisplayName}`);

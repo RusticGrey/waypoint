@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
-import { GeminiExtractor } from '../lib/scraping/llm/geminiExtractor';
+import { ExtractionEngine } from '../lib/extraction/extractionEngine';
 import * as dotenv from 'dotenv';
 dotenv.config({ path: '.env.local' });
 

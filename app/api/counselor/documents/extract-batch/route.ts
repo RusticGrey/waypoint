@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { GeminiExtractor } from '@/lib/scraping/llm/geminiExtractor';
+import { ExtractionEngine } from '@/lib/extraction/extractionEngine';
 
 export async function POST(request: Request) {
   try {
@@ -52,7 +52,7 @@ export async function POST(request: Request) {
     const documentContents = documents.map(d => d.content);
     const targetModel = process.env.LLM_MODEL_EXTRACTION || 'gemini-1.5-pro';
     
-    const extractor = new GeminiExtractor(process.env.GOOGLE_AI_API_KEY!);
+    const extractor = new ExtractionEngine(process.env.GOOGLE_AI_API_KEY!);
     const extractedResult = await (extractor as any).extractWithTemplate(
       documentContents.join("\n\n---\n\n"),
       promptToUse,

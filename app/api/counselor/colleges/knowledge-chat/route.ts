@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { GeminiExtractor } from '@/lib/scraping/llm/geminiExtractor';
+import { ExtractionEngine } from '@/lib/extraction/extractionEngine';
 
 /**
  * DEEP SCHEMA RESILIENCE HELPERS
@@ -62,7 +62,7 @@ function findDeepArray(obj: any, keyword: string, depth = 0): any[] {
 /**
  * GLOSSARY RESOLUTION HELPER
  */
-async function resolve_terms(input: string | string[], extractor?: GeminiExtractor) {
+async function resolve_terms(input: string | string[], extractor?: ExtractionEngine) {
   const terms = Array.isArray(input) ? input : [input];
   let glossary: any[] = [];
   try {
@@ -95,7 +95,7 @@ async function resolve_terms(input: string | string[], extractor?: GeminiExtract
 /**
  * TOOL EXECUTION: get_college_ids
  */
-async function exec_get_college_ids(args: { names: string[] }, extractor: GeminiExtractor) {
+async function exec_get_college_ids(args: { names: string[] }, extractor: ExtractionEngine) {
   const resolvedNames = await resolve_terms(args.names, extractor);
   const allColleges = await prisma.college.findMany({ select: { id: true, name: true, shortName: true } });
   const normalize = (str: string) => String(str || "").toLowerCase().replace(/[^a-z0-9]/g, "").trim();
@@ -184,11 +184,11 @@ export async function POST(req: NextRequest) {
     const { query, history } = await req.json();
     if (!query) return NextResponse.json({ error: 'Query is required' }, { status: 400 });
 
-    const extractor = new GeminiExtractor(process.env.GOOGLE_AI_API_KEY!);
+    const extractor = new ExtractionEngine(process.env.GOOGLE_AI_API_KEY!);
     const model = (extractor as any).genAI.getGenerativeModel({ 
       model: process.env.LLM_MODEL_CHAT || 'gemini-2.5-flash',
-      tools: [GeminiExtractor.TOOLS] as any,
-      systemInstruction: GeminiExtractor.SYSTEM_INSTRUCTION
+      tools: [ExtractionEngine.TOOLS] as any,
+      systemInstruction: ExtractionEngine.SYSTEM_INSTRUCTION
     });
 
     let cleanHistory = (history || []).map((h: any) => ({ role: h.role === 'assistant' ? 'model' : 'user', parts: [{ text: h.content || "" }] }));
